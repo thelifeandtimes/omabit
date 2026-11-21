@@ -1,0 +1,1306 @@
+{
+  "version": 1,
+  "basis": "Reviewed public CLI help inventory at source25588e7; per-command effects for unextracted families require further review before exposure.",
+  "bindings": [
+    {
+      "cli": "omabit app-preflight",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit copy-code",
+      "effects": [
+        "secret-disclosure-or-credential-write"
+      ],
+      "exclusion_reason": "Credentials and authentication require a private handoff, never model-visible MCP arguments or results."
+    },
+    {
+      "cli": "omabit desk-adopt",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-app-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-commit",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-create",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-inspect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-install",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-list",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-operation",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-adoption",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-commit",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-create",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-frontend",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-install",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-release",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-plan-stage",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-receiver-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-reconcile",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-release",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-review-adoption",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-review-commit",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-review-frontend",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-review-install",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-review-release",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-settings",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-source-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-stage",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-stage-discard",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-stage-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit desk-upload-frontend",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit remote-setup",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit remote-setup-prepare",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit remote-setup-run",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit remote-setup-start",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit remote-setup-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit service-upgrade",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit service-upgrade-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit setup",
+      "effects": [
+        "host-installation"
+      ],
+      "exclusion_reason": "Host installation/enrollment authority is intentionally separate from ordinary fleet operations."
+    },
+    {
+      "cli": "omabit setup-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit ship-routes",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit ship-routes-configure",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-auto",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-migrate",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-preview",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-publish",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "omabit theme-sync",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-archive",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-connect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-connection",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-connections",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-disconnect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-fleet-connect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-fleet-health",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-fleet-maintain",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-fleet-reconnect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-managed-connect",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-plugins",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-policy",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-reconcile",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-recover",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-ship-approvals",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-ship-approve",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector app-ship-review",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector configure",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector create-comet",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector create-fake",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector create-ship",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector delete-pier",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Destructive maintenance or host storage authority needs a separately reviewed typed exposure contract."
+    },
+    {
+      "cli": "urbit-collector enroll",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector enroll-pier",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector epoch-preview",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector epoch-prune",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Destructive maintenance or host storage authority needs a separately reviewed typed exposure contract."
+    },
+    {
+      "cli": "urbit-collector forget",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector hello",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector help",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help runners",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help ships",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help projects",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help imports",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help connections",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector help hosting",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Existing offline CLI guidance remains available; verified release-bound MCP resources are pending."
+    },
+    {
+      "cli": "urbit-collector host-check",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector import-fake",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector import-pier",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector import-sources",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector inventory",
+      "effects": [
+        "saved-runner-read"
+      ],
+      "exclusion_reason": "A shared bounded sanitized snapshot/watch contract must avoid free-form private journal diagnostics and retain cursor semantics."
+    },
+    {
+      "cli": "urbit-collector login-code",
+      "effects": [
+        "secret-disclosure-or-credential-write"
+      ],
+      "exclusion_reason": "Credentials and authentication require a private handoff, never model-visible MCP arguments or results."
+    },
+    {
+      "cli": "urbit-collector logs",
+      "effects": [
+        "live-probe",
+        "operator-log-disclosure"
+      ],
+      "exclusion_reason": "The typed runtime.log-tail.v1 preview requires exact container binding and explicit private-data selection. Legacy --watch is excluded until streaming and cursor parity are qualified."
+    },
+    {
+      "cli": "urbit-collector move-host",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Destructive maintenance or host storage authority needs a separately reviewed typed exposure contract."
+    },
+    {
+      "cli": "urbit-collector move-pier",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Destructive maintenance or host storage authority needs a separately reviewed typed exposure contract."
+    },
+    {
+      "cli": "urbit-collector operate",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector piers",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector preview-import-restore",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector preview-pier",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector private-chain-inputs",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector private-chain-plan",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector private-chain-projects",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector private-chain-register",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-add",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-create",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Compound plan/reservation/dependency/boot orchestration remains on the compatible CLI pending extraction; typed primitive project operations are exposed separately."
+    },
+    {
+      "cli": "urbit-collector project-diagnose",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-operate",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-plan",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-reconcile-stop",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-recover",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-recovery-checkpoint",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-recovery-source",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-register",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector project-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector projects",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector publish-ames",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector restore-import",
+      "effects": [
+        "journal-write",
+        "runtime-mutation"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector routine",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector routine-set",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector runner-accept-mode",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector runner-edit",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector runners",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector ship-enroll",
+      "effects": [
+        "secret-disclosure-or-credential-write"
+      ],
+      "exclusion_reason": "Credentials and authentication require a private handoff, never model-visible MCP arguments or results."
+    },
+    {
+      "cli": "urbit-collector ship-forget",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector ship-login",
+      "effects": [
+        "secret-disclosure-or-credential-write"
+      ],
+      "exclusion_reason": "Credentials and authentication require a private handoff, never model-visible MCP arguments or results."
+    },
+    {
+      "cli": "urbit-collector ship-logout",
+      "effects": [
+        "secret-disclosure-or-credential-write"
+      ],
+      "exclusion_reason": "Credentials and authentication require a private handoff, never model-visible MCP arguments or results."
+    },
+    {
+      "cli": "urbit-collector ship-scry",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector ship-status",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector ship-watch",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector ships",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector snapshot",
+      "effects": [
+        "saved-runner-read"
+      ],
+      "exclusion_reason": "A shared bounded sanitized snapshot/watch contract must avoid free-form private journal diagnostics and retain cursor semantics."
+    },
+    {
+      "cli": "urbit-collector storage-root-add",
+      "effects": [
+        "runtime-mutation",
+        "journal-write"
+      ],
+      "exclusion_reason": "Destructive maintenance or host storage authority needs a separately reviewed typed exposure contract."
+    },
+    {
+      "cli": "urbit-collector suggest-port",
+      "effects": [
+        "legacy-contract-review-required"
+      ],
+      "exclusion_reason": "Existing CLI remains supported; typed orchestration extraction and adapter qualification are pending."
+    },
+    {
+      "cli": "urbit-collector watch",
+      "effects": [
+        "saved-runner-read"
+      ],
+      "exclusion_reason": "A shared bounded sanitized snapshot/watch contract must avoid free-form private journal diagnostics and retain cursor semantics."
+    },
+    {
+      "cli": "urbit-runner authorize-desktop",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner comet-epochs-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner comet-maintenance-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner comet-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner comet-prefix-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner demo",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner doctor",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner epochs-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner host-check",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner http-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner import-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner install-host",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner meld-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner prefix-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner preflight",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner prepare-rootless",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner prepare-ssh",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner prune-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner qualify-comet",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-comet-epochs",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-comet-maintenance",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-comet-prefix",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-epochs",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-http",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-import",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-meld",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-prefix",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-prune",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner qualify-runtime",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner remote-bootstrap",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner repair-boot-identity",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner repair-engine-guard",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner resource-policy",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner runtime-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner serve-development",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner serve-fake",
+      "effects": [
+        "disposable-test-execution"
+      ],
+      "exclusion_reason": "Disposable local-owner execution requires a named, bounded qualification descriptor; remote MCP execution is excluded."
+    },
+    {
+      "cli": "urbit-runner setup-plan",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner ssh-authorized-key",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner ssh-bridge",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "urbit-runner state-schema",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline local-owner planning remains on urbit-runner until a typed named-plan handler is qualified."
+    },
+    {
+      "cli": "urbit-runner verify-host-packages",
+      "effects": [
+        "local-owner-contract"
+      ],
+      "exclusion_reason": "Local-owner host setup, repair, service or bridge authority is excluded from ordinary fleet MCP tools."
+    },
+    {
+      "cli": "omabit operations",
+      "effects": [
+        "offline-read"
+      ],
+      "exclusion_reason": "Offline catalog is available through omabit.catalog and omabit://operations/v1; it is a discovery adapter."
+    },
+    {
+      "cli": "omabit call",
+      "effects": [
+        "adapter-dispatch"
+      ],
+      "exclusion_reason": "The generic CLI dispatcher maps to each explicit typed MCP tool, rather than accepting arbitrary commands."
+    },
+    {
+      "cli": "omabit mcp",
+      "effects": [
+        "adapter-startup"
+      ],
+      "exclusion_reason": "Starting an MCP transport is a local process configuration action, not a recursively exposed tool."
+    },
+    {
+      "cli": "omabit app-development-status",
+      "effects": [
+        "local-metadata-read"
+      ],
+      "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit app-development-save",
+      "effects": [
+        "policy-edit-or-configuration-write"
+      ],
+      "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit app-development-retry",
+      "effects": [
+        "policy-edit-or-configuration-write"
+      ],
+      "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit app-development-workflow",
+      "effects": [
+        "local-metadata-read"
+      ],
+      "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit app-development-configure",
+      "effects": [
+        "policy-edit-or-configuration-write"
+      ],
+      "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit recording-export",
+      "effects": [
+        "local-metadata-read",
+        "saved-runner-read",
+        "private-runtime-read",
+        "local-private-file-write"
+      ],
+      "exclusion_reason": "Only the owner-selected local archive destination is CLI-specific. The writer composes runtime.recording-export-manifest.v1 and runtime.recording-export-part.v1; both exact reads are shared CLI/MCP operations. MCP inputs cannot select arbitrary local output paths."
+    },
+    {
+      "cli": "urbit-runner recording-worker",
+      "effects": [
+        "private-recording-job-read",
+        "runner-owned-recording-write",
+        "native-runtime-attachment"
+      ],
+      "exclusion_reason": "Internal entry only for the exact main process of its owner-private notify service and existing immutable job. Ordinary shell invocation and general-purpose MCP execution are refused."
+    }
+  ]
+}

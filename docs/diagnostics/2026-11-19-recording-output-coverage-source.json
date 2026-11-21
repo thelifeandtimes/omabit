@@ -1,0 +1,76 @@
+{
+  "format": 1,
+  "status": "passed-focused-source-native-pending",
+  "scope": "per-selected retained closed recording source only; no host/history-wide oldest-output claim",
+  "model": "optional version1 timing output_coverage, including explicit no-output-in-verified-prefix status, stream frame/byte counts, first/last in sequence and earliest/latest wall times",
+  "source_sha256": {
+    "internal/recording/timing_index.go": "b63b1e4f09d1cf342f0865284af56d056c6f7e6d075393e6ea74ac30a97cfd80",
+    "internal/recording/timing_index_linux_test.go": "2ac472ffb2fc4b7369fb64fba8e054bc89560aafecbba9c3737e1e5a5b972707",
+    "internal/service/recording_timing.go": "8b9140d62eb59121d029703b3a0877a8ad63a20c6b960a9727efbe79f35cade0",
+    "cmd/omabit/help.go": "f476c0e15470b597fdca4b19a7f8c70ddcb1620954e34494d61bf42c02957f35",
+    "cmd/omabit/core_recording_timing_test.go": "9e31e42a5c8874248376321021c214a7727f945583254383bcf80cafe04007c7",
+    "internal/managed/issues_recording_usage_vm_test.go": "01a9920264f23b00fde1ea5eda682d692a70dfc6a51b93c2e874a63654527884",
+    "internal/managed/issues_recording_derived_vm_test.go": "27c1ce3cfc8434d62e754e16e77e91a1b334b6c10e519e93b4ebf760038547cb",
+    "scripts/qualification/recording-usage-cow/run.py": "aff9db63af09e0d476dfd84ca10a8ee4a188b627d6bb4b90214da612277fad36",
+    "scripts/qualification/recording-usage-cow/guest.py": "7612e5811ca60f3813da293b3227849491293b29cfb88e61284428b9c2275825",
+    "scripts/qualification/recording-usage-cow/test_guards.py": "07be61e76e32adc5face71379a2919c98b06f225f0d7ec48dba7a7b06fb6eef9"
+  },
+  "checks": [
+    {
+      "unit": "omabit-issues-recording-output-coverage-source-01-codec.scope",
+      "exit": 0,
+      "wall_seconds": 20.59,
+      "output": "Running as unit: omabit-issues-recording-output-coverage-source-01-codec.scope; invocation ID: 8b6f82303b494e81affcc031bf5c27aa\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/recording\t1.933s\n"
+    },
+    {
+      "unit": "omabit-issues-recording-output-coverage-source-01-interfaces.scope",
+      "exit": 0,
+      "wall_seconds": 37.09,
+      "output": "Running as unit: omabit-issues-recording-output-coverage-source-01-interfaces.scope; invocation ID: fa814c4ae5654efa925d8705f1a20c69\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/cmd/omabit\t19.424s\n"
+    },
+    {
+      "unit": "omabit-issues-recording-output-coverage-source-01-catalog.scope",
+      "exit": 0,
+      "wall_seconds": 11.33,
+      "output": "Running as unit: omabit-issues-recording-output-coverage-source-01-catalog.scope; invocation ID: a814facfe720404ea06003eee385d160\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/service\t7.912s\n"
+    },
+    {
+      "unit": "omabit-issues-recording-output-coverage-source-01-vet.scope",
+      "exit": 0,
+      "wall_seconds": 2.06,
+      "output": "Running as unit: omabit-issues-recording-output-coverage-source-01-vet.scope; invocation ID: aa7edd468f034adab1875eb233f8127b\n"
+    }
+  ],
+  "covered": [
+    "reversed wall clock versus sequence order",
+    "output summary independent of query match filter/page limit",
+    "empty and exit-only prefixes do not invent output timestamps",
+    "exit timestamps excluded from output extrema",
+    "corrupt retained tails preserve only verified prefix scope",
+    "original retained files unchanged",
+    "actual CLI/official SDK exact timestamps above2^53",
+    "no summary on selection/privacy/role/capability/transport/part/source failures",
+    "actual indexed ZIP CLI summary preserves chronology",
+    "12 inert guest/flag/oversized-proof guards"
+  ],
+  "storage": {
+    "admission_bytes": 805306368,
+    "initial_charge": 49665310720,
+    "fast_peak_charge": 49924710400,
+    "full_charge_after": 49830883328,
+    "budget_bytes": 51539607552
+  },
+  "compatibility": [
+    "no recording metadata/frame/segment/job/control/SQLite schema65 change",
+    "no new runner endpoint or capability",
+    "optional derived core summary; absent older field is unavailable, not zero",
+    "same hash-verified source scan and privacy authorization; no extra source requests",
+    "JSONL index file records and original/redacted file formats unchanged"
+  ],
+  "pending": [
+    "matching clean products/helper and static-help reference generation",
+    "fresh native output-summary and independent original-frame verification",
+    "host/session-wide oldest inventory, pressure/retirement and other factories",
+    "final previous-stable/native-plugin/preserved DEV gates"
+  ]
+}

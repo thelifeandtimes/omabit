@@ -1,5 +1,14 @@
 # Live 0.4.0 manual review
 
+> Current update (M779,2026-11-20): this same review040 profile and runner now use
+> qualified candidate0.5.0/schema65. The complete plugin lives at
+> `~/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v050`; its plugin ID
+> and IPC commands remain unchanged. Existing manual history/intent/pier and
+> pre-existing recovery-required stopped state are preserved. The fresh app
+> workflow and stable publication remain separate gates. The original installation
+> history below describes the earlier0.4.0 review, not its current version/state.
+
+
 Open **Omabit 0.4.0 DEV** in the application launcher, or click **DEV** in the
 menubar. The full panel is also available with:
 

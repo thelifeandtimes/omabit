@@ -75,3 +75,5 @@ AgentHelpPane 1.0 AgentHelpPane.qml
 ContainerResourceFields 1.0 ContainerResourceFields.qml
 ShipRoutes 1.0 ShipRoutes.qml
 ShipRoutesPane 1.0 ShipRoutesPane.qml
+Recordings 1.0 Recordings.qml
+RecordingsPane 1.0 RecordingsPane.qml

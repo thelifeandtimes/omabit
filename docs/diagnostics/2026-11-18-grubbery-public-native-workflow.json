@@ -1,0 +1,246 @@
+{
+  "version": 1,
+  "status": "passed",
+  "scope": "actual public runner API/registry/client and pinned native HTTP; synthetic lifecycle and fixed kernel state probes; product Docker transport, pending-operation rebinding, CLI/native combination, permits/routes/assets/peers and installed upgrade unqualified",
+  "artifact_source": "d2d8cf98bc6322c9358f9291015da7d601a141af",
+  "artifact_sha256": "8ce0d86adc0a22534d6120cebd3bb93a00c04bc2c5ce2de4d26bb9e0596ecceb",
+  "workflow_case": "grubbery-public-workflow-v1",
+  "test_seconds": 1003.86,
+  "workflow_exit": 0,
+  "clean_shutdown": true,
+  "schema": 62,
+  "plan_version": 2,
+  "record_version": 2,
+  "rounds": [
+    {
+      "epoch": 1,
+      "plan_digest": "348f718e2511766f148c69b11ca594909b746171e4c607757088b4eca8d9267a",
+      "header_digest": "d6b64ef8b6ddfecc619c6e4cc6f8aa6872a101b61a5e3c489f9a523b954dac21",
+      "final_revision": 36,
+      "source_digest": "840fb9fa309325af2ec44087342999dd95595ceacebd04335ba250103e5859b7",
+      "phases": [
+        {
+          "index": 0,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 1,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 2,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 3,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 4,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 5,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 6,
+          "kind": "observe-code",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 7,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 8,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 9,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 10,
+          "kind": "poke-source",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 11,
+          "kind": "observe-followed-source",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "epoch": 2,
+      "plan_digest": "50e33bff184139059d39cd86c94b2cc8cf22c83bd24ac9dc0f5254ccf05ddefc",
+      "header_digest": "3b84be0ae3b663446e7900f74f5a25dc514bb2400bc893b658a928d7fcd08239",
+      "final_revision": 27,
+      "source_digest": "5be1882ece1a6c07f58dce29bace4df9bbf3bd2ab9feae164a3ddc3c874a3a3b",
+      "phases": [
+        {
+          "index": 0,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 1,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 2,
+          "kind": "make-directory",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 3,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 4,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 5,
+          "kind": "observe-code",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 6,
+          "kind": "make-file",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 7,
+          "kind": "poke-source",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        },
+        {
+          "index": 8,
+          "kind": "observe-followed-source",
+          "states": [
+            "dispatched",
+            "acknowledged",
+            "observed"
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "new_code_label_observed": true,
+    "old_phase_replay_unchanged": true,
+    "original_receipts_after_store_reopen": true,
+    "same_pier_clean_restart": true,
+    "source_versions": 2,
+    "state_preserved_on_restart": true,
+    "state_preserved_on_source_update": true,
+    "write_after_restart": true
+  },
+  "proof_sha256": "8123645bb2ca94da206a19de74cd0021ee8115c744ec073023a710de9d45b30e",
+  "original_result_sha256": "b7a2557c3ec0e16d15022fb9576057ecf17f989186f9722a7aa613501caf8b1a",
+  "workflow_log_sha256": "ef764c6a2ce2c9008dfff9ae62e449a1622fe54b1f7777559d65efc54b90898c",
+  "closed_store_sha256": "70b13a9c3ebe49e7f507d8b99cb4ca2c28232f3b4b9da8156dc51e5bf97ecc0b",
+  "restart_receipt_sha256": "9a3461ea6314b573ce1b1d554d0d92cdca0e3bb8fba275cb92bfbe707514ae0a",
+  "remaining": [
+    "actual product Docker/curl native transport",
+    "pending source operation recovery on a replaced native process/container",
+    "durable owner-session cleanup after process death",
+    "native CLI/stdio integration",
+    "permits, aliases, routes/served assets, peer cases and installed upgrades"
+  ],
+  "live_grubbery_capability_enabled": false
+}

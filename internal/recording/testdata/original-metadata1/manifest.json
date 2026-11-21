@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "scope": "actual original3218e6f private store writer fixture; declared helper adds no runtime changes; synthetic bytes/identity only",
+  "original_source": "3218e6fb87ef293cc87d9083c574b3232de09271",
+  "original_writer_sha256": "0b27ba1be956f24e6ebcfb0de417ede59b84c4b48cd8534f96357f91454ef843",
+  "declared_helper_sha256": "7f15cceb3f86f09d57c86c503aa28255011bc889cc4db028ad812b34d856359d",
+  "original_source_manifest_sha256": "1cf7e4431616dd3a72a5768fedbf5832ca5993380d0640ac906c5750c83abd80",
+  "files": {
+    "frames.obr": "e0852d81c1837247e8d159d0016e4e3dd0e16947d54806dea5c4bc4498970e95",
+    "metadata.json": "b251bc76eb002414d11d90b81b5f59a0092a4a69512e936a0c7a9afd7fb9b371",
+    "writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

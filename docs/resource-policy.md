@@ -38,3 +38,9 @@ blocks starts with an actionable error; observation and Stop remain available.
 
 Rollback: old binaries ignore this additive file and retain their previous
 thresholds. No pier or managed-state schema migration is involved.
+
+The separate development [project allocation contract](project-allocation.md)
+reports bounded current-root inode usage and server-sampled net growth. Its
+explicit exclusions and unknown shared allowance prevent treating it as a full
+project budget. This start policy supplies neither ongoing containment nor
+permission to stop or prune a project.

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "schema": 62,
+  "source_commit": "3e7808791c6af9357eb0bc808620b1ec1daca349",
+  "writer_test": "TestOriginal62AppRuntimeWriter",
+  "writer_binary_sha256": "1e71300f023b1602a3d415e32e260aa14e7522f0965f10b663009e54e4c65ff3",
+  "declared_helper_sha256": "de5786bf670d9a91d189b9fdd57e1ab8e32af0316378313263eb49588c90fd2e",
+  "original_source_manifest_sha256": "42c29456287638a592b55e05f058f4b62021a156640323c84c821f90f410b746",
+  "original_database_sha256": "e9089e124f96b4788e2f75bc2a3a93b70b6d31fd11a562a62f8964148de63dab",
+  "raw_sql_sha256": "8a86dd7a36fe19dbd7ce812fdb030e53b4a096ad49628cb5ff949b95d4118cc0",
+  "gzip_sha256": "50276f57c53cd7b2d64debf47f5489ca330b0401d93257c4519d758935c7b68b",
+  "scope": "Synthetic actual62 plan2 journal with dispatched/acknowledged uncertainty, exact lease and original59/60 history. Metadata source fixture only; no private or native ship database."
+}

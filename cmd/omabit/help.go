@@ -2,6 +2,70 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"recording-export": `Usage: omabit [--config-dir DIR] recording-export --runner NAME --expected-runner-id ID --instance INSTANCE --job JOB_ID --job-sha256 SHA256 (--original [--timing-index] | --redacted) --include-private-data --output /absolute/private/new.zip
+
+Export a closed saved recording job through the shared manifest/part operations.
+Choose exactly one representation. --original preserves exact metadata and
+encoded segments, timing/streams and verified-prefix/gap coverage. Optional
+--timing-index adds a separate verified payload-free JSONL index; it re-reads the
+hash-pinned originals and refuses incomplete or oversized output. The shared
+runtime.recording-timing.v1 operation filters timing and returns context cursors.
+It separates first/last output in sequence from earliest/latest retained output
+wall times; coverage covers this verified prefix, not earlier or other sessions.
+--redacted exports only derived escaped spans, omission reasons, technical
+metadata and coverage, omitting exact bindings and original encoded files.
+Finite credential rules require owner review before sharing; technical strings,
+hashes, timing and application text can remain private. --timing-index cannot be
+combined with --redacted. Original output may contain secrets and terminal
+controls; inspect it as data. No publication or runtime completeness is implied.
+The existing output directory must be physical, owned by you and mode0700.
+The final file is mode0600 and never overwritten. Failure retains .partial output;
+it does not substitute another session, retry capture or change recording policy.`,
+	"operations": `Usage: omabit operations
+Read the offline shared operation catalog, inferred JSON schemas, effects, target
+bindings, replay rules and explicit legacy CLI exclusions. Creates no state.`,
+	"call": `Usage: omabit [--config-dir DIR] call OPERATION_ID [--input-file FILE | --input-json JSON]
+Invoke the same typed core handler used by MCP. FILE=- reads stdin; input is
+bounded to 128 KiB. The version1 JSON envelope contains data or a structured error.
+Use operations to discover schemas. Existing command JSON formats are unchanged.
+Select name and runner_id explicitly for live operations. Save complete plans and
+original IDs before mutation; read receipts after uncertainty. No automatic retry.
+Named tests.plans/plan reads never execute tests. Optional --allow-test-report
+NAME:SHA256:/absolute/report.json selects an owner-private historical snapshot for
+tests.reports/report reads. Tool inputs contain no file paths; reported outcomes
+are not independently attested execution or source evidence.`,
+	"mcp": `Usage: omabit [--config-dir DIR] mcp serve --transport stdio|http [--allow-runner NAME:ID ...] [--enable-mutations]
+       omabit mcp create-http-token --output /absolute/private/new-file.json
+Serve the shared core with the official pinned Go SDK. Stdio stdout is MCP only.
+HTTP requires --listen NUMERIC_LOOPBACK_IP:PORT --token-file PRIVATE_FILE.
+Create a new eight-hour owner-private credential first; its secret is never printed.
+HTTP reports its local URL on stderr, rechecks credentials on every request and
+refuses browser origins. This local manual-bearer mode provides no OAuth discovery.
+An empty allowlist denies all live targets. Offline plans/guidance and explicitly
+selected local source/report snapshots have separate startup authority.
+Optional --allow-test-report NAME:SHA256:/absolute/report.json selects a private
+historical snapshot for tests.reports/report. Those tools execute no tests and
+cannot attest caller-written outcomes or missing source/environment provenance.
+Mutation tools require explicit startup enablement and still enforce operator role,
+runner capability, exact reviewed bindings and saved policy. Every call selects its
+own target. No runner-credential, login-code, policy-authoring, shell, SQL, Docker or host-installation tools.
+Explicit original recordings can contain private data; review derived views before sharing.
+Cancelling a call or closing this subprocess never cancels runner-owned work.
+Optional global --skills-bundle DIR --skills-manifest-sha256 SHA exposes the exact
+verified bundle guidance through resources and bounded ordinary tool reads. Both
+BUILD and SKILLS provenance must match. Reading guidance installs nothing.
+Actual named-client/provider connection qualification remains separate work.`,
+	"app-preflight": `Usage: omabit [--config-dir DIR] app-preflight --runner NAME --expected-runner-id ID --workflow gall|grubbery [--instance INSTANCE --desk DESK] [--effects create-desk,commit,publish]
+
+Read only the selected runner's actual Hello and saved application policy before
+creating an app-specific project. Effects default to create-desk,commit. Missing
+runner APIs, operation adapters and named policy denials are separate results.
+Exit 1 with structured output when incompatible; exit 0 means only capability
+and saved-policy compatibility. Omitted instance/desk checks the environment,
+without claiming future ship permissions. No project or policy is changed.
+Fresh runtime, publication and application review is required before each effect.
+Grubbery remains unavailable until its versioned workflow adapter is implemented.
+Runner build metadata is self-reported; absent older-runner metadata is unknown.`,
 	"ship-routes": `Usage: omabit [--config-dir DIR] ship-routes --runner NAME --expected-runner-id ID --instance INSTANCE
 
 Read the live ship incarnation, saved URL choices and current automatic routes.

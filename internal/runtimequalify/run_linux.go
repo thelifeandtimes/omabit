@@ -42,6 +42,7 @@ type dependencies struct {
 	persist          func(Result) error
 	home, runtimeDir string
 	identity         func() (identity, error)
+	readBootID       func() (string, error)
 	stat             func(string) (node, error)
 	admission        func(string) (uint64, uint64, error)
 	resourcePolicy   func() (resourcepolicy.Policy, error)
@@ -61,6 +62,7 @@ type dependencies struct {
 	pillSHA          string
 	pillBytes        int64
 	times            timings
+	recording        *ManagedRecordingLifecycle
 }
 
 type qualifier struct {
@@ -71,6 +73,8 @@ type qualifier struct {
 	progress                    func(string)
 	engineEvidence              hostcompat.Engine
 	restrictedEngine            bool
+	beforeRuntimeStart          func(context.Context) error
+	beforeRuntimeRemove         func(context.Context, string) error
 }
 
 // Run has no runtime, image, identity, pier, shell or endpoint overrides. All

@@ -200,13 +200,6 @@ func addExpansionInventory(q querier, p *protocol.ProjectReservation) error {
 func (r *Server) queueProjectAddition(actor, id string, req protocol.ProjectActionRequest, replayOnly bool) (protocol.Operation, bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.closing || r.failed.Load() || r.ctx.Err() != nil || r.updateFence.Held {
-		return protocol.Operation{}, false, conflict("runner_unavailable", "runner is unavailable for project changes")
-	}
-	b, ok := r.b.(projectExpansionBackend)
-	if !ok {
-		return protocol.Operation{}, false, bad("runner does not support project additions")
-	}
 	data, _ := json.Marshal(struct {
 		Project string
 		Request protocol.ProjectActionRequest
@@ -215,7 +208,14 @@ func (r *Server) queueProjectAddition(actor, id string, req protocol.ProjectActi
 		return op, found, err
 	}
 	if replayOnly {
-		return protocol.Operation{}, false, conflict("replay_not_found", "no matching addition receipt")
+		return protocol.Operation{}, false, conflict("replay_not_found", "no matching project member receipt")
+	}
+	if r.closing || r.failed.Load() || r.ctx.Err() != nil || r.updateFence.Held {
+		return protocol.Operation{}, false, conflict("runner_unavailable", "runner is unavailable for project changes")
+	}
+	b, ok := r.b.(projectExpansionBackend)
+	if !ok {
+		return protocol.Operation{}, false, bad("runner does not support project additions")
 	}
 	p, err := loadProject(r.s.db, id)
 	if err != nil {
@@ -225,8 +225,8 @@ func (r *Server) queueProjectAddition(actor, id string, req protocol.ProjectActi
 	if err != nil || digest != req.ReviewDigest || p.Revision != req.ExpectedRevision {
 		return protocol.Operation{}, false, bad("project selection changed")
 	}
-	var active int
-	if err = r.s.db.QueryRow("SELECT count(*) FROM operations WHERE json_extract(body,'$.project_id')=? AND id!=? AND json_extract(body,'$.status') IN ('queued','running','interrupted')", id, req.AfterOperationID).Scan(&active); err != nil || active > 0 {
+	active, err := projectPendingOperationCount(r.s.db, id, req.AfterOperationID)
+	if err != nil || active > 0 {
 		return protocol.Operation{}, false, conflict("project_busy", "finish or review the project's pending operation first")
 	}
 	state, err := loadProjectExpansion(r.s.db, id)
@@ -436,7 +436,8 @@ func (s *store) finishProjectExpansion(opID string, cause error) error {
 	}
 	if cause != nil {
 		op.Status = "interrupted"
-		op.Message = "Project member addition paused; retained state needs review: " + cause.Error()
+		action := map[string]string{"add-project-member": "addition", "start-project-ship": "start", "stop-project-ship": "stop"}[op.Kind]
+		op.Message = "Project member " + action + " paused; retained state needs review: " + cause.Error()
 		if len(op.Message) > 512 {
 			op.Message = op.Message[:512]
 		}

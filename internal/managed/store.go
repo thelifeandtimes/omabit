@@ -185,6 +185,12 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeAppPolicy(tx); err != nil {
 		return err
 	}
+	if err := initializeRecordingIntents(tx, version); err != nil {
+		return err
+	}
+	if err := initializeRecordingControl(tx, version); err != nil {
+		return err
+	}
 	if err := initializeDeskOperations(tx, version); err != nil {
 		return err
 	}
@@ -216,6 +222,15 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 		return err
 	}
 	if err := initializeProjectExpansions(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectStopReconciliations(tx, version); err != nil {
+		return err
+	}
+	if err := initializeAppRuntimeRecoveryTables(tx, version); err != nil {
+		return err
+	}
+	if err := initializeGrubberyApps(tx, version); err != nil {
 		return err
 	}
 	if err := initializePrivateProjects(tx); err != nil {

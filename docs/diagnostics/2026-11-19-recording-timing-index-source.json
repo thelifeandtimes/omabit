@@ -1,0 +1,266 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "portable verified timestamp-index/query, disposable codec/store fixtures, optional local ZIP and actual CLI/official-SDK stdio parity only; no native indexed export, installed upgrade or DEV/production qualification",
+  "reviewed_source_base": "eecf68de3442220ccf8bd98dd92bd3523a9289a2",
+  "clean_artifact_freeze": false,
+  "implementation_inputs": [
+    {
+      "path": "cmd/omabit/core_recording_timing_test.go",
+      "sha256": "f2a66f054bc8f2c1541c3b7fd577757e779ea88133716bd239e51bc45d779499"
+    },
+    {
+      "path": "cmd/omabit/recording_export.go",
+      "sha256": "b77f992dcd6580ac7f5efbc4737f73a7c508cb1e283b7fa42e0eaa4afee5140c"
+    },
+    {
+      "path": "internal/recording/bundle_archive.go",
+      "sha256": "5e4457f8fd602d56ba666a6eceae8342c1ffd2346e17c6d325e89c9494cf35fc"
+    },
+    {
+      "path": "internal/recording/metadata.go",
+      "sha256": "d524591bfbeb9f30c69b52d7760ffebfd556b5a5d57e07ac63e9e93ee3c7533c"
+    },
+    {
+      "path": "internal/recording/store_linux.go",
+      "sha256": "b3954fc4823dc91eb4ba09d4ad54f2ccd88290a3733f27c32635b61a8cacbe03"
+    },
+    {
+      "path": "internal/recording/timing_index.go",
+      "sha256": "e523c52cac1e3733ed56ef75c542f3fed32f59188d6cd8a3bacb740ede82d17f"
+    },
+    {
+      "path": "internal/recording/timing_index_linux_test.go",
+      "sha256": "c637b9705bc238053f23ba53b7e0d1ef40171466b2025a61ee60ba7dc2856bf2"
+    },
+    {
+      "path": "internal/recording/timing_query.go",
+      "sha256": "c80c064c7aedaea29f627b829216d6bd01ca2ef668370b5bc5b2d0ef6b932561"
+    },
+    {
+      "path": "internal/recording/timing_query_linux_test.go",
+      "sha256": "d19232dbe3e914e99d1ae96d45c4b87c92f218902b68577a0f77e830bd73c656"
+    },
+    {
+      "path": "internal/service/recording_bundle.go",
+      "sha256": "cb8d73ae2a97bba479ac1f2a50b24819551f005936b7953cde3f90c2bb93440a"
+    },
+    {
+      "path": "internal/service/recording_timing.go",
+      "sha256": "99439d3cd2ff57723de11513f840edd0b63c665d06debdc9901ad69123f27702"
+    },
+    {
+      "path": "internal/service/recordings.go",
+      "sha256": "9d3f82f4d6c45194392d385bd32cae1e80cd95496dea04f20e7b73db01dc4e30"
+    },
+    {
+      "path": "internal/service/timeouts.go",
+      "sha256": "a73a44845bc3c29c902987bf2f26af175b9cc3e72062a6d65c0c67aad0e60653"
+    },
+    {
+      "path": "internal/service/timeouts_test.go",
+      "sha256": "4066019a09305bbb5db06c5685e53837004f0691678267330f5fd2d3f3ea064f"
+    }
+  ],
+  "shared_operation": "runtime.recording-timing.v1",
+  "runner_capability": "existing runtime-recording-export-v1; no new runner endpoint",
+  "cli_option": "omabit recording-export --original --timing-index",
+  "persistent_formats_changed": false,
+  "runner_schema": 65,
+  "contract": {
+    "original_default_export_keeps_one_pass_and_same_entries": true,
+    "optional_separate_payload_free_timing_index": true,
+    "operator_private_source_bindings_and_consent": true,
+    "exact_metadata_chunk_whole_file_and_codec_chain_checks": true,
+    "stable_source_digest_excludes_read_timestamp": true,
+    "row_fields": [
+      "filename",
+      "uncompressed offset/encoded length",
+      "segment/sequence",
+      "wall Unix nanoseconds",
+      "receive epoch/elapsed nanoseconds",
+      "stream kind/payload length/linked digest"
+    ],
+    "no_payloads_in_timing_index_or_query": true,
+    "hashes_not_source_authenticity": true,
+    "max_index_frames": 1048576,
+    "max_uncompressed_index_bytes": 268435456,
+    "max_line_bytes": 262144,
+    "explicit_failure_without_completed_footer_or_archive": true,
+    "all_raw_files_including_unparsed_tails_hashed": true,
+    "verified_prefix_and_raw_retained_completeness_separate_from_runtime_completeness": true,
+    "runtime_complete": false,
+    "query_inclusive_wall_range_and_stream_filter": true,
+    "sequence_order_and_source_bound_continuation": true,
+    "query_limit": [
+      1,
+      256
+    ],
+    "context_before": [
+      0,
+      32
+    ],
+    "surrounding_context_uses_existing_separately_authorized_page_cursor": true,
+    "no_matches_until_full_source_checks_finish": true,
+    "shared_query_timeout_seconds": 360,
+    "no_new_paths_worker_runtime_or_retention_authority": true
+  },
+  "coverage": [
+    "actual encoded offsets, lengths, digests, wall reversal and receive epochs checked against original file bytes",
+    "rotation, restart/corrupt-tail gap, incomplete/corrupt tail, empty prefix, exit and retained extra file after exit",
+    "exact source changes, per-part/whole mismatch, declared coverage mismatch, cancellation, failed fetch and short writer withhold completion",
+    "stable index bytes after volatile manifest read timestamp changes",
+    "query sequence continuation, source mismatch, inclusive reverse wall-time filters and exact cursor back to surrounding original payload",
+    "indexed ZIP keeps exact originals,0600 entries and separate index hash; second-pass failure yields no ZIP completion directory",
+    "actual CLI/official-SDK query parity, operation/session bindings, exact integers above2^53 and payload-free output",
+    "actual optional CLI indexed ZIP with a real codec fixture; default original export regressions",
+    "observer/missing capability/no consent/redacted choice/wrong target/changed part/stale source/transport refusals and no retries or private error-data leakage",
+    "focused existing codec/segment/legacy-reader/export regressions and race-configuration vet"
+  ],
+  "checks": [
+    {
+      "source_check": 2,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "-run",
+        "TestTimingIndex",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "passed": true,
+      "package_results": [
+        [
+          "internal/recording",
+          "1.183"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51199549440,
+      "full_post_charge_bytes": 51186753536
+    },
+    {
+      "source_check": 3,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "-run",
+        "Test(Timing|Segment|OriginalBundle|OriginalExport|OriginalFrames|InterruptedTail|FailedOrShortWriter|BindingChain|HeaderContinuation|ActualOriginalMetadata2)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "passed": true,
+      "package_results": [
+        [
+          "internal/recording",
+          "1.509"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51204280320,
+      "full_post_charge_bytes": 51191345152
+    },
+    {
+      "source_check": 4,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "-run",
+        "Test(Timing|Segment|OriginalBundle|OriginalExport|OriginalFrames|InterruptedTail|FailedOrShortWriter|BindingChain|HeaderContinuation|ActualOriginalMetadata2)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "passed": true,
+      "package_results": [
+        [
+          "internal/recording",
+          "1.609"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51065614336,
+      "full_post_charge_bytes": 51136327680
+    },
+    {
+      "source_check": 4,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./cmd/omabit",
+        "./internal/service",
+        "-run",
+        "Test(CLIAndMCPTimingQuery|CLIAndMCPPrivateRecordingHistoryAndExactPage|Catalog)",
+        "-count=1",
+        "-timeout=120s"
+      ],
+      "passed": true,
+      "package_results": [
+        [
+          "cmd/omabit",
+          "29.863"
+        ],
+        [
+          "internal/service",
+          "2.262"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51236200448,
+      "full_post_charge_bytes": 51136327680
+    },
+    {
+      "source_check": 5,
+      "command": [
+        "go",
+        "vet",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "./internal/service",
+        "./cmd/omabit"
+      ],
+      "passed": true,
+      "package_results": [],
+      "sampled_fast_peak_bytes": 51136917504,
+      "full_post_charge_bytes": 51136983040
+    }
+  ],
+  "retained_initial_failure": {
+    "source_check": 1,
+    "stage": "test build only; no tests ran",
+    "reason": "test offset comparison used int64 versus typed int constant; corrected explicit cast without product behavior change",
+    "report_retained": true
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "cache45_removed_older_omabit_archives": 28,
+    "cache45_freed_bytes": 143446016,
+    "cache45_named_pins_exact": 227,
+    "current_index_and_std_dependency_caches_excluded": true,
+    "unique_vm_original_sql_recording_receipt_log_source_frozen_artifact_retired": false,
+    "source04_admission_bytes": 402653184,
+    "no_monitor_interruption_in_final_checks": true,
+    "final_full_charge_bytes": 51136983040
+  },
+  "remaining": [
+    "matching clean artifacts and generated optional-flag reference",
+    "independent actual native current indexed export/query and original byte/history preservation",
+    "complete redacted bundle and explicit redacted export choice",
+    "oldest output coverage, pressure/retirement and other factories/adoption",
+    "full previous-stable and preserved DEV qualification"
+  ],
+  "production_installed_existing_ship_manual_review_state_changed": false
+}

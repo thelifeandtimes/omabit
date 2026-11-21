@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "passed": false,
+  "artifact_source": "282c3b372d0289858c3ea7e3ceb1296808a97420",
+  "harness_source": "d2bb3ba6c152396c9938c44a28cf90a0c902de72",
+  "case": "ordinary-capture-active-worker-upgrade-policy-api-v1",
+  "root_sha256": "f4272d40be723306ddae515dd1b7f3a1b2cb7ebfbbcf1b42f25debc454b9b776",
+  "payload_sha256": "718c6705c9c47ffbd85c49a6d1c39d7dc28cde6e8ae6b27c202ea2e066b28e2b",
+  "result_sha256": "571c39d447a5fa4c4300ab11b07e547f23ca4f5188a076adf69e90d775cebc21",
+  "failure_stage": "candidate install-host before schema migration",
+  "installer_status": "failed",
+  "installer_partial": false,
+  "installer_message": "preserving user service override /home/review/.config/systemd/user/urbit-runner.service.d",
+  "pre_upgrade_checks_completed": [
+    "old64 installed and captured first ordinary launch",
+    "exact notify worker and native container preserved across management stop"
+  ],
+  "analysis_copy_schema": 64,
+  "analysis_copy_operation_statuses": [
+    "register-fake succeeded",
+    "start succeeded"
+  ],
+  "original_recording_intent_count": 1,
+  "read_only_extraction_passed": true,
+  "source_and_backing_unchanged": true,
+  "raw_image_retained": true,
+  "scope": "fresh disposable offline fixture only; installer correctly refused this fixture-owned temporary override. No native upgrade, policy/API, second-session or old-reader pass. All original root bytes, SQLite/receipts/logs and frozen inputs retained; production and preserved DEV untouched."
+}

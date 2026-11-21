@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "passed": true,
+  "original_source": "cc55707090061885a75fd144c2e2d6648d8d6292",
+  "candidate_source": "bc482030d0ce07eba83d3c0a3c7f5894dddc7587",
+  "original_writer_sha256": "0de8c3d179434c2c68530f134d5c2279a9d41f71d6bad682628c7ec728eb65a1",
+  "candidate_sha256": "d921d8b4816e547dcd61ad7f537d5e5a66bc20e6948c5cac2391b51ae9b04dc1",
+  "declared_helper_sha256": "49422d5cf3cba6e1595a6493e0681fe6465081f04c7adb542b6a17e6929c6719",
+  "original_source_manifest_sha256": "03e2b57dd21f05605a8a48cce79063cf8a2faf1018a40725afa47022ef55d98e",
+  "original_writer_files": {
+    "runner.sqlite": "61282cdc316d7add60b6e91798e4d7baf039f7b25c2503661eb289fca0a3e74c"
+  },
+  "successor_files": {
+    "runner.sqlite": "cd9a81f58be95008f474ec00b69a5ea590385870c4caee46c1ff8407bc725fd1"
+  },
+  "original_rows_ddl_access_and_uncertainty_preserved": true,
+  "repeated_migration_and_reopen": true,
+  "policy_and_pin_preserved_original_rows": true,
+  "actual_old_reader_refused_successor_unchanged": true,
+  "scope": "source-only actual64/candidate65 SQLite migration and populated recording-control refusal; synthetic saved recording metadata, no job submission, live worker, native capture, installed upgrade, DEV or stable qualification"
+}

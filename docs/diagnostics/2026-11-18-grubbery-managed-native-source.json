@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "status": "passed",
+  "scope": "actual private managed coordinator, SQLite/cache/policy/ownership/source/compile/followed-mirror checks against a fresh pinned native kernel; synthetic lifecycle; separate fixed custom-mark kernel namespace",
+  "artifact_source": "ac3eec25393ee23acdb6e03c2d7776d756450398",
+  "artifact_sha256": "c281979258538a8f79a1cfb61e675c56b0c008284ce43b1236f931761927afd5",
+  "workflow_case": "grubbery-managed-coordinator-v1",
+  "workflow_exit": 0,
+  "clean_shutdown": true,
+  "schema": 62,
+  "plan_version": 2,
+  "record_version": 2,
+  "phases": [
+    {
+      "index": 0,
+      "kind": "make-file",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 1,
+      "kind": "make-directory",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 2,
+      "kind": "make-directory",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 3,
+      "kind": "make-directory",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 4,
+      "kind": "make-file",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 5,
+      "kind": "make-file",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 6,
+      "kind": "observe-code",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 7,
+      "kind": "make-file",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 8,
+      "kind": "make-directory",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 9,
+      "kind": "make-file",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 10,
+      "kind": "poke-source",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    },
+    {
+      "index": 11,
+      "kind": "observe-followed-source",
+      "states": [
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ]
+    }
+  ],
+  "header_digest": "496b4d3007714fec0f4c4c7fd556d3bd7e4cbda88165dcd8867ac73a3ef7faa6",
+  "plan_digest": "669416fad3bd14af0943f63196a9aa32695fba2883f97b8026e5ac41a99f36f3",
+  "final_revision": 36,
+  "virtual_foundation_bytes_separately_verified": true,
+  "native_session_cleanup_required_before_evidence": true,
+  "custom_mark_layout": {
+    "after_create": {
+      "neck": null,
+      "files": {},
+      "dirs": {}
+    },
+    "before": {
+      "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31",
+      "status": 404
+    },
+    "before_status": 404,
+    "build": {
+      "total": 5,
+      "failed": 0,
+      "files": [
+        {
+          "source": "/mar/custom.hoon",
+          "status": "vase"
+        },
+        {
+          "source": "/mar/hoon.hoon",
+          "status": "vase"
+        },
+        {
+          "source": "/mar/kelvin.hoon",
+          "status": "vase"
+        },
+        {
+          "source": "/mar/mime.hoon",
+          "status": "vase"
+        },
+        {
+          "source": "/mar/tang.hoon",
+          "status": "vase"
+        }
+      ]
+    },
+    "calls": 11,
+    "code_after_custom": {
+      "neck": "code",
+      "files": {},
+      "dirs": {
+        "mar": {
+          "neck": null,
+          "files": {
+            "custom.hoon": "hoon"
+          },
+          "dirs": {}
+        }
+      }
+    },
+    "create_status": 201,
+    "custom_source_sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+    "mar_after_custom": {
+      "neck": null,
+      "files": {
+        "custom.hoon": "hoon"
+      },
+      "dirs": {}
+    },
+    "scope": "kernel diagnostic only; separate namespace, no managed receipt/ownership assertion"
+  },
+  "proof_sha256": "865f279a80175601d96db79b2727c68b0e58ccc9a8dd759e802e5995e53f4606",
+  "original_result_sha256": "0f55697d25cfe42b0b8f66441de6c79215c3e78a827ac98960408f29c4b5c08d",
+  "workflow_log_sha256": "cb400f45ab4fceb7d20209f9abe11c3b3cf84840e8bfe76d86a9f5e6a4ba1ce3",
+  "custom_mark_calls_sha256": "d5701dd6ed182fb997980fde99492864f246ee32d3bd0b9653e567bd92ecca35",
+  "remaining": [
+    "public CLI/MCP app operations and parity",
+    "actual product Docker/curl native transport",
+    "managed app second source/state update and same-pier restart",
+    "durable owner-session cleanup after process death",
+    "permits, aliases, routes/served assets, peer cases and installed upgrades"
+  ],
+  "live_grubbery_capability_enabled": false
+}

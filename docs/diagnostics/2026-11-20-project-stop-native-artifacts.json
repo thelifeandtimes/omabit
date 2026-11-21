@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "status": "frozen-verified",
+  "source_commit": "68bf2336e565edf411453683fb9e92d3fd6238a5",
+  "scope": "fresh disposable native Stop transition qualification only; no installed/DEV/production changes",
+  "go": "go version go1.27.3 linux/amd64",
+  "tracked_source_inputs_verified_before_after": 4043,
+  "artifacts": {
+    "omabit": {
+      "sha256": "91cb52b85109f6491e5c73cb41ba4a10a8bc9db2b5506d7da217af3c06f5d783",
+      "bytes": 18542752,
+      "build_info": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/native-stop-01/omabit: go1.27.3\n\tpath\tgit.thechristophgroup.org/thelifeandtimes/omabit/cmd/omabit\n\tmod\tgit.thechristophgroup.org/thelifeandtimes/omabit\tv0.3.7-0.20261120171129-68bf2336e565\t\n\tdep\tgithub.com/dustin/go-humanize\tv1.0.1\th1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=\n\tdep\tgithub.com/google/jsonschema-go\tv0.4.3\th1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=\n\tdep\tgithub.com/google/uuid\tv1.6.0\th1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\n\tdep\tgithub.com/mattn/go-isatty\tv0.0.24\th1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=\n\tdep\tgithub.com/modelcontextprotocol/go-sdk\tv1.8.0\th1:KIvahhYqwtbeniWVPs3TcXEA7b8jEtwfBpOTAI+Urx4=\n\tdep\tgithub.com/remyoudompheng/bigfft\tv0.0.0-20230129092748-24d4a6f8daec\th1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=\n\tdep\tgithub.com/segmentio/asm\tv1.1.3\th1:WM03sfUOENvvKexOLp+pCqgb/WDjsi7EK8gIsICtzhc=\n\tdep\tgithub.com/segmentio/encoding\tv0.5.4\th1:OW1VRern8Nw6ITAtwSZ7Idrl3MXCFwXHPgqESYfvNt0=\n\tdep\tgithub.com/yosida95/uritemplate/v3\tv3.0.2\th1:Ed3Oyj9yrmi9087+NczuL5BwkIc4wvTb5zIM+UJPGz4=\n\tdep\tgolang.org/x/crypto\tv0.58.0\th1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=\n\tdep\tgolang.org/x/oauth2\tv0.35.0\th1:Mv2mzuHuZuY2+bkyWXIHMfhNdJAdwW3FuWeCPYN5GVQ=\n\tdep\tgolang.org/x/sync\tv0.22.0\th1:SZjpbeLmrCk4xhRSZFNZW5gFUeCeFgjekvI/+gfScek=\n\tdep\tgolang.org/x/sys\tv0.49.0\th1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=\n\tdep\tgolang.org/x/time\tv0.15.0\th1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=\n\tdep\tmodernc.org/libc\tv1.75.7\th1:o3DTP9/0p9pKmY2WCKQaySW6wIiZhNM7wc2lUoyhfew=\n\tdep\tmodernc.org/mathutil\tv1.7.1\th1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=\n\tdep\tmodernc.org/memory\tv1.12.1\th1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=\n\tdep\tmodernc.org/sqlite\tv1.59.0\th1:X1es1GpqBlS/5T+vbM4HLUdaa8OtQx468DF2vrx+38A=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=tracebacklabels=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=68bf2336e565edf411453683fb9e92d3fd6238a5\n\tbuild\tvcs.time=2026-11-20T17:11:29Z\n\tbuild\tvcs.modified=false\n"
+    },
+    "urbit-collector": {
+      "sha256": "0dc9fb2d6662a38cd564d9db0bd8026741eec3201b628eca54c5a4e266b51038",
+      "bytes": 9089184,
+      "build_info": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/native-stop-01/urbit-collector: go1.27.3\n\tpath\tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector\n\tmod\tgit.thechristophgroup.org/thelifeandtimes/omabit\tv0.3.7-0.20261120171129-68bf2336e565\t\n\tdep\tgolang.org/x/sys\tv0.49.0\th1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=tracebacklabels=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=68bf2336e565edf411453683fb9e92d3fd6238a5\n\tbuild\tvcs.time=2026-11-20T17:11:29Z\n\tbuild\tvcs.modified=false\n"
+    },
+    "urbit-runner": {
+      "sha256": "ba8110ff24a108c078648a52550eb613f9c7bd3f731b91be973056549f3d3de7",
+      "bytes": 21442720,
+      "build_info": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/native-stop-01/urbit-runner: go1.27.3\n\tpath\tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-runner\n\tmod\tgit.thechristophgroup.org/thelifeandtimes/omabit\tv0.3.7-0.20261120171129-68bf2336e565\t\n\tdep\tgithub.com/dustin/go-humanize\tv1.0.1\th1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=\n\tdep\tgithub.com/google/uuid\tv1.6.0\th1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\n\tdep\tgithub.com/mattn/go-isatty\tv0.0.24\th1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=\n\tdep\tgithub.com/remyoudompheng/bigfft\tv0.0.0-20230129092748-24d4a6f8daec\th1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=\n\tdep\tgolang.org/x/sys\tv0.49.0\th1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=\n\tdep\tmodernc.org/libc\tv1.75.7\th1:o3DTP9/0p9pKmY2WCKQaySW6wIiZhNM7wc2lUoyhfew=\n\tdep\tmodernc.org/mathutil\tv1.7.1\th1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=\n\tdep\tmodernc.org/memory\tv1.12.1\th1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=\n\tdep\tmodernc.org/sqlite\tv1.59.0\th1:X1es1GpqBlS/5T+vbM4HLUdaa8OtQx468DF2vrx+38A=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=tracebacklabels=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=68bf2336e565edf411453683fb9e92d3fd6238a5\n\tbuild\tvcs.time=2026-11-20T17:11:29Z\n\tbuild\tvcs.modified=false\n"
+    },
+    "managed.test": {
+      "sha256": "9c99aec0a2b46471359d458b55a340ed491dc030eeb7638419d508c5df0bf834",
+      "bytes": 30630048,
+      "build_info": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/native-stop-01/managed.test: go1.27.3\n\tpath\tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed.test\n\tmod\tgit.thechristophgroup.org/thelifeandtimes/omabit\t(devel)\t\n\tdep\tgithub.com/dustin/go-humanize\tv1.0.1\th1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=\n\tdep\tgithub.com/google/jsonschema-go\tv0.4.3\th1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=\n\tdep\tgithub.com/google/uuid\tv1.6.0\th1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\n\tdep\tgithub.com/modelcontextprotocol/go-sdk\tv1.8.0\th1:KIvahhYqwtbeniWVPs3TcXEA7b8jEtwfBpOTAI+Urx4=\n\tdep\tgithub.com/remyoudompheng/bigfft\tv0.0.0-20230129092748-24d4a6f8daec\th1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=\n\tdep\tgithub.com/segmentio/asm\tv1.1.3\th1:WM03sfUOENvvKexOLp+pCqgb/WDjsi7EK8gIsICtzhc=\n\tdep\tgithub.com/segmentio/encoding\tv0.5.4\th1:OW1VRern8Nw6ITAtwSZ7Idrl3MXCFwXHPgqESYfvNt0=\n\tdep\tgithub.com/yosida95/uritemplate/v3\tv3.0.2\th1:Ed3Oyj9yrmi9087+NczuL5BwkIc4wvTb5zIM+UJPGz4=\n\tdep\tgolang.org/x/oauth2\tv0.35.0\th1:Mv2mzuHuZuY2+bkyWXIHMfhNdJAdwW3FuWeCPYN5GVQ=\n\tdep\tgolang.org/x/sync\tv0.22.0\th1:SZjpbeLmrCk4xhRSZFNZW5gFUeCeFgjekvI/+gfScek=\n\tdep\tgolang.org/x/sys\tv0.49.0\th1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=\n\tdep\tgolang.org/x/time\tv0.15.0\th1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=\n\tdep\tmodernc.org/libc\tv1.75.7\th1:o3DTP9/0p9pKmY2WCKQaySW6wIiZhNM7wc2lUoyhfew=\n\tdep\tmodernc.org/mathutil\tv1.7.1\th1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=\n\tdep\tmodernc.org/memory\tv1.12.1\th1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=\n\tdep\tmodernc.org/sqlite\tv1.59.0\th1:X1es1GpqBlS/5T+vbM4HLUdaa8OtQx468DF2vrx+38A=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-tags=omabit_disposable_qualification\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=tracebacklabels=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n"
+    },
+    "init": {
+      "sha256": "4b9cca98112adba9f694f9c5e1f2eabe32b381c72902cf69c0f5e8e17ae0883d",
+      "bytes": 2629792,
+      "build_info": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/native-stop-01/init: go1.27.3\n\tpath\tgit.thechristophgroup.org/thelifeandtimes/omabit/scripts/qualification/project-transition-cow/init\n\tmod\tgit.thechristophgroup.org/thelifeandtimes/omabit\tv0.3.7-0.20261120171129-68bf2336e565\t\n\tdep\tgolang.org/x/sys\tv0.49.0\th1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=tracebacklabels=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=linux\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=68bf2336e565edf411453683fb9e92d3fd6238a5\n\tbuild\tvcs.time=2026-11-20T17:11:29Z\n\tbuild\tvcs.modified=false\n"
+    }
+  },
+  "ordinary_hook_omitted": true,
+  "boot_host_refusal_exit": 80,
+  "helper_source_and_host_refusal_checks_passed": true,
+  "storage": {
+    "admission_bytes": 536870912,
+    "initial_charged_bytes": 49053728768,
+    "final_charged_bytes": 49235075072,
+    "budget_bytes": 51539607552
+  },
+  "native_transition": "pending fresh offline execution and independent verification",
+  "not_qualified": [
+    "final0.5.0 artifacts",
+    "stable59 to65 upgrade",
+    "preserved DEV or production"
+  ]
+}

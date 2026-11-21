@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "original_source": "2eb1b67a7e42ac8eb8ae428ac9092cbd61a50507",
+  "original_writer_sha256": "f6c51e94537e62031c0e29b1bf867bcef65eab7b5a4d518604aa6e895884e335",
+  "original_source_manifest_sha256": "908608c7e5d76e33d36a6010e85a7569bb07b21b38d9911bf7ada2d923f23f2d",
+  "files": {
+    "metadata.json": "f8c95b362ab275552519d8c229139ad9ab6ac9ecef2a8ab901d2599a31fe8c97",
+    "writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frames.obr": "5689c1aa528a43a084fef1b3337a8287c2e871bb486988282e70602608b9d3b9"
+  },
+  "scope": "actual original2 writer plus declared test helper; inert metadata/source fixture, no runtime/credentials"
+}

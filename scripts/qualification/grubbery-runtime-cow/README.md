@@ -1,0 +1,93 @@
+# Audited recovery on a read-only-backed disposable pending app
+
+This fixed case accepts only the exact ended VM05 root with its original
+17-event acknowledged app uncertainty. The root and pristine base are bound
+read-only; a fresh output gets a new COW overlay. No host HOME, runner, engine,
+credential, service or user pier is exposed. Original VM05 never boots writable.
+
+PID1 validates the exact old failure and new scenario before systemd, then
+suppresses manager startup/resume. The guest checks original62 app rows, inflates
+hash/size-verified compressed executables into guest `/run` tmpfs, starts only the
+matching source service and verifies migration to65 leaves original app rows
+exact. This is source-service qualification; it exercises no installer override.
+
+The fixed Go helper uses supported Stop/Start on this copied disposable~zod's
+existing initialized pier, then typed CLI/stdio review/apply to save a separately
+audited process mapping. It observes the exact old unknown phase without another
+dispatch, completes the original source, follows a second source version and
+checks retained state/new code. Another supported same-pier replacement and
+manager restart must preserve state, the historical audit and completed receipts.
+Original header/body/stamp and all17 original events must remain exact; later
+supported phase progress appends events and changes only its legitimate revision/
+lease state. No SQL/receipt edits, new bootstrap or unreviewed native retry occurs.
+
+No work without `--run`, clean matching artifacts, closed predecessor scopes and
+storage admission. Declare896MiB capsule scratch plus64MiB host build reserve
+under the temporary48GiB goal cap. Compressed inputs use a64MiB read-only
+filesystem. QEMU alone inherits a kernel hard file-size limit of768MiB, bounding
+its newly written root's logical/allocated size; input/boot/log allowance fits the
+larger scratch reservation. Host storage/log/deadline checks run every second.
+The second same-pier case completed its first source with218,238,976allocated
+root bytes; this tightened hard bound retains over three times that measured space.
+It never permits a fresh bootstrap or silent reservation growth on failure.
+The original8GiB/no-NIC guest,10GiB/no-swap/one-CPU QEMU scope, separate2GiB
+staging supervisor remain. The whole Go case allows90minutes, its test process
+95minutes and the guest5750seconds; the host VM bound is6100seconds and supervisor
+6300seconds. Measured first-source recovery took1713seconds, so the original
+30minute whole case could not also qualify version two. Individual native RPCs
+retain their four-minute bound and lookup-only handling of uncertain effects.
+A size/I/O/forced-stop failure is
+failed qualification with retained evidence. This case is not yet native-qualified.
+
+Only one runtime experiment may run. Production, manual DEV, protected/tmux ships
+and `~/temp-ur` remain excluded. This case does not qualify full permits/routes/
+assets/peers, process-death owner cleanup, installed upgrades or a stable release.
+
+An explicit older `--artifact-source` permits only non-Go documentation and the
+four named host/guest/Python-test/README harness files to differ, plus the exact
+standalone PID1 Go path with its separately verified binary/source/clean-VCS
+freeze. That package is not linked into the product executables or managed.test.
+Embedded JSON, source samples, QML, modules and every other Go change require
+new matching artifacts; the launcher refuses them before artifact reads or
+storage admission. The PID1 exception does not cover sibling Go files.
+
+The next case targets current schema65 in the host scenario, PID1 guard, guest
+checks and current managed helper. Old63/foreign markers refuse; the original
+schema62/17-event predecessor pin is unchanged. All Python read-only database
+helpers explicitly close their handles, including schema-refusal paths; a real
+SQLite lifetime regression covers this. This prepares a fresh corrected retry
+after the earlier case completed both app versions but failed manager-restart
+readiness. New matching artifacts, storage admission and full native execution
+are still required; original VM05 is bound read-only and never resumed writable.
+
+Supply `--init` with the separately frozen corrected current-schema PID1, SHA
+04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee.
+The launcher verifies source SHA
+9e28db77697f9bd7c870905c9cd86d80d571428815c6205d5a87424259ab3fcc
+and clean bf3e5f83 provenance, then
+copies it. It performs no Go build during preparation or native execution. This
+allows regenerable compiler cache eviction without changing named artifacts or
+requiring compilation inside the constrained staging supervisor. The64MiB host
+reserve remains available for preparation. Existing capsules never resume.
+
+M718's current65 COW04 helper passes both source versions/state, same-pier and
+manager restarts, original audit/replay and single dispatch. Independent read-only
+extraction preserves the original header and17 events. The whole case still
+fails: this generated oneshot unit retained a2400s startup timeout, outer logging
+ends at that boundary and final clean Stop/report are absent. Its ended full disk
+and compact evidence stay retained. The actual-unit regression now covers this
+previously missed layer. The corrected unit allows6000s, with30s to stop, inside
+the6100s host bound. Its Go input has the new separate freeze above; the earlier
+bf5b6c1 boot remains historical and cannot satisfy the changed source.
+A fresh corrected whole case is required; do not promote the helper pass into
+whole-case or installed/DEV qualification.
+
+M719 makes this one standalone Go-input exception explicit. All3931 remaining
+tracked frozen inputs are unchanged; six allowed documentation/harness inputs
+differ from12f78952. All350 listed product/managed-test dependency entries exclude
+the standalone PID1. Its exact new binary/source/clean-VCS pins are checked before
+admission, while the four runtime artifacts remain frozen at12f78952. Twelve
+inert guards cover changed embedded/other Go inputs, wrong boot bytes/source/
+provenance, and the actual emitted unit's full timeout nesting. This exception
+supersedes only the previous blanket Go-harness rebuild rule for that path; it
+does not qualify a runtime change or the fresh corrected native retry.

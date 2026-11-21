@@ -5,6 +5,7 @@ package runtimequalify
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"slices"
@@ -12,6 +13,8 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
 )
+
+var errProjectProcessExited = errors.New("project member process exited during inspection; fresh ownership observation required")
 
 type projectObservedMember struct {
 	contract projectMemberContract
@@ -143,6 +146,14 @@ func (e *projectAnchorEngine) inspectProjectMemberSnapshotMode(ctx context.Conte
 		observed := projectnetwork.MemberObservation{InstanceID: member.contract.selection.InstanceID, ResourceObservation: projectnetwork.ResourceObservation{Resource: projectnetwork.ResourceIdentity{ID: member.id, ContractDigest: member.contract.digest}, Present: true}, Running: running, AnchorID: p.Anchor.ID}
 		if running {
 			observed.Namespace, err = e.namespaceFor(ctx, member.id)
+			if err != nil && member.allowExited {
+				// A namespace exec may lose its process while Stop is in flight.
+				// Do not turn a generic exec error into permission to retry: first
+				// verify the same full container contract and process actually exited.
+				if after, inspectErr := e.inspectProjectContainers(ctx, []string{member.id}); inspectErr == nil && projectMemberExitedDuringInspection(member, actual, after[member.id]) {
+					return actual, projectnetwork.MemberObservation{}, errProjectProcessExited
+				}
+			}
 		}
 		return actual, observed, err
 	}
@@ -173,6 +184,9 @@ func (e *projectAnchorEngine) inspectProjectMemberSnapshotMode(ctx context.Conte
 			return projectMemberSnapshot{}, err
 		}
 		if !reflect.DeepEqual(containers[i], again) || !reflect.DeepEqual(members[i], observed) {
+			if projectMemberExitedDuringInspection(m, containers[i], again) {
+				return projectMemberSnapshot{}, errProjectProcessExited
+			}
 			return refuse("member process or namespace changed during inspection")
 		}
 	}
@@ -229,6 +243,14 @@ func (e *projectAnchorEngine) inspectProjectMemberSnapshotMode(ctx context.Conte
 		o.BridgeAttachments = []string{p.Anchor.ID}
 	}
 	return projectMemberSnapshot{Observation: o, Containers: second}, nil
+}
+
+func projectMemberExitedDuringInspection(m projectObservedMember, before, after container) bool {
+	if !m.allowExited || m.processStartedAt.IsZero() || m.contract.validateContainer(before, m.id, true) != nil || m.contract.validateExitedContainer(after, m.id, m.processStartedAt) != nil {
+		return false
+	}
+	started, err := time.Parse(time.RFC3339Nano, before.State.StartedAt)
+	return err == nil && started.Equal(m.processStartedAt)
 }
 
 // Inspect exact full IDs in one bounded request. Never discover/adopt by name,

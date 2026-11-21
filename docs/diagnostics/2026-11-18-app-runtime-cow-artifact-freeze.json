@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "source_commit": "6676c9ec5fcf36e7b3823bcc0ebc80e8090b103a",
+  "clean_before_after": true,
+  "artifacts": {
+    "omabit": {
+      "sha256": "c2e175a924f81d0254a3fa4fc83935005506f4467cb8018ab093fe50cffa26e8",
+      "bytes": 17142023
+    },
+    "urbit-collector": {
+      "sha256": "3906f17947d1aee07b21da6b490b98962356a8919feedd6f03f6bf108d40f054",
+      "bytes": 9031943
+    },
+    "urbit-runner": {
+      "sha256": "0e2312ee1235d0ebcaad55cae4b6ce11a1630b7a68b00dd0b960dd238f525f60",
+      "bytes": 20562183
+    },
+    "managed.test": {
+      "sha256": "f4cba73566cbd31eff70dcd68d606f211a027219c8f31f0d2fdaf64447c35c83",
+      "bytes": 29503751
+    }
+  },
+  "private_input_manifest_sha256": "0abaa2404d368cfddda2e9fabdbe36dacaa61249a94b8427cfa9517c1ea2f19f",
+  "schema": 63,
+  "storage": {
+    "charged_bytes": 50089832448,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 1409286144,
+    "total_with_reserves": 51499118592
+  },
+  "scope": "frozen matching source artifacts and storage admission only; pending fixed copied-pier native qualification; no installed upgrade/DEV/production deployment"
+}

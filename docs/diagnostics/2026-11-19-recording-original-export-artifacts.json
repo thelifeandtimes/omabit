@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "status": "frozen-verified-native-pending",
+  "source_commit": "3fc6eab33b4d323735ed904e81c0e8e2b3a2c5d5",
+  "go": "go1.27.3",
+  "cgo_enabled": false,
+  "trimpath": true,
+  "artifact_sha256": {
+    "omabit": "a62a58abe16522ce5ad4f1d35d7f65e689dcb639fa25cd1b0e30db4dad1ab00b",
+    "urbit-collector": "a6e6d345e387b46b0967be6791008b861c681a2b7808232d06b9edb478467fbb",
+    "urbit-runner": "1639080feefc54a083cffd1aabc747c5508a640ed0ac376d4992f2b365e90ed3",
+    "managed.test": "495bae80bdbe63975a80d7742f197ed435c349b3bf6dc346004cd2d66e57548d"
+  },
+  "artifact_bytes": {
+    "omabit": 18296992,
+    "urbit-collector": 9089184,
+    "urbit-runner": 21323936,
+    "managed.test": 30245024
+  },
+  "tracked_inputs_verified": 3978,
+  "product_clean_vcs_and_helper_explicit_source_pin_verified": true,
+  "helper_host_guard_passed_native_skipped": true,
+  "generated_help_entries": 180,
+  "networkless_generation_and_check_passed": true,
+  "reader": {
+    "source_sha256": "a6444250faa4d0c287c53d12833df3f783be914c430c8b80ca5510daba73cabc",
+    "binary_sha256": "af0d47a61ef9d0e9e269eae9d98ff8f9a11c22de201de45e0cb761d5b2eaf966",
+    "scope": "source/kind/require-exports-bound read-only kernel utility; no source disk code execution; not a runtime artifact"
+  },
+  "storage": {
+    "cache39_removed_files": 822,
+    "cache39_freed_bytes": 781938688,
+    "all174_retained_pins_exact": true,
+    "build_admission_bytes": 939524096,
+    "build_initial_charge": 50463834112,
+    "build_peak_fast_estimated_charge": 50960588800,
+    "build_end_full_charge": 50843561984,
+    "budget_bytes": 51539607552
+  },
+  "scope": "matching development artifacts and prepared read-only utility only; no native export, installed stable upgrade, preserved DEV or production qualification",
+  "native_requirements": [
+    "fresh fixed recording07-backed COW only",
+    "mandatory original export flag and source-bound helper",
+    "actual CLI/SDK manifests and all parts against independent original file bytes",
+    "actual CLI ZIP matches both original closed sessions",
+    "all capture/control/table/intent preservation except one exact fresh observation",
+    "no capture/runtime launch, policy writes or retention"
+  ]
+}

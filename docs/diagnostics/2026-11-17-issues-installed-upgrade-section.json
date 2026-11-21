@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "overall_scenario_passed": false,
+  "installed_upgrade_section_passed": true,
+  "artifact_source": "d24c960281dd3e4c0e2029f35e07b0aa546d665b",
+  "previous_stable": "0.4.0",
+  "previous_runner_sha256": "5d273dfa82e2464f94c2ae5e8366cd314edf2917514b4baf3c7131824d195752",
+  "candidate_artifacts": {
+    "omabit": {
+      "sha256": "6ad412c73b46ff16f407f156682dd45a5cd8521f52468b2d542e6317761e0c40",
+      "bytes": 24007373
+    },
+    "urbit-collector": {
+      "sha256": "2881052301b8e54909759582626fb9af258598396080faaf3e99a1e7ce1e6214",
+      "bytes": 13043469
+    },
+    "urbit-runner": {
+      "sha256": "0aa2dc0db788337e9b239be2588da47d9ac1efd32b64ede6973f6c7c9bca615a",
+      "bytes": 28198180
+    },
+    "managed.test": {
+      "sha256": "4b4ff43dd6bba95f50cc004252539f426c7c63676a15a403e837a2adf30441ee",
+      "bytes": 38325804
+    }
+  },
+  "schema_path": [
+    59,
+    60
+  ],
+  "scope": "Linux/AMD64 owner-user, fresh ordinary fake ships with pinned0.4.0 Recommended Apps pill; one running, one intentionally stopped",
+  "preserved": {
+    "running_stopped_intent_and_history_preserved": true,
+    "engine_and_container_processes_preserved": true,
+    "access_preserved": true
+  },
+  "actual_old_reader_refused_unchanged": true,
+  "manager_restart_preserved_runtime": true,
+  "old_witnesses_stopped_through_supported_api": true,
+  "failure_after_passed_section": {
+    "step": "switch fixture from Unix to restricted SSH access",
+    "diagnostic": "enrollment conflict; duplicate runner identity refused",
+    "cause": "harness attempted a second enrollment instead of updating the existing access binding",
+    "recovery_project_created": false
+  },
+  "read_only_inspection": {
+    "passed": true,
+    "original_overlay_unchanged": true,
+    "overlay_sha256": "d564402ca0d3ad477dd70f174aa9d74e59bbe6811ad45cdf104062408f4410fa",
+    "services_started": false,
+    "journal_replayed": false,
+    "files": {
+      "commands.jsonl": {
+        "bytes": 2592517,
+        "sha256": "23317aa4a8056b427a8e850199f9b72e538e374bade5df922f39036ffc714044"
+      },
+      "result.json": {
+        "bytes": 12135,
+        "sha256": "ff24211d8c21bcf28554029b4b79c0e139ecc7e4213cd3baec21c98376b29239"
+      },
+      "runner.sqlite": {
+        "bytes": 573440,
+        "sha256": "a1c095aadf5b80de93898c27d46470f6fa8987f898dae59dd68d9e0ac3ef9e70"
+      }
+    }
+  },
+  "archived_store": {
+    "schema": 60,
+    "counts": {
+      "instances": 2,
+      "operations": 6
+    },
+    "sha256": "a1c095aadf5b80de93898c27d46470f6fa8987f898dae59dd68d9e0ac3ef9e70",
+    "read_only_integrity": true,
+    "original_bytes_unchanged": true
+  },
+  "limits": [
+    "No interrupted expanded project existed before migration in this native fixture; synthetic original-writer fixtures cover that data shape separately.",
+    "Native Stop/review/apply/resume and app-state preservation not reached.",
+    "No desktop, DEV or production deployment was changed.",
+    "Development snapshot only; not a stable release qualification or claim for later source/artifacts."
+  ],
+  "archive_recompression": {
+    "original_sha256": "d564402ca0d3ad477dd70f174aa9d74e59bbe6811ad45cdf104062408f4410fa",
+    "new_sha256": "373b1492240d18112d0de02fffa6f9aae4d97e5857c7acd977d60277238403c6",
+    "old_allocated": 1961037824,
+    "new_allocated": 875831296,
+    "all_virtual_block_contents_identical": true,
+    "immutable_backing_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "scope": "completed disposable disk representation only; original59/60 store bytes and saved diagnostics remain preserved",
+    "first_attempt": "512MiB scope OOM; original unchanged, only unverified derivative discarded; 2GiB retry and full content comparison passed"
+  }
+}

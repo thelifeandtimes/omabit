@@ -18,7 +18,7 @@ import (
 )
 
 func TestRC11BridgeCreationReplayHeaderAndSameConnectionCapability(t *testing.T) {
-	for _, path := range []string{"/v1/instances", "/v1/comets", "/v1/ships"} {
+	for _, path := range []string{"/v1/instances", "/v1/comets", "/v1/ships", "/v1/projects", protocol.PrivateChainProjectsPath, protocol.ProjectStopReconcilePath("project-one"), protocol.ProjectActionPath("project-one"), protocol.ProjectRecoveryActionPath("project-one", "", "start"), protocol.ProjectRecoveryActionPath("project-one", "op-parent", "observe"), protocol.ProjectRecoveryActionPath("project-one", "op-parent", "continue")} {
 		for _, scenario := range []string{"supported", "old-server", "lost-capability", "malformed", "multiple"} {
 			t.Run(path+"/"+scenario, func(t *testing.T) {
 				socket, keys, grant := bridgeGrantFixture(t)

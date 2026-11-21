@@ -37,4 +37,16 @@ package managed
 // Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
 // Schema58 retains ship URL choices and history bound to each pier incarnation.
 // Schema59 fences configurable container limits and immutable per-container contracts.
-const StateSchemaVersion = 59
+// Schema60 retains interrupted-stop reconciliation receipts and pre-signal
+// process bindings. Earlier readers must refuse rather than ignore resolution.
+// Schema61 retains immutable Grubbery app phase journals and namespace leases.
+// Opening never dispatches; older writers must refuse the new format.
+// Schema62 fences app plan/journal2, native-readable version values and known
+// pre-effect refusal. Legacy plan1 receipts stay read-only and byte-preserved.
+// Schema63 retains separate immutable app runtime recovery receipts and exact
+// per-operation heads; original plan/event/lease bytes remain unchanged.
+// Schema64 fences immutable recording-job intents bound to the original Start
+// actor, revision, runtime and created container. Opening dispatches nothing.
+// Schema65 fences canonical retention policy and incident-pin audit history;
+// older managers must refuse rather than ignore recording storage controls.
+const StateSchemaVersion = 65

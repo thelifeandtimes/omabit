@@ -1,0 +1,65 @@
+{
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "checks": [
+    {
+      "name": "release-policy",
+      "status": "failure",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822643547/job/136587175154",
+      "required": true
+    },
+    {
+      "name": "core",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822569291/job/136586909196",
+      "required": false
+    },
+    {
+      "name": "managed-race (0)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822569291/job/136586909107",
+      "required": false
+    },
+    {
+      "name": "managed-race (1)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822579769/job/136586946107",
+      "required": false
+    },
+    {
+      "name": "managed-race (2)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822579769/job/136586946063",
+      "required": false
+    },
+    {
+      "name": "managed-race (3)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822579769/job/136586946048",
+      "required": false
+    },
+    {
+      "name": "qml-offscreen",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822579769/job/136586946187",
+      "required": true
+    },
+    {
+      "name": "source",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/44822579769/job/136605253497",
+      "required": true
+    }
+  ],
+  "pr": "https://github.com/thelifeandtimes/omabit/pull/23",
+  "scope": "PR check rollup for the frozen candidate source; final distribution head must pass its own required checks before merge.",
+  "release_policy_failure": "final release pins must name this stable version and its frozen source",
+  "release_policy_reason": "native/bootstrap/release.json intentionally remains at0.4.0 until final qualification and draft download verification"
+}

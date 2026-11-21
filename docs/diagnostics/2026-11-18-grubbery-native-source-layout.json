@@ -1,0 +1,343 @@
+{
+  "version": 1,
+  "status": "passed",
+  "scope": "fresh fixed kernel source-layout and state contract; no managed coordinator, product Docker transport, public API, permits/routes/restart/peer or installed upgrade qualification",
+  "artifact_source": "b4b01c6c081691bf8aa37ea3038236ec9e2a1b2b",
+  "artifact_sha256": "3e22078e7199cecfb872f0a085e7b9ec399c5cf278728aa4766c5aa6220156d9",
+  "workflow_case": "grubbery-source-layout-v1",
+  "workflow_exit": 0,
+  "clean_shutdown": true,
+  "native_calls": 74,
+  "finding": "Pinned foundational source grubs are directly readable with exact framework bytes even when their directory/files are absent from the materialized source tree. Creation is not absence of those virtual sources; the observer confused these views.",
+  "layouts": {
+    "source-layout-1-bill.json": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime"
+        },
+        "dirs": {}
+      }
+    },
+    "source-layout-1-created": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {},
+        "dirs": {}
+      }
+    },
+    "source-layout-1-nex-state.hoon": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime"
+        },
+        "dirs": {
+          "nex": {
+            "neck": null,
+            "files": {
+              "state.hoon": "hoon"
+            },
+            "dirs": {}
+          }
+        }
+      }
+    },
+    "source-layout-1-versioned": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime",
+          "version.json": "mime"
+        },
+        "dirs": {
+          "nex": {
+            "neck": null,
+            "files": {
+              "state.hoon": "hoon"
+            },
+            "dirs": {}
+          }
+        }
+      }
+    },
+    "source-layout-2-bill.json": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime"
+        },
+        "dirs": {}
+      }
+    },
+    "source-layout-2-created": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {},
+        "dirs": {}
+      }
+    },
+    "source-layout-2-nex-state.hoon": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime"
+        },
+        "dirs": {
+          "nex": {
+            "neck": null,
+            "files": {
+              "state.hoon": "hoon"
+            },
+            "dirs": {}
+          }
+        }
+      }
+    },
+    "source-layout-2-versioned": {
+      "foundations": {
+        "hoon": {
+          "bytes": 1098,
+          "sha256": "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe",
+          "status": 200
+        },
+        "kelvin": {
+          "bytes": 689,
+          "sha256": "706b3c9e305ef54653e6c4e4d7fc4561b59ebf9827715bd48351b1bdfa1c23ba",
+          "status": 200
+        },
+        "mime": {
+          "bytes": 439,
+          "sha256": "3ca9949786a5876bf8de05c9913cd0b6b1e78509c8e86912dcc0d766c1075863",
+          "status": 200
+        },
+        "tang": {
+          "bytes": 824,
+          "sha256": "a6dec16f1c704df54e6f3015f5cf0c5a792e126d67ae290f8540dfda68ff5749",
+          "status": 200
+        }
+      },
+      "tree": {
+        "neck": "code",
+        "files": {
+          "bill.json": "mime",
+          "version.json": "mime"
+        },
+        "dirs": {
+          "nex": {
+            "neck": null,
+            "files": {
+              "state.hoon": "hoon"
+            },
+            "dirs": {}
+          }
+        }
+      }
+    }
+  },
+  "live_mirrors": {
+    "first-live-code-tree": {
+      "neck": "code",
+      "files": {
+        "bill.json": "mime",
+        "version.json": "mime"
+      },
+      "dirs": {
+        "nex": {
+          "neck": null,
+          "files": {
+            "state.hoon": "hoon"
+          },
+          "dirs": {}
+        }
+      }
+    },
+    "second-live-code-tree": {
+      "neck": "code",
+      "files": {
+        "bill.json": "mime",
+        "version.json": "mime"
+      },
+      "dirs": {
+        "nex": {
+          "neck": null,
+          "files": {
+            "state.hoon": "hoon"
+          },
+          "dirs": {}
+        }
+      }
+    }
+  },
+  "checks": {
+    "atomic_plain_parent_marker": true,
+    "desk_followed_both_versions": true,
+    "known_409_unchanged_marker": true,
+    "local_nexus_compiled": true,
+    "new_code_label_observed": true,
+    "saved_state_preserved_on_update": true
+  },
+  "proof_sha256": "84953690ab32edf9bf93ab011e23441d2be4b22fbe71b50673a59226dbf19249",
+  "original_result_sha256": "0f55697d25cfe42b0b8f66441de6c79215c3e78a827ac98960408f29c4b5c08d",
+  "workflow_log_sha256": "6a4677508dd22c5e90b7c5069b626b876006e8db2efdeaede81d6bcc9aa1ce52",
+  "remaining": [
+    "correct and retest trusted projection and inert model",
+    "qualify actual managed native phases including custom-mark directory handling",
+    "product Docker/curl and public CLI/MCP parity",
+    "permits, aliases, routes/served assets, restart, peers and installed upgrades"
+  ]
+}

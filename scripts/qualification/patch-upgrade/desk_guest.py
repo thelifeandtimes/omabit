@@ -5,10 +5,12 @@ from pathlib import Path
 import time
 
 
-def exercise(run, tool, version, runner_id):
+def exercise(run, tool, version, runner_id, label="qualification"):
     assert os.geteuid() == 0
     assert 'omabit.disposable-guest=release-upgrade-v1' in Path('/proc/cmdline').read_text().split()
-    root = Path('/home/review/desk-qualification')
+    if label not in ('qualification', 'stable-before-upgrade', 'candidate-after-upgrade'):
+        raise RuntimeError('fixed disposable desk fixture required')
+    root = Path('/home/review')/('desk-'+label)
     assert not root.exists()
     root.mkdir(mode=0o700)
     source = root/'source'
@@ -16,12 +18,12 @@ def exercise(run, tool, version, runner_id):
     (source/'hello.txt').write_text('Omabit release qualification\n')
     run(['chown', '-R', 'review:review', root])
     report = {'passed': False, 'steps': {}}
-    target = {'instance_id': 'upgrade-zod', 'desk': 'omabit-qualification'}
+    target = {'instance_id': 'upgrade-zod', 'desk': 'omabit-'+label}
     selection = ['--instance', target['instance_id'], '--desk', target['desk']]
 
     def save(name, value):
         report['steps'][name] = value
-        (Path('/opt/omabit-release-results')/'desk.json').write_text(json.dumps(report, indent=2)+'\n')
+        (Path('/opt/omabit-release-results')/('desk.json' if label == 'qualification' else 'desk-'+label+'.json')).write_text(json.dumps(report, indent=2)+'\n')
         return value
 
     def command(name, *args, setup=False):

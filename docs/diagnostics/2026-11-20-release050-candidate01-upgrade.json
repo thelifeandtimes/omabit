@@ -1,0 +1,130 @@
+{
+  "status": "passed-for-candidate01-new-freeze-required",
+  "artifact_source": "bdf43978e1d0ea858c3349b787e2ff8eaa1252ad",
+  "previous_source": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "versions": [
+    "0.4.0",
+    "0.5.0"
+  ],
+  "schemas": [
+    59,
+    65
+  ],
+  "scope": "Offline Linux/AMD64 owner-user native desktop/service upgrade, original app history, running/stopped intent, authorization denial/retry, manager restart, actual old-reader refusal and final ordinary Stop.",
+  "limits": [
+    "Candidate01 only; corrected skill guidance and test deadline require a new clean freeze and matching qualification.",
+    "No installed DEV or production update. No remote upgrade, power-loss, active recording worker, complete Gall/Grubbery or peer/routes/assets qualification.",
+    "Large import preview is sparse; actual import uses a small fresh fake with synthetic metadata."
+  ],
+  "cases": {
+    "01": {
+      "status": "interrupted-at-user-pause-no-upgrade-pass",
+      "evidence": {
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/host.json": "05d43512546b58e31fee8c3ab8ebf00b7717b2926508404c760fb5af6f9ef4da",
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/serial.log": "ab0a8ba204d451f5c719bb60232c31d6cbf84e5e0c3c841a4e1c0ead2317c1b9",
+        "/tmp/omabit-050-upgrade-evidence-01/result.json": "18a8efa07ec23da925eb1b2f083ce6abf8fe7f4fde5eb025f3229ddbfa9d6557",
+        "/tmp/omabit-050-upgrade-evidence-01/command.json": "3de8aa2020ed82f47b1d890db87d2d257d508aece0f22cfbee6aa08f7078ba82",
+        "/tmp/omabit-050-upgrade-evidence-01/files/managed/runner.sqlite": "f617e570b2dd659bafea3d995fab2c0ec9650c9dd6b2aab9fffd25dec0c9ccf2",
+        "/tmp/omabit-050-upgrade-evidence-01/files/results/commands.jsonl": "2416a1c8ce511335852b001759aac799cd91787dec48d09da9aaadfbdb1cb6c8",
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/USER_PAUSED_20261120.json": "a76df80562cab10d98bf448763a8e8bf5c04243bd42982802993761384a4c37d"
+      },
+      "host_exit": 0,
+      "host_source": "0708beb98eb5b9e4df7cd3d86b100b501383ea87"
+    },
+    "02": {
+      "status": "whole-guest-and-host-passed-independent-report-SQL-export-verified",
+      "evidence": {
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/host.json": "aab57344782d0b9da37aec14389d00ccf5a4931454e6eb43e108a36840cf8844",
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/serial.log": "b255980d236bc5e8b46f89f21d7da2325844c50938c8ea9345495ba7b5e3dc14",
+        "/tmp/omabit-050-upgrade-evidence-02/result.json": "b263ec627dcc2e435f42b76b0d599a2f6fffe4abbe86675537bf059a9c8c769e",
+        "/tmp/omabit-050-upgrade-evidence-02/command.json": "60d25fe87e70d21b5df4764c94f311af148aa7bd6dfb29bdfe1c526212b167a3",
+        "/tmp/omabit-050-upgrade-evidence-02/files/managed/runner.sqlite": "454c04f11492aba80e3d4af739235b9cab20822698f578a80080cf7ba0367c40",
+        "/tmp/omabit-050-upgrade-evidence-02/files/results/report.json": "842a86794c8e0dc57bfb52f368b87d3eed251e4bc37561f0f5203b19b6313ab7",
+        "/tmp/omabit-050-upgrade-evidence-02/files/results/commands.jsonl": "dcdd94ca8c0e857e702ecc76181458fb8e9d51a504a3f1624557aaf9733070ca",
+        "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/result.json": "842a86794c8e0dc57bfb52f368b87d3eed251e4bc37561f0f5203b19b6313ab7",
+        "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/docs/diagnostics/2026-11-20-release050-candidate01-upgrade-result.json": "842a86794c8e0dc57bfb52f368b87d3eed251e4bc37561f0f5203b19b6313ab7"
+      },
+      "host_exit": 0,
+      "host_source": "e88da595009d9225af5cc5bcb6988d9208ff1d41"
+    }
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "files": [
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/init",
+        "sha256": "63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7",
+        "bytes": 4091943,
+        "allocated_bytes": 4096000
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/initramfs.cpio",
+        "sha256": "04c117a7edfd613a3088298887213049f5b0a6314f601989642ce69c93285eda",
+        "bytes": 9099000,
+        "allocated_bytes": 9101312
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/payload.ext4",
+        "sha256": "e6ac75ba8bb7fa1b3b5811c787680c2a49ac167595a01ce9342d7c034bb63b5a",
+        "bytes": 805306368,
+        "allocated_bytes": 295641088
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final01/root.qcow2",
+        "sha256": "8306e2d73af411d3dc1f8b86e322bc813d43518b4937894b795d6719fdfa7cc5",
+        "bytes": 326762496,
+        "allocated_bytes": 326701056
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/init",
+        "sha256": "63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7",
+        "bytes": 4091943,
+        "allocated_bytes": 4091904
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/initramfs.cpio",
+        "sha256": "04c117a7edfd613a3088298887213049f5b0a6314f601989642ce69c93285eda",
+        "bytes": 9099000,
+        "allocated_bytes": 9101312
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/payload.ext4",
+        "sha256": "8746b82faa8228f738ed9a0e56a4a8d0177ef04846a4c7ffc4d0563dc79d5bc5",
+        "bytes": 805306368,
+        "allocated_bytes": 295641088
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-050-final02/root.qcow2",
+        "sha256": "eb07d963aba06f09dfcadcc8c84a6e57ec6293ad42a3eea4504b7347038d86d3",
+        "bytes": 2368733184,
+        "allocated_bytes": 2368671744
+      },
+      {
+        "path": "/tmp/omabit-050-upgrade-evidence-01/initramfs.cpio",
+        "sha256": "c2f513cd8e261640d905fad2038fb36eac06929a4bef536b8e765ce75c0e2b1d",
+        "bytes": 7976936,
+        "allocated_bytes": 7979008
+      },
+      {
+        "path": "/tmp/omabit-050-upgrade-evidence-02/initramfs.cpio",
+        "sha256": "c2f513cd8e261640d905fad2038fb36eac06929a4bef536b8e765ce75c0e2b1d",
+        "bytes": 7976936,
+        "allocated_bytes": 7979008
+      }
+    ],
+    "reclaimed_bytes": 3329003520,
+    "full_charge_record": {
+      "path": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/upgrade-retirement01-charge.json",
+      "sha256": "ba0df0f015e2a847a21cad6ddb0fa11cff2fd06d8b524548613aaa309a1fa22f"
+    },
+    "charged_bytes": 46252068864
+  },
+  "independent_checks": {
+    "original_operation_receipts_unchanged": 5,
+    "original_app_table_ddl_unchanged": 13,
+    "schema": 65,
+    "final_stop_succeeded": true,
+    "all_three_fresh_instances_desired_stopped": true,
+    "exported_report_matches_serial": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "original_source": "1589158b4484c1a7c0f96c188a223e0faa83e141",
+  "candidate_source": "6fd35d6d2d6a29aefdc6405e3e0696308af4616d",
+  "original_writer_sha256": "6254e8adda13e740eca98307ec9973fdefc453017c1cffb1ec64125f85e71716",
+  "candidate_sha256": "f05fbf475a2c99504a483173575ee46e9b7e61ac912bcd08f63a6a6bb2d5f749",
+  "declared_helper_sha256": "25defad826b12b20b2430adc859b0b6966b57ee65edd1bfd758dd89ac22e5c67",
+  "original_source_manifest_sha256": "8edc0d810c2dd1cd7adfbbc0ceb3939258ff3c80868c802a14511956f08720af",
+  "scope": "source-only actual63/candidate64 SQLite migration and populated recording-intent refusal; synthetic pre-Start metadata, no job submission, live worker, native capture, installed upgrade, DEV or stable qualification",
+  "schema": 63,
+  "raw_sqlite_sha256": "4687d1a8f951ee968cba44b26038fcab8d350ac1e64d2a9d8890cbc6026c8fe1",
+  "gzip_sha256": "c829c87733b512da09fcd3ece3dda3cf1223b04a6c1e0b25f28077efd4af246b",
+  "raw_sql_sha256": "1ba673c65d0c53e71c2d80edde4a7406e50cd0b2b0395bb23b0c36d1032849b6"
+}

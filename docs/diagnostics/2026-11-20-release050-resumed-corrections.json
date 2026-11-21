@@ -1,0 +1,39 @@
+{
+  "status": "source-corrections-validated-new-freeze-required",
+  "previous_frozen_source": "bdf43978e1d0ea858c3349b787e2ff8eaa1252ad",
+  "ci": {
+    "successful_full_source_run": "https://github.com/thelifeandtimes/omabit/actions/runs/44792728375",
+    "duplicate_run_with_failed_race_shard": "https://github.com/thelifeandtimes/omabit/actions/runs/44792713306",
+    "test": "TestAppRuntimeStoreRetainsBoundedAuditHistoryAndRefusesOverflow",
+    "successful_elapsed_seconds": 60.83,
+    "failed_elapsed_seconds": 93.05,
+    "old_context_seconds": 90,
+    "reported_error": "app operation history changed",
+    "interpretation": "Timing is consistent with deadline expiration on the slower race runner; the old assertion did not retain context.Err(), so this cause is not independently proven. No race detector failure was reported.",
+    "logs": {
+      "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/frozen-race3-failed.log": "83d71ee9888721a7018f1d4fa7c64b7ec1331618a4711f1ef5794fabb43cd19b",
+      "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/frozen-race3-passed.log": "6ceb9c0ed1c7a0b080bdf16ac152b972e851d794fefca17e6a8443342675e1cc"
+    }
+  },
+  "changes": [
+    "Keep all64 recoveries, overflow refusal, exact unchanged rows and latest binding assertions; extend only the test context to5minutes and include iteration/context in failure diagnostics.",
+    "Replace obsolete missing-Grubbery-adapter text with the actual bounded source-and-restart preflight contract in both synchronized skill references."
+  ],
+  "skill_validation": {
+    "synchronized_references": true,
+    "operator_quick_validate": true,
+    "app_developer_quick_validate": true
+  },
+  "runtime_behavior_changed": false,
+  "release_requires_new_freeze_and_matching_artifacts": true,
+  "focused_race": {
+    "passed": true,
+    "elapsed_test_seconds": 66.32,
+    "elapsed_build_and_run_seconds": 146.7,
+    "report": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/audit-deadline-race02.json",
+    "report_sha256": "8debacf3b511e2c1af7c3f1b42d2f214d022af83416a63cccea2717775067432",
+    "log": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/audit-deadline-race02.log",
+    "log_sha256": "ea92280fd708a0c6fe33a5511d18688efcb3bc5f5df1af876afc279fb16f9d34",
+    "test_source_sha256": "5cbec092d94d5a39cdcdca370c51b644604e5ec60a7a01ee95cb3ef6f84ae752"
+  }
+}

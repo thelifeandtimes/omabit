@@ -41,8 +41,8 @@ Column {
           required property var modelData
           width:skillsBody.width;spacing:Style.space(8)
           Rectangle {width:parent.width;height:1;color:Design.line}
-          Label {width:parent.width;font.bold:true;text:modelData.name==="omabit-operator" ? "Omabit operator" : "Omabit plugin developer"}
-          Label {width:parent.width;caption:true;secondary:true;text:modelData.name==="omabit-operator" ? "Manage ships, diagnose setup, and follow the fleet's operational policies." : "Develop Urbit applications and Omarchy interfaces using the supported workflows."}
+          Label {width:parent.width;font.bold:true;text:({"omabit-operator":"Omabit operator","omabit-plugin-developer":"Omabit plugin developer","omabit-app-developer":"Omabit application developer"})[modelData.name] || modelData.name}
+          Label {width:parent.width;caption:true;secondary:true;text:({"omabit-operator":"Manage ships, diagnose setup, and follow fleet policies.","omabit-plugin-developer":"Build Omarchy interfaces and optional Omabit authentication.","omabit-app-developer":"Develop Gall or Grubbery backends with staged source, tests and recovery."})[modelData.name] || "Read the bundled skill before installation."}
           Label {width:parent.width;caption:true;secondary:true;text:"Destination: "+modelData.target}
           Label {width:parent.width;caption:true;visible:!!modelData.message;text:modelData.message || "";color:Design.warning}
           ActionButton {objectName:"agent-skill-install-"+parent.modelData.name;text:parent.modelData.action==="update" ? "Update skill" : parent.modelData.state==="installed" ? "Installed" : parent.modelData.state==="preserved" ? "Existing skill preserved" : "Install skill";enabled:!!root.controller && !root.controller.busy && parent.modelData.action!=="none";onClicked:root.controller.install(parent.modelData)}

@@ -1,0 +1,168 @@
+{
+  "format": 1,
+  "passed": true,
+  "target_schema": 65,
+  "test": "TestG02HistoricalInterruptedOperationsReconcileOnce",
+  "qualified_fixture_count": 39,
+  "groups": [
+    {
+      "fixtures": [
+        "rc1",
+        "preview14",
+        "rc2",
+        "rc3",
+        "rc4",
+        "rc5",
+        "rc6",
+        "rc7",
+        "rc8",
+        "rc9",
+        "preview18",
+        "rc10",
+        "rc11"
+      ],
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/managed",
+        "-run",
+        "^TestG02HistoricalInterruptedOperationsReconcileOnce$/^(rc1|preview14|rc2|rc3|rc4|rc5|rc6|rc7|rc8|rc9|preview18|rc10|rc11)$",
+        "-count=1",
+        "-timeout=4m",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 25.853167694993317,
+      "source": "c8fce998620cbca3ecf9718c2024d1047458f564",
+      "passed_fixtures": [
+        "rc1",
+        "preview14",
+        "rc2",
+        "rc3",
+        "rc4",
+        "rc5",
+        "rc6",
+        "rc7",
+        "rc8",
+        "rc9",
+        "preview18",
+        "rc10",
+        "rc11"
+      ]
+    },
+    {
+      "fixtures": [
+        "rc12",
+        "schema21",
+        "schema22",
+        "schema23",
+        "schema24",
+        "schema25",
+        "schema26",
+        "schema27",
+        "schema28",
+        "schema29",
+        "schema30",
+        "schema31",
+        "schema32"
+      ],
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/managed",
+        "-run",
+        "^TestG02HistoricalInterruptedOperationsReconcileOnce$/^(rc12|schema21|schema22|schema23|schema24|schema25|schema26|schema27|schema28|schema29|schema30|schema31|schema32)$",
+        "-count=1",
+        "-timeout=4m",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 40.47125322301872,
+      "source": "c8fce998620cbca3ecf9718c2024d1047458f564",
+      "passed_fixtures": [
+        "rc12",
+        "schema21",
+        "schema22",
+        "schema23",
+        "schema24",
+        "schema25",
+        "schema26",
+        "schema27",
+        "schema28",
+        "schema29",
+        "schema30",
+        "schema31",
+        "schema32"
+      ]
+    },
+    {
+      "fixtures": [
+        "schema33",
+        "schema34",
+        "schema35",
+        "schema36",
+        "schema37",
+        "schema38"
+      ],
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/managed",
+        "-run",
+        "^TestG02HistoricalInterruptedOperationsReconcileOnce$/^(schema33|schema34|schema35|schema36|schema37|schema38)$",
+        "-count=1",
+        "-timeout=4m",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 73.73459153203294,
+      "passed_fixtures": [
+        "schema33",
+        "schema34",
+        "schema35",
+        "schema36",
+        "schema37",
+        "schema38"
+      ],
+      "source": "282c3b372d0289858c3ea7e3ceb1296808a97420"
+    },
+    {
+      "fixtures": [
+        "schema39",
+        "schema40",
+        "schema41",
+        "schema42",
+        "schema43",
+        "schema44",
+        "schema45"
+      ],
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/managed",
+        "-run",
+        "^TestG02HistoricalInterruptedOperationsReconcileOnce$/^(schema39|schema40|schema41|schema42|schema43|schema44|schema45)$",
+        "-count=1",
+        "-timeout=4m",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 198.55514796101488,
+      "passed_fixtures": [
+        "schema39",
+        "schema40",
+        "schema41",
+        "schema42",
+        "schema43",
+        "schema44",
+        "schema45"
+      ],
+      "source": "282c3b372d0289858c3ea7e3ceb1296808a97420"
+    }
+  ],
+  "scope": "source race checks only; all historical interrupted-operation fixtures preserve stopped intent, linked ancestry and exact replay across repeated reopen/reconciliation. First26 use c8fce99, final13 use descendant282c3b3; intervening Go changes affect inert VM helper guards and CLI help only. Not a full managed-package suite, native upgrade or stable-release qualification. Earlier whole-group deadline failures remain failures."
+}

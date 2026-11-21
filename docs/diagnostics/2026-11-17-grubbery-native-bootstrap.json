@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "status": "passed-bootstrap-only",
+  "scope": "fresh standalone native kernel; actual API/SQLite/collection/staging; synthetic managed lifecycle; no Unix mount; not installed/managed application qualification",
+  "artifact_source_commit": "f9ca8a7c2e4da2f0cdafc2e66070bff19ef35035",
+  "harness_source_commit": "a658341ad8048c12e54997082f96d5f1cbafef25",
+  "artifact_go_sources_unchanged_at_harness_commit": true,
+  "workflow_sha256": "f4d459eab0baed5b52ce483cf9ae2bb0bacec4a7b5c9d0258eaf4e8feeda9b97",
+  "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
+  "framework_definition_sha256": "ad2ea8615c95483232eb2a07c019fade42787775e9520b158e26c6cbc43cce77",
+  "framework_source_digest": "7d2ae430acd4868bb56268188dff57addcdf4520abcc7aabaa6b9a342b22febc",
+  "framework_files": 1443,
+  "framework_bytes": 8013304,
+  "required_clay_desk": "grubbery",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "source_export_and_adoption": {
+    "source_read_through_public_api": true,
+    "read_exact_original_scaffold": true,
+    "paths": [
+      "mar/hoon.hoon",
+      "sys.kelvin"
+    ],
+    "adopted_count": 2,
+    "conflict_count": 0,
+    "adoption_changed_clay": false,
+    "source_commit_observed_and_verified": true,
+    "unowned_source_conflict_gate_preserved": true
+  },
+  "activation": {
+    "original_receipt_states": [
+      "planned",
+      "dispatched",
+      "uncertain",
+      "observed"
+    ],
+    "native_dispatches": 1,
+    "reconciliation": "read-only; original receipt retained; no reinstallation",
+    "expected_agents": [
+      "grub-client",
+      "grubbery"
+    ],
+    "both_agents_live": true
+  },
+  "kernel_observation": {
+    "origin_authenticated": true,
+    "read": "GET /grubbery/api/build/code?all=1",
+    "namespace": "/code",
+    "total": 1335,
+    "failed": 0,
+    "statuses": {
+      "vase": 223,
+      "mime": 1112
+    },
+    "required_compiled": {
+      "/lib/nexus-web.hoon": "vase",
+      "/nex/desk.hoon": "vase",
+      "/nex/shell.hoon": "vase"
+    },
+    "owner_session_cleanup_passed": true
+  },
+  "separate_warning": {
+    "source": "original native runtime log",
+    "namespace": "/apps/shell/tools/code",
+    "reported_build_failures": 4,
+    "individual_failures_queried": false,
+    "not_promoted_to_framework_success": true
+  },
+  "unix_mount_requests": 0,
+  "autocommit_active": false,
+  "clean_shutdown": true,
+  "declared_additional_scratch_bytes": 1610612736,
+  "aggregate_budget_bytes": 51539607552,
+  "proof_sha256": "6810f2f81f8f8454ae91b3913cb953011c8ec8a57ac413f01fbd75be5443d449",
+  "result_sha256": "0f55697d25cfe42b0b8f66441de6c79215c3e78a827ac98960408f29c4b5c08d",
+  "effects_sha256": "207cae37ec22e9174954cb407069e9ce8861203a86607e14ba0af795f9c04a88",
+  "native_input_audit_sha256": "13b883d149ad9b42b7fa2cc56ad82f6f873550e42599ba0827c7781b450e60dc",
+  "not_qualified": [
+    "Grubbery app deployment/state/update/restart",
+    "permits and reload ordering",
+    "discovery/alias conflicts/publication",
+    "exact served application assets",
+    "two/three-peer workflow",
+    "the four nested shell-tool failures",
+    "managed Docker/SSH lifecycle",
+    "installed upgrade or DEV deployment",
+    "full issue18 completion"
+  ]
+}

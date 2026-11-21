@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "status": "qualification-only-native-timing-helper-source-tested-native-pending",
+  "build_tag": "omabit_disposable_qualification",
+  "ordinary_build_file_selection_proves_hook_absent": true,
+  "normal_runner_has_no_fault_flag_endpoint_or_backend": true,
+  "source_sha256": {
+    "internal/runtimequalify/project_stop_race_qualification_linux.go": "d5e8baea33729247f0658565e59363f32d0feed8b94b20de67ee8ec69d54207e",
+    "internal/runtimequalify/project_stop_race_qualification_linux_test.go": "e3dede87530f19d62f5460e1e594ada8433cb2a443550bcfe5078f75d990bc81",
+    "internal/managed/issues_project_race_vm_qualification_test.go": "7eaeb5114cd6e31f4e95cc943368a5afe228525cdfc9f5ea261e1f66eeb35acf",
+    ".github/workflows/checks.yml": "358493aeef475161c47ce163293b4bbc47afd93bf9028e9c050c0c8a7924d89f"
+  },
+  "checks": [
+    {
+      "unit": "omabit-issues-project-stop-race-qualification-source-03-runtime.scope",
+      "exit": 0,
+      "output": "Running as unit: omabit-issues-project-stop-race-qualification-source-03-runtime.scope; invocation ID: 711a64eefe064179b6297a2570d708e8\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify\t1.834s\n",
+      "wall_seconds": 16.5
+    },
+    {
+      "unit": "omabit-issues-project-stop-race-qualification-source-03-manager.scope",
+      "exit": 0,
+      "output": "Running as unit: omabit-issues-project-stop-race-qualification-source-03-manager.scope; invocation ID: 3ceabcc4a5ec478a952b440faf11f639\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t1.015s\n",
+      "wall_seconds": 22.68
+    },
+    {
+      "unit": "omabit-issues-project-stop-race-qualification-source-03-vet.scope",
+      "exit": 0,
+      "output": "Running as unit: omabit-issues-project-stop-race-qualification-source-03-vet.scope; invocation ID: 14907f8354b8482a8468b3f342fdf919\n",
+      "wall_seconds": 4.13
+    }
+  ],
+  "inert_file_selection_checks": [
+    {
+      "unit": "omabit-issues-project-stop-race-qualification-source-04-ordinary.scope",
+      "exit": 0
+    },
+    {
+      "unit": "omabit-issues-project-stop-race-qualification-source-04-tagged.scope",
+      "exit": 0
+    }
+  ],
+  "initial_file_selection_attempt": "read-only Go list template quoting failed; exact report retained; corrected range/println template passes",
+  "guard_scope": [
+    "exact QEMU/kernel flag, uid1000/HOMEreview/runtime directory and source-bound scenario",
+    "fixed65 current-app fixture backing hash; original65/target65 and required flags",
+    "exact fresh added bud and original nec members/ports/mode/generation/pier; history/replayed stop intent refused",
+    "actual manager save callbacks remain authoritative before the one real SIGTERM",
+    "test SIGSTOP holds only the selected process; real preliminary running result is returned unchanged after bounded exact exit observation",
+    "fresh full-ID/StartedAt check before SIGCONT and failure cleanup; changed processes refuse",
+    "unexpected kill/restart/remove/exec/engine/config targets refuse",
+    "failure/cancellation/lost replies release only the same held process; SIGTERM never repeated"
+  ],
+  "source_safety_tests": [
+    "foreign/host/marker/source/selection refusal",
+    "journal-before-signal and exact process callback tests",
+    "clean exact native-read/control ordering with inert engine",
+    "lost TERM/CONT replies, inspection failure, replacement, cancellation and trace failure",
+    "no unselected signal or force kill",
+    "tagged test-manager backend rejects other actions/projects and host entry",
+    "vet for both tagged packages"
+  ],
+  "ci": "adds explicit inert tagged safety/vet and ordinary-file-omission check; no native guest runs in CI",
+  "pending": [
+    "fresh VM launcher/guest/PID1 guards and storage admission",
+    "matching normal products plus explicitly tagged/source-pinned managed helper",
+    "actual native running-to-exited injection and independent receipt/pier/peer proof",
+    "optional quiescent project allocation in same disposable case",
+    "final stable/native-plugin/preserved DEV gates"
+  ],
+  "storage": {
+    "source_full_charge_after": 50272702464,
+    "selection_full_charge_after": 50273107968,
+    "budget_bytes": 51539607552
+  },
+  "production_installed_dev_existing_ships_unchanged": true
+}

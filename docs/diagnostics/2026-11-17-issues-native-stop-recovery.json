@@ -1,0 +1,113 @@
+{
+  "format": 1,
+  "passed": true,
+  "artifact_source": "d24c960281dd3e4c0e2029f35e07b0aa546d665b",
+  "harness_source": "d01d839f67f8b3de0f2603179ebd4bb370d3f636",
+  "case": "recovery-only",
+  "private_original_report_sha256": "833bc11a82a31a8656485eedc438fa55e5e9b78da1edaeaf51ea4d11b272b1fe",
+  "candidate_artifacts": {
+    "omabit": {
+      "sha256": "6ad412c73b46ff16f407f156682dd45a5cd8521f52468b2d542e6317761e0c40",
+      "bytes": 24007373
+    },
+    "urbit-collector": {
+      "sha256": "2881052301b8e54909759582626fb9af258598396080faaf3e99a1e7ce1e6214",
+      "bytes": 13043469
+    },
+    "urbit-runner": {
+      "sha256": "0aa2dc0db788337e9b239be2588da47d9ac1efd32b64ede6973f6c7c9bca615a",
+      "bytes": 28198180
+    },
+    "managed.test": {
+      "sha256": "4b4ff43dd6bba95f50cc004252539f426c7c63676a15a403e837a2adf30441ee",
+      "bytes": 38325804
+    }
+  },
+  "installed_upgrade_section": {
+    "evidence": "2026-11-17-issues-installed-upgrade-section.json",
+    "same_four_frozen_artifacts": true,
+    "separate_fresh_guest": true,
+    "original_overall_scenario_passed": false,
+    "passed_section": "installed_upgrade"
+  },
+  "native_scope": "fresh fake project on installed Linux/AMD64 owner-user candidate; pinned standard core pill, no Unix mounts",
+  "fault": "separately hashed dependency-injected test manager blocks after native clean exit before final phase save; only that owned child is killed; installed manager then restarts; no database editing",
+  "assertions": {
+    "fresh_project_created_and_peer_added": true,
+    "original_peer_process_unchanged_by_add_and_recovery": true,
+    "original_stop_became_interrupted_and_start_stayed_fenced": true,
+    "saved_diagnosis_sent_no_runtime_probe": true,
+    "fresh_exact_clean_exit_review": true,
+    "retained_pre_signal_process_binding": true,
+    "new_successful_linked_receipt_original_preserved": true,
+    "single_sigterm": true,
+    "no_signal_or_start_on_reconciliation": true,
+    "exact_replay_after_manager_and_store_reopen": true,
+    "ssh_guarded_lookup": true,
+    "replay_with_refusing_observer": true,
+    "same_pier_resume": true,
+    "all_fresh_ships_stopped_cleanly": true,
+    "final_installed_executable_matches": true,
+    "schema_after": 60
+  },
+  "selected_installed_app_preflight": {
+    "environment_compatible": true,
+    "declared_workflow": "gall",
+    "before_project_boot": true,
+    "runtime_effect_or_app_policy_grant": false
+  },
+  "limits": [
+    "The historical observation-race predicate was not proved or deterministically injected in this native case; source fixtures cover forced preliminary/bracketed transitions.",
+    "The actual interrupted manager is the separately identified Go test helper, not the installed runner executable. Real native backend, API, store, SSH and installed manager reopen/recovery are exercised.",
+    "No application was installed here, so managed app-state/reload preservation remains a separate gate.",
+    "Native case covers clean retained-intent Stop; legacy missing-intent, stale/concurrent/identity/actor/OOM/nonzero and dropped-reply matrices have source/inert evidence, not this full native matrix.",
+    "No DEV/desktop/production deployment or stable-release qualification; later source/artifacts are not qualified by this frozen result."
+  ],
+  "archived_store_verification": {
+    "schema": 60,
+    "counts": {
+      "operations": 12,
+      "projects": 1,
+      "project_stop_reconciliations": 1
+    },
+    "original_bytes_unchanged": true,
+    "original_operation_body_and_request_fingerprint_match_review_after_all_lifecycle": true,
+    "original_interrupted_status_preserved": true,
+    "exact_linked_resolution_row": true,
+    "store_sha256": "7a96698a101b5a2bc6362746ad80c9c462cc6600fd93b051eb9bacada66e2e64"
+  },
+  "read_only_inspection": {
+    "original_overlay_sha256": "430171966dc83ffc8055dd14d68cdafc0734e199ca7caa9c9877ebdce2a9a040",
+    "original_overlay_unchanged": true,
+    "journal_replayed": false,
+    "services_started": false,
+    "files": {
+      "commands.jsonl": {
+        "bytes": 341895,
+        "sha256": "87c884c9ffb7e3a0e26d1fd0aa0768b379dff2cec7210e772f7e60ba4735bc7e"
+      },
+      "result.json": {
+        "bytes": 24309,
+        "sha256": "833bc11a82a31a8656485eedc438fa55e5e9b78da1edaeaf51ea4d11b272b1fe"
+      },
+      "runner.sqlite": {
+        "bytes": 520192,
+        "sha256": "7a96698a101b5a2bc6362746ad80c9c462cc6600fd93b051eb9bacada66e2e64"
+      }
+    }
+  },
+  "retained_overlay_derivation": {
+    "format": 1,
+    "original_sha256": "430171966dc83ffc8055dd14d68cdafc0734e199ca7caa9c9877ebdce2a9a040",
+    "new_sha256": "89c0ef46f91dc375d8c9bb58b207b2195bd67aea3d168a67e888603ea9399c5a",
+    "old_allocated": 2586644480,
+    "new_allocated": 1005039616,
+    "all_virtual_block_contents_identical": true,
+    "virtual_bytes": 17179869184,
+    "immutable_backing_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "original_store_archive_preserved": true,
+    "comparison_exit": 0,
+    "replacement_complete": true,
+    "scope": "content-identical archive representation only; no guest boot or filesystem mutation"
+  }
+}

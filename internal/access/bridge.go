@@ -97,8 +97,8 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 	if err != nil {
 		return true, err
 	}
-	if replayOnly && (req.Method != http.MethodPost || req.URL.Path != "/v1/instances" && req.URL.Path != "/v1/comets" && req.URL.Path != "/v1/ships") {
-		return true, errors.New("creation-replay-only header requires a creation endpoint")
+	if replayOnly && !protocol.ReplayOnlyEndpoint(req.Method, req.URL.Path) {
+		return true, errors.New("replay-only header requires a guarded receipt endpoint")
 	}
 	grant, err := Load(keys, id)
 	if err != nil || !grant.Allows(req.Method, req.URL.Path) {
@@ -138,8 +138,13 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 		limited.N = req.ContentLength
 		body = io.LimitReader(req.Body, req.ContentLength)
 	} else {
-		data, err := io.ReadAll(io.LimitReader(req.Body, 4097))
-		if err != nil || len(data) > 4096 {
+		bodyLimit := int64(4096)
+		if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) || protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) {
+			bodyLimit = protocol.GrubberyAppRequestBytes
+			limited.N = bodyLimit + 8192
+		}
+		data, err := io.ReadAll(io.LimitReader(req.Body, bodyLimit+1))
+		if err != nil || int64(len(data)) > bodyLimit {
 			return true, errors.New("invalid SSH RPC body")
 		}
 		req.Body.Close()
@@ -246,6 +251,12 @@ func forward(ctx context.Context, req *http.Request, socket string, grant Grant,
 	}
 	if req.Method == http.MethodPost && req.URL.Path == protocol.DeskStagesPath && !slices.Contains(hello.Features, protocol.DeskStageFeature) {
 		return nil, nil, errors.New("local runner does not support source staging; request was not forwarded")
+	}
+	if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) && !slices.Contains(hello.Features, protocol.GrubberyAppSourceFeature) {
+		return nil, nil, errors.New("local runner no longer supports app source phases; request was not forwarded")
+	}
+	if protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) && !slices.Contains(hello.Features, protocol.GrubberyRuntimeRecoveryFeature) {
+		return nil, nil, errors.New("local runner no longer supports app runtime recovery; request was not forwarded")
 	}
 	replayOnly, err := protocol.CreationReplayOnly(req.Header)
 	if err != nil {

@@ -37,7 +37,11 @@ func (f *createFixture) RegisterProject(ctx context.Context, _ client.Identity, 
 	if r.ReviewDigest != digest {
 		return protocol.ProjectRegistrationResult{}, errors.New("changed plan")
 	}
-	return protocol.ProjectRegistrationResult{Operation: protocol.Operation{ProjectID: "project", ConfigRevision: 1, RequestID: r.RequestID}}, nil
+	op := protocol.Operation{ID: r.RequestID, ProjectID: "project", ConfigRevision: 1, RequestID: r.RequestID, Kind: "register-project", Actor: "actor", Status: "succeeded"}
+	if _, exists := f.operations[r.RequestID]; !exists {
+		f.operations[r.RequestID] = op
+	}
+	return protocol.ProjectRegistrationResult{Operation: op}, nil
 }
 func (f *createFixture) ProjectOperate(_ context.Context, _ client.Identity, _ string, r protocol.ProjectActionRequest) (protocol.ProjectActionResult, error) {
 	f.calls = append(f.calls, r)
@@ -66,7 +70,7 @@ func (f *createFixture) ProjectStatus(_ context.Context, _ client.Identity, _ st
 			}
 			f.operations[id] = op
 		}
-		s.Operations = append(s.Operations, protocol.ProjectOperationSummary{ID: op.ID, RequestID: op.RequestID, Actor: op.Actor, Kind: op.Kind, InstanceID: op.InstanceID, Status: op.Status})
+		s.Operations = append(s.Operations, protocol.ProjectOperationSummary{ID: op.ID, RequestID: op.RequestID, Actor: op.Actor, Kind: op.Kind, InstanceID: op.InstanceID, Status: op.Status, ConfigRevision: 1})
 	}
 	if f.foreign {
 		s.Operations = append(s.Operations, protocol.ProjectOperationSummary{RequestID: "other", Actor: "actor"})

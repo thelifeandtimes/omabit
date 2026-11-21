@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "status": "verified-lossless-archives",
+  "scope": "ended recording fixtures02 and07; no original state bytes discarded",
+  "authorization": "user permits obsolete test consolidation while preserving needed transition state",
+  "files": [
+    {
+      "case": "07",
+      "original": "root.qcow2",
+      "archive": "root.qcow2.gz",
+      "original_sha256": "e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9",
+      "archive_sha256": "c0d3e80589a17f51f881a50277b05dbfae4f514edd8cf911151fa99744e2b1ed",
+      "original_bytes": 1577123840,
+      "original_allocated_bytes": 1261965312,
+      "archive_allocated_bytes": 442667008,
+      "full_decode_verified": true,
+      "source_commit": "703de9f257b6f67296c8ed6551d845d2754182af"
+    },
+    {
+      "case": "07",
+      "original": "payload.ext4",
+      "archive": "payload.ext4.gz",
+      "original_sha256": "821ad5e96af8b690d00db9bf7a104806b427085714ac5e4ec3d6976b5657dcfe",
+      "archive_sha256": "7ac4b7a85a1402ec054f82eb7864e2c00de4030c777e4cbb1a68cb7c9be18ffb",
+      "original_bytes": 536870912,
+      "original_allocated_bytes": 334917632,
+      "archive_allocated_bytes": 127610880,
+      "full_decode_verified": true,
+      "source_commit": "703de9f257b6f67296c8ed6551d845d2754182af"
+    },
+    {
+      "case": "02",
+      "original": "payload.ext4",
+      "archive": "payload.ext4.gz",
+      "original_sha256": "41e39fc20c2a9e8906917efad445f5c6b517ac562a79e8600aa904ef6d0a4596",
+      "archive_sha256": "dcb45eecfea55857b9dd72419860ad8d1e3bb827093a12053d0696d4ed073cdb",
+      "original_bytes": 536870912,
+      "original_allocated_bytes": 312774656,
+      "archive_allocated_bytes": 119115776,
+      "full_decode_verified": true,
+      "source_commit": "2d0281971cca0285e5aabc4b91279830a04ab9b1"
+    }
+  ],
+  "allocated_bytes_reclaimed": 1220263936,
+  "earlier_attempts": [
+    {
+      "status": "refused-before-write",
+      "reason": "fuser invocation used unsupported -- option; corrected to inode-based -I"
+    },
+    {
+      "status": "failed-oom-kill",
+      "memory_limit_bytes": 268435456,
+      "original_preserved_and_rehashed": true,
+      "partial_archive_removed": true
+    }
+  ],
+  "successful_archive_memory_limit_bytes": 1073741824,
+  "restore_rule": "Restore decoded hash-verified exact bytes only after storage admission; original ended capsules must never resume. Retain required pristine backing and compact proof."
+}

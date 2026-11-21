@@ -11,34 +11,41 @@ import (
 )
 
 func (c *Client) AppPolicy(ctx context.Context, expected Identity) (protocol.AppPolicyStatus, error) {
+	status, _, err := c.AppPolicyWithHello(ctx, expected)
+	return status, err
+}
+
+// AppPolicyWithHello returns the exact authenticated Hello used for this read.
+// Unsupported capability errors still return that observation for diagnosis.
+func (c *Client) AppPolicyWithHello(ctx context.Context, expected Identity) (protocol.AppPolicyStatus, protocol.Hello, error) {
 	var out protocol.AppPolicyStatus
 	h, err := c.Hello(ctx)
 	if err != nil {
-		return out, err
+		return out, h, err
 	}
 	if err = expected.Check(h.RunnerID, h.Mode); err != nil {
-		return out, err
+		return out, h, err
 	}
 	if !slices.Contains(h.Features, protocol.AppPolicyFeature) {
-		return out, errors.New("runner lacks app-development-policy-v2; desk creation, commit and publication unavailable")
+		return out, h, &UnsupportedCapabilityError{Feature: protocol.AppPolicyFeature, Hello: h}
 	}
 	if err = c.do(ctx, http.MethodGet, protocol.AppPolicyPath, nil, &out, true); err != nil {
-		return out, err
+		return out, h, err
 	}
 	if err = expected.Check(out.RunnerID, out.Mode); err != nil {
-		return protocol.AppPolicyStatus{}, err
+		return protocol.AppPolicyStatus{}, h, err
 	}
 	if out.Version != 1 || out.ReadAt.IsZero() || out.Policy.Validate() != nil || out.Targets == nil || out.DeskOperations {
-		return protocol.AppPolicyStatus{}, errors.New("unsupported application policy response")
+		return protocol.AppPolicyStatus{}, h, errors.New("unsupported application policy response")
 	}
 	seen := map[string]bool{}
 	for _, t := range out.Targets {
 		if t.Target.Validate() != nil || t.Target.InstanceID == "" || t.Target.Desk != "" || seen[t.Target.InstanceID] || t.Ready && t.Target.ProjectID != "" && t.Target.Generation == 0 {
-			return protocol.AppPolicyStatus{}, errors.New("invalid application policy target")
+			return protocol.AppPolicyStatus{}, h, errors.New("invalid application policy target")
 		}
 		seen[t.Target.InstanceID] = true
 	}
-	return out, nil
+	return out, h, nil
 }
 
 // SetAppPolicy is reserved for the user-facing Setup authoring helper. The

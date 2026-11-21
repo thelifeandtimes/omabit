@@ -7,12 +7,12 @@ func TestDevelopmentPathsNeverMutateInstalledProfile(t *testing.T) {
 	t.Cleanup(func() { developmentRoot = old })
 	developmentRoot = ""
 	p := Profile{Version: 1, Name: "alice", UID: 1000, GID: 1000, Home: "/home/alice", Piers: DefaultPiers}
-	if selectedProfilePath() != Path || RuntimeDirectory() != "" || *runtimeProfile(&p) != p {
+	if selectedProfilePath() != Path || RuntimeDirectory() != "" || DevelopmentRoot() != "" || *runtimeProfile(&p) != p {
 		t.Fatal("ordinary defaults changed")
 	}
 	developmentRoot = "/srv/dev/urbit"
 	got := runtimeProfile(&p)
-	if got.Home != "/srv/dev/urbit/state" || p.Home != "/home/alice" || selectedProfilePath() != "/srv/dev/urbit/owner.json" {
+	if got.Home != "/srv/dev/urbit/state" || p.Home != "/home/alice" || selectedProfilePath() != "/srv/dev/urbit/owner.json" || DevelopmentRoot() != "/srv/dev/urbit" {
 		t.Fatal("development state is not separate")
 	}
 	developmentRoot = ""

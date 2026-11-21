@@ -12,15 +12,20 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--persistent-agent',action='store_true',help='Check interactive sessions past both helper deadlines and UI suspension')
+    parser.add_argument('--legacy-skills',action='store_true',help='Exercise a verified historical two-skill bundle with the current UI')
     args=parser.parse_args();out=args.output.absolute()
     if out.parent!=Path('/tmp') or not re.fullmatch('omabit-agent-ui-[a-zA-Z0-9-]+',out.name) or out.exists():
         parser.error('Use a fresh /tmp/omabit-agent-ui-NAME fixture')
     subprocess.run(['/usr/bin/python3','-B',str(ROOT/'scripts/prepare-app-development-preview.py'),'--output',str(out)],check=True)
     for name in ('agent-help.py','manifest.json'):
         shutil.copy2(ROOT/'plugins/omabit'/name,out/'Plugin'/name)
-    shutil.copytree(ROOT/'skills',out/'skills')
     spec=importlib.util.spec_from_file_location('packager',ROOT/'scripts/package-release.py')
     packager=importlib.util.module_from_spec(spec);spec.loader.exec_module(packager)
+    names=('omabit-operator','omabit-plugin-developer') if args.legacy_skills else packager.skill_names(ROOT)
+    for name in names:
+        shutil.copytree(ROOT/'skills'/name,out/'skills'/name)
+    if not args.legacy_skills:
+        shutil.copyfile(ROOT/'SKILLSET.json',out/'SKILLSET.json')
     metadata={'version':json.loads((out/'Plugin/manifest.json').read_text())['version'],'source_commit':'a'*40,'development':{'label':'agent-ui-fixture'}}
     (out/'BUILD.json').write_text(json.dumps(metadata));packager.write_skill_manifest(out,metadata)
     (out/'bin').mkdir()
@@ -54,6 +59,8 @@ else:raise SystemExit(78)''')
 ''',1);service.write_text(source)
     shell=out/'shell.qml';shell.write_text(shell.read_text().replace('ShellRoot {','ShellRoot {\n AgentChecks { window:window }',1).replace('setupPane.mode="development"','setupPane.mode="agent"').replace('if(Quickshell.env("OMABIT_PREVIEW_SMOKE")==="1")Qt.quit()',''))
     shutil.copy2(ROOT/'scripts/test-agent-help-ui.qml',out/'AgentChecks.qml')
+    if args.legacy_skills:
+        checks=out/'AgentChecks.qml';checks.write_text(checks.read_text().replace('property int expectedSkillCount:3','property int expectedSkillCount:2'))
     if args.persistent_agent:
         shell.write_text(shell.read_text().replace('import QtQuick','import QtQuick\nimport QtQuick.Window',1).replace('AgentChecks { window:window }','Window {visible:true;width:1;height:1}\n AgentChecks { window:window;persistentAgent:true }').replace('onClosing:Qt.quit()','').replace('onVisibleChanged:if(!visible)Qt.quit()',''))
         launcher.write_text(launcher.read_text().replace('timeout=25 if smoke else None','timeout=40 if smoke else None'))
@@ -65,7 +72,7 @@ else:raise SystemExit(78)''')
     assert len(prompts)==2,prompts
     assert 'remote-setup-status --id '+'1'*32 in prompts[1][2],prompts
     assert all(p[:2]==['agent','prompt'] and len(p)==3 and '/preview/skills/omabit-operator/SKILL.md' in p[2] for p in prompts)
-    for name in ('omabit-operator','omabit-plugin-developer'):
+    for name in names:
         assert (out/'data/config/opencode/skills'/name/'SKILL.md').read_bytes()==(ROOT/'skills'/name/'SKILL.md').read_bytes()
     if args.persistent_agent:
         sessions=[json.loads(path.read_text()) for path in sorted((out/'data/state').glob('agent-session-*.json'))]

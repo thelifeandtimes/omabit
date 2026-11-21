@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "one fresh offline fake; installed ordinary recording pilot only; not comprehensive recording or upgrade qualification",
+  "source_commit": "2d0281971cca0285e5aabc4b91279830a04ab9b1",
+  "harness_commit": "dff389c9cd7ebb7d919fab983117031b369f93c2",
+  "artifacts": {
+    "managed.test": "d5a62b057238fe64aa83445a7e4f065b9e9d35fcf50ea850cf900e931c05b74b",
+    "omabit": "5ed8fe62e818056891033a2f598b42a1593677e85d171abd9e74d020ff2ab698",
+    "urbit-collector": "7e086318c104d3c0f1234811ac1568658a4c851e1fb779a2dd7bdbaf77ca5f57",
+    "urbit-runner": "98bfa21634dce830076f49b0b05a2422944fe55476734bd8e961b68c1ee60e6c"
+  },
+  "root_sha256": "f45984cdb0362ba31f63007b278b2807c8033d4244aebf82f9fc6e0080286a74",
+  "payload_sha256": "41e39fc20c2a9e8906917efad445f5c6b517ac562a79e8600aa904ef6d0a4596",
+  "private_result_sha256": "e36be9cb59f5f2e00deb6a0fe39f689bdef9e7d0b2d353bd912df9f7255e9cd0",
+  "source_runtime_inputs_and_binaries_unchanged": true,
+  "qualification": {
+    "installed_native_prestart_capture": true,
+    "exact_notify_worker_outside_container": true,
+    "manager_stop_and_reopen_preserve_processes": true,
+    "single_worker_per_launch": true,
+    "terminal_drain_before_container_removal": true,
+    "same_pier_new_session": true,
+    "original_session_unchanged": true,
+    "final_clean_ship_stop": true
+  },
+  "declared_scratch_bytes": 2147483648,
+  "charged_bytes_after": 50888048640,
+  "aggregate_cap_bytes": 51539607552,
+  "guest_trim": {
+    "runs": 18,
+    "failures": 0
+  },
+  "sessions": [
+    {
+      "frames": 218,
+      "stdout_bytes": 2811,
+      "stderr_bytes": 337,
+      "stdout_sha256": "a2b6768506ea659d4a0376e8be2546b5774d5896b421710397982d96d6312934",
+      "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+      "exit_frames": 1,
+      "gap_frames": 0,
+      "tail": "snapshot-eof",
+      "saved_result": "capture-finished",
+      "closed_durably": true
+    },
+    {
+      "frames": 32,
+      "stdout_bytes": 1030,
+      "stderr_bytes": 160,
+      "stdout_sha256": "587339d0e17946db84f962ef88fee8af2d03057c569b8deaaee979c81252166b",
+      "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+      "exit_frames": 1,
+      "gap_frames": 0,
+      "tail": "snapshot-eof",
+      "saved_result": "capture-finished",
+      "closed_durably": true
+    }
+  ],
+  "ended_units_verified": true,
+  "limitations": [
+    "ordinary fake pilot only",
+    "no burst/pressure/host-reboot or active-worker binary upgrade qualification",
+    "no existing-running adoption, project or maintenance capture",
+    "no recording public API/CLI/UI/export qualification",
+    "no production or preserved manual-DEV changes"
+  ]
+}

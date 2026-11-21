@@ -1,0 +1,67 @@
+{
+  "status": "completed",
+  "memory": "M777",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "compiler_cache": {
+    "record": "/tmp/omabit-050-cache-retirement02.json",
+    "sha256": "3d9f2ac069190425c7103a800950008e72ea14116be4862cca39ae02ba2c320e",
+    "files": 5955,
+    "allocated_bytes_before": 764129280,
+    "named_artifacts_unchanged": true,
+    "after_charged_bytes": 48233906176,
+    "scope": "Regenerable standard Go compiler cache only, previously authorized under the temporary storage cap. No module downloads, source, named executable, original writer/reader or transition fixture is retired. Build/test/runtime lock held."
+  },
+  "temporary_cow_copies": {
+    "record": "/tmp/omabit-050-retired-cow-inputs02.json",
+    "sha256": "2122d5cecff86bff37e3ac581e22269b779f18f1a1b6e5019c6277aad93dc3bd",
+    "files": [
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-app-vm-05/root.qcow2",
+        "path": "/tmp/omabit-issues-app-vm-05/root.qcow2",
+        "sha256": "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9",
+        "bytes": 1782513664,
+        "allocated_bytes": 1478426624
+      },
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-app-vm-05/host.json",
+        "path": "/tmp/omabit-issues-app-vm-05/host.json",
+        "sha256": "dae5063b70fd60cccd72f1c44e5623f0bf223515bac526e7999299e60cfae6d0",
+        "bytes": 293159,
+        "allocated_bytes": 294912
+      },
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-app-vm-05/result.json",
+        "path": "/tmp/omabit-issues-app-vm-05/result.json",
+        "sha256": "e9d3992940a12992b69645b37e6c2437bd300193188f14375653884a39e6cf25",
+        "bytes": 8690,
+        "allocated_bytes": 12288
+      },
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-runtime-cow-05/root.qcow2",
+        "path": "/tmp/omabit-issues-runtime-cow-05/root.qcow2",
+        "sha256": "0c28d526285e5b4e055e209e9021e5c683505ddabb5f0ce661678052949d141c",
+        "bytes": 333316096,
+        "allocated_bytes": 287178752
+      },
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-runtime-cow-05/host.json",
+        "path": "/tmp/omabit-issues-runtime-cow-05/host.json",
+        "sha256": "2b8dc42e36a2da857766d6f537bf0517f6a66392ab077cda2ef840986b3ccb65",
+        "bytes": 439992,
+        "allocated_bytes": 442368
+      },
+      {
+        "source": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-runtime-cow-05/result.json",
+        "path": "/tmp/omabit-issues-runtime-cow-05/result.json",
+        "sha256": "c9963e6c649345c89198da2c2293729777e2c7f2aec8e31bccd896819dd437a2",
+        "bytes": 10224,
+        "allocated_bytes": 12288
+      }
+    ],
+    "reclaimed_bytes": 1766367232,
+    "after_charged_bytes": 46487318528,
+    "reason": "Final Grubbery and Stop users ended and independently verified. Delete temporary physical duplicates only; all exact durable original fixtures and historical evidence retained."
+  },
+  "originals_preserved": true,
+  "limits": "No original transition fixture, module source/download, named product/helper executable, manual DEV state or production data retired."
+}

@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "passed": false,
+  "scope": "Fresh offline Linux/AMD64 product transport attempts; development evidence only. No production, manual DEV, stable or complete app-workflow qualification.",
+  "cases": [
+    {
+      "case": "product03",
+      "source_commit": "60335dda9eee4b9511b605c92b5f6968dc0d68b3",
+      "result": "failed",
+      "failure": "Desk selection raced the first optional resource/container observation after successful Start.",
+      "native_desk_or_app_effects": false,
+      "original_running_snapshots": "Unavailable resource identity immediately after Start; actual later original database has fresh full container identity.",
+      "retention": "Original database/commands/result/serial preserved through a no-network read-only utility; explained full root/copied payload retired with manifest. No full old pier archive retained."
+    },
+    {
+      "case": "product04",
+      "source_commit": "55331af519b8038b673d920ad85697ebce76d4a9",
+      "candidate_artifacts": {
+        "omabit": {
+          "sha256": "3b82ccb5e961c6227e2bb3ccb36f0c03fe73db1a61dc0243742494909a69b803",
+          "bytes": 17076487
+        },
+        "urbit-collector": {
+          "sha256": "e379c927894a0b5f848776d85ba18f5c8878dcf6a0be2693fe5c0f9c700cdefc",
+          "bytes": 9089287
+        },
+        "urbit-runner": {
+          "sha256": "4af43d49a65d4b567071e5ed90d1f57b1f3a596d00e299358ef314f31cf2304b",
+          "bytes": 20447495
+        },
+        "managed.test": {
+          "sha256": "e42da01bac5b1d2cdfd1374b5c963156a608be8a87f7077dd2986c7b5177d2ad",
+          "bytes": 29053191
+        }
+      },
+      "result": "failed",
+      "observed_framework_phases": [
+        "create-desk",
+        "adopt-source",
+        "commit"
+      ],
+      "activation_states": [
+        "planned",
+        "dispatched",
+        "uncertain"
+      ],
+      "activation_dispatches": 1,
+      "failure": "A subsequent read-only reconciliation admission waited behind a bounded observer and exceeded the ordinary client timeout.",
+      "app_source_phases_started": false,
+      "retention": "Original SQLite, complete phase plans, guest commands/result and serial retained; read-only utility verifies unchanged source/base; only explained full root/copied payload retired. No full old pier archive retained.",
+      "unqualified": [
+        "activation outcome",
+        "product app source/state/restart",
+        "native CLI/MCP workflow",
+        "installed app upgrade",
+        "preserved DEV"
+      ]
+    }
+  ],
+  "source_changes": {
+    "product_readiness": "Bounded snapshot-only wait for exact observed running container before desk planning and after replacement.",
+    "reconciliation_admission": "Saved busy/queued evidence; no waiting behind long native admission and no duplicate observer backlog; original native effect is never redispatched.",
+    "persistent_schema_change": false
+  },
+  "validation": {
+    "all_managed_desk_source_race_tests": "passed",
+    "held_and_pending_admission_single_observer_tests": "passed",
+    "original_dispatch_and_fence_tests": "passed",
+    "actual_cli_official_sdk_stdio_admission_parity": "passed",
+    "typed_client_collection_catalog_checks": "passed",
+    "focused_vet": "passed"
+  },
+  "next_gate": "Fresh matching artifacts and a new disposable product VM; prior failed outcomes remain failed."
+}

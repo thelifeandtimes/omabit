@@ -68,6 +68,24 @@ network and the owned child's executable hash/start time before Lens requests.
 go test -c -o /tmp/omabit-desk-workflow-native.test ./internal/managed
 ```
 
+The explicit `--workflow-case gall-state-v2` selects the named minimal Gall gate
+instead of the historical assembled desk workflow. It requires a fresh single
+fake, explicit workflow binary and no receivers/resume/release-source flags.
+It uses the normal4GiB/no-swap/one-CPU scope,2GiB scratch and an850-second outer
+deadline covering boot, bounded workflow and graceful shutdown. The48GiB option
+is only for the user-authorized issues16–21 goal; default admission remains40GiB.
+This case also conservatively charges the whole shared compiler/module caches.
+
+The test checks the exact eight-file sample with cold activation before its
+separate native compilation probes and authenticated Eyre read/poke/watch. A fixed supervisor control
+accepts one owned PID/start/executable/pier-bound restart request, writes durable
+transition receipts, waits for clean exit and resumes that same fake without
+creation flags. It accepts no path/command/ship selection. State/session and fresh
+subscription reconciliation are checked after restart. The lifecycle backend in
+the Go manager remains synthetic; this is not installed Docker/upgrade evidence.
+Pruned capsules contain tombstones and refuse reuse. See the
+[current native report](../../../docs/diagnostics/2026-11-17-gall-state-v2-native.md).
+
 Probe21 passes the real kernel + API/store + collector/Unix transport composition.
 It covers default gates, creation/discovery, source alerts, frozen staging, verified
 commits preserving scaffold, add/update/delete, lost acknowledgement, read-only
@@ -128,3 +146,24 @@ and exact replay after stage discard. Source/Docket metadata and every asset's
 bytes/MIME match; the full source/release workflow and clean shutdown also pass.
 The managed lifecycle/private-network transport remains a fixture. See the native
 frontend API diagnostic; do not treat this as installed Docker/SSH qualification.
+
+## Pinned Grubbery bootstrap gate
+
+`--workflow-case grubbery-bootstrap-v1` requires an explicit current managed test
+binary and `--framework-source /absolute/pinned-checkout/desk`. It refuses resume,
+receivers, frontend diagnostics and ordinary release-source inputs. The complete
+source must match the compiled1443-file Grubbery definition before and after the
+bounded copy; the owned kernel rechecks it before staging. Only that desk subtree
+is copied, never a repository or dependency cache.
+
+This case has a13-minute test deadline and1100-second outer bound, the same4GiB,
+one-core/no-swap private namespace, and1.5GiB declared additional storage. Shared Go
+and module caches are charged under the explicit40/48GiB admission. It exercises
+ordinary API/store staging, commit and cold activation without a Unix mount.
+An uncertain activation permits only bounded read-only reconciliation of the
+original receipt. Kernel diagnostics are read with a separate private owner session
+and logged out. The supervisor stops only the newly created kernel.
+
+Passing this bootstrap gate does not qualify app deployment, permits, publication,
+discovery, served assets, saved-state restart, managed Docker lifecycle or an
+installed environment. Unrelated build failures must be reported separately.

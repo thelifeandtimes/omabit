@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
 func OpenProjectDesk(ctx context.Context, s ProjectCurrentReadinessSelection, instance, containerID string) (*DeskRuntime, error) {
@@ -98,5 +100,25 @@ func deskFromProject(ctx context.Context, e *projectCurrentReadinessEngine, befo
 	if err = s.check(ctx); err != nil {
 		return nil, err
 	}
+	expected := before
+	expected.Observation.ObservedAt = time.Time{}
+	// Project launch contracts independently pin this verified image/runtime;
+	// their qualifier has no ordinary ManagedState.VereVersion field to reuse.
+	s.process = deskProcessReader(s, q.engineEvidence.ID, candidate.VereVersion, e.source.anchor.readBootID, func(ctx context.Context) (container, any, error) {
+		current, err := projectFleetInspect(ctx, e)
+		current.Observation.ObservedAt = time.Time{}
+		if err != nil || !reflect.DeepEqual(current, expected) {
+			return container{}, nil, errDeskProcess
+		}
+		currentPorts, err := readHTTPPortsAt(path)
+		if err != nil || currentPorts != ports {
+			return container{}, nil, errHTTPPorts
+		}
+		return current.Containers[containerID], struct {
+			Snapshot projectMemberSnapshot
+			Contract string
+			Ports    string
+		}{current, selected.contract.digest, currentPorts}, nil
+	})
 	return s, nil
 }

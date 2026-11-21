@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "passed": false,
+  "source_commit": "d9b536ec0dad4f25ca970143234b42855f77b206",
+  "scope": "second fresh offline Linux/AMD64 VM; published0.4.0 tools with pinned Recommended Apps pill",
+  "observed": {
+    "fresh_fake_starts_succeeded": 2,
+    "fresh_fake_stops_succeeded": 1,
+    "guest_virtual_cpus": 3,
+    "host_cpu_quota_percent": 100
+  },
+  "failed_stage": "harness baseline process inspection before candidate installation",
+  "cause": "harness treated the stopped instance historical container ID as a live object; supported Stop had removed it",
+  "saved_diagnostic_category": "docker: no such object",
+  "candidate_installed": false,
+  "upgrade_or_stop_recovery_qualified": false,
+  "correction": "inspect running processes only; independently compare all saved stopped/running intent, pier/configuration and history",
+  "original_store": {
+    "schema": 59,
+    "counts": {
+      "instances": 2,
+      "operations": 5
+    },
+    "original_sha256": "66f3df66051a88539ac989eafb8c23aa938fa9143740f0661c674458162c61db",
+    "read_only_integrity_check": true,
+    "original_bytes_unchanged": true
+  },
+  "read_only_inspection": {
+    "passed": true,
+    "original_overlay_sha256": "28b059c4dfc57fe716002e7f73e113522445e76ff6e622cd7a22b17faedf3a4e",
+    "original_overlay_unchanged": true,
+    "journal_replayed": false,
+    "services_started": false,
+    "files": {
+      "commands.jsonl": {
+        "bytes": 2442093,
+        "sha256": "2e8d42274240ef45fa27483e739e5eaad7cc9919f3f529a9422a4920750d40a8"
+      },
+      "result.json": {
+        "bytes": 8451,
+        "sha256": "6ff73d9c76f27e112a89dd4808159492261e7aebbe2480cf5bbef6285e27a520"
+      },
+      "runner.sqlite": {
+        "bytes": 524288,
+        "sha256": "66f3df66051a88539ac989eafb8c23aa938fa9143740f0661c674458162c61db"
+      }
+    }
+  },
+  "retention": {
+    "full_obsolete_disk_and_inert_staging_compacted": true,
+    "original_schema59_store_bytes_preserved": true,
+    "complete_saved_command_and_result_files_preserved": true,
+    "immutable_inputs_preserved": true,
+    "private_removal_manifest_recorded": true
+  },
+  "production_or_existing_ship_access": false
+}

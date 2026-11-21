@@ -1,0 +1,105 @@
+{
+  "format": 1,
+  "status": "passed-scoped-native",
+  "passed": true,
+  "helper_passed": true,
+  "helper_exit": 0,
+  "qemu_exit": 0,
+  "source_commit": "f37b32d4f60d5b2e915ad86186caa12c5b853bc2",
+  "harness_commit": "179fdc689ac59328a526b60e5fc8c7abdf150cb0",
+  "artifact_sha256": {
+    "omabit": "8b12850184e232241fb800e91520df6f5a5660f5878b2c8aa73f0f47fc5f98b2",
+    "urbit-collector": "705646950713a865d2d8de77faa9494450468c91edd976f01a417ee0583c7726",
+    "urbit-runner": "ea0508ee09d9d31586c25bb91157f9ff0e8d63c01efb7e5c8d030dfd437995cb",
+    "managed.test": "fb8db26a5921d19a6b2882a87f20d1235c41be1645961b855823ed5db9c4c70a"
+  },
+  "boot": {
+    "source_commit": "e0af21ae13dc781b4e299b1afd48476fb5d41a54",
+    "sha256": "ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819",
+    "source_sha256": "cbd497447962bf8ca949288bc602c87d5f4eadf6e4812517a2f90878eccccfb3"
+  },
+  "native_measurement": {
+    "actual_cli_and_stdio_measurements": true,
+    "independent_instances": {
+      "recording-zod": {
+        "files": 18,
+        "directories": 4,
+        "logical_bytes": 29495,
+        "allocated_bytes": 86016
+      }
+    },
+    "independent_shared": {
+      "files": 1,
+      "directories": 2,
+      "logical_bytes": 0,
+      "allocated_bytes": 8192
+    },
+    "independent_totals": {
+      "files": 19,
+      "directories": 6,
+      "logical_bytes": 29495,
+      "allocated_bytes": 94208
+    },
+    "original_recording_bytes_unchanged": true,
+    "passed": true,
+    "policy_head_unchanged": true,
+    "scope": "closed native captures after copied fixture reboot only; no running capture, pressure/retirement/export, installed upgrade, DEV or production qualification"
+  },
+  "proof_sha256": "1d070f4f406a4b2ee27d5d3d1efe74d24bb919d48e922b3d2c3ce288fa3e9bbd",
+  "independent_read_only_analysis": {
+    "passed": true,
+    "original_rows_digest_matches_guest": true,
+    "quick_check": "both schema65 stores ok on separate copies",
+    "observation_refresh": {
+      "fields": [
+        "public.observed_at",
+        "runtime_revision"
+      ],
+      "before_revision": 75,
+      "after_revision": 76,
+      "fresh_observation_only": true
+    },
+    "all_other_rows_and_values_preserved": true,
+    "raw_exports_unchanged": true,
+    "exported_files": 8
+  },
+  "original_backings_unchanged": true,
+  "retained_pins": {
+    "root.qcow2": {
+      "sha256": "8aa479bc84566efbbec867bf308e2a9dce6221e79b0cacd31f88b0e0e88444f9",
+      "bytes": 16121856,
+      "allocated_bytes": 16060416
+    },
+    "payload.ext4": {
+      "sha256": "7eb932614784ba119a61569ebecf3c8d6b29152f21acf0f7ffc342c701a65aab",
+      "bytes": 67108864,
+      "allocated_bytes": 30011392
+    },
+    "result.json": {
+      "sha256": "4f2a7cf2ce5a57eaa66404ff4a785d7e032fbda3fc267178a2285ba081494858",
+      "bytes": 10525,
+      "allocated_bytes": 12288
+    },
+    "serial.log": {
+      "sha256": "588eec1eb76fbf59050ae1c3b349c15a4649f227f3b24e6ed8ff41ca78233747",
+      "bytes": 22808,
+      "allocated_bytes": 24576
+    },
+    "host.json": {
+      "sha256": "37357449108b04c441491d0c25497e06c828cf93c71ab0c1fc6efe7d38a4564d",
+      "bytes": 458675,
+      "allocated_bytes": 458752
+    }
+  },
+  "earlier_failure": "2026-11-19-recording-allocation-native-fixture-failure.json remains failed and retained",
+  "scope": "closed native captures after copied fixture reboot only; no running capture, pressure/retirement/export, installed upgrade, DEV or production qualification",
+  "remaining": [
+    "active capture growth",
+    "pressure and recovery",
+    "retirement and oldest coverage",
+    "complete export packaging",
+    "other runtime factories",
+    "stable-to-candidate installed upgrade",
+    "preserved DEV qualification"
+  ]
+}

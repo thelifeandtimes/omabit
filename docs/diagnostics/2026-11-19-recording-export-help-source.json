@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "status": "source-updated-matching-generation-pending",
+  "scope": "static CLI recording-export help only",
+  "source_sha256": "6cf44aee63106f1d80f96963a29075b84dbfc716b54ebd949155d3f98b884a61",
+  "described_options": [
+    "exactly one --original or --redacted",
+    "--timing-index only with --original",
+    "private consent and existing0700 parent",
+    "0600 final no-overwrite and retained partial failure",
+    "finite derived redaction and review before sharing",
+    "shared payload-free timing query with source/context association"
+  ],
+  "checked": [
+    "gofmt produces no diff",
+    "git diff --check passes"
+  ],
+  "not_claimed": [
+    "new full CLI build or runtime test",
+    "new matching generated reference",
+    "stable/installed/DEV qualification"
+  ],
+  "prior_native_semantics_evidence": "2026-11-19-recording-derived-export-native.json",
+  "storage_approval_pending": "obsolete failed recording VM01 archive/input disposal; no removal performed"
+}

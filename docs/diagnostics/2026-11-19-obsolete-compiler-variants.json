@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "status": "verified-compiler-only-cleanup",
+  "passed": true,
+  "product_code_changed": false,
+  "scope": "ended source12 scratch and older Omabit compiler archives only; not a product, native or installed qualification",
+  "dependency_inventory": {
+    "whole_passed": false,
+    "reason": "bounded source storage/deadline threshold",
+    "reserve_bytes": 67108864,
+    "sampled_fast_peak_bytes": 51425955840,
+    "retained_post_inventory_measurement_bytes": 51426308096,
+    "inventory_can_compile_test_exports": true,
+    "no_completed_dependency_inventory_claim": true,
+    "interruption_report_retained": true
+  },
+  "removed_scratch_files": 21,
+  "scratch_freed_bytes": 49586176,
+  "removed_older_omabit_archives": 63,
+  "archive_freed_bytes": 206110720,
+  "archive_filter": "complete hash/inode/owner/Go1.27.3 archive checks; Omabit package-path evidence in __.PKGDEF and mtime before source10; no standard-library/dependency archives or fresh variants selected",
+  "preserved_named_pins_exact": 221,
+  "final_full_charge_bytes": 51170893824,
+  "budget_bytes": 51539607552,
+  "no_unique_vm_sql_recording_receipt_log_source_or_frozen_artifact_retirement": true,
+  "production_and_installed_manual_review_state_changed": false
+}

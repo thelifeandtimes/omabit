@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "status": "completed-user-authorized",
+  "scope": "only four finished output-coverage test COW image/input files",
+  "allocated_bytes_reclaimable": 95027200,
+  "retained_pins_verified": 1481,
+  "notes": [
+    {
+      "case": "recording-usage-cow-06",
+      "lesson": "whole status framing failed, independent full output/export assertions and preservation passed; full report exposed unbounded metadata",
+      "compact_evidence_files": 52,
+      "exact_sqlite_files": 2,
+      "source_image_sha256": "5d2c2ca8d9df98fce11e871d17d19cf462369d0ae47fdd66d0cee5b92bef1823",
+      "replacement": "complete compact output06/07 SQL/frame/query/archive proof and immutable original recording07; original app62/recording64/current app65 transition fixtures preserved"
+    },
+    {
+      "case": "recording-usage-cow-07",
+      "lesson": "corrected bounded wire status and whole native output/export assertions passed; complete independent SQL/frame/archive evidence retained; no required state transition beyond immutable recording07",
+      "compact_evidence_files": 52,
+      "exact_sqlite_files": 2,
+      "source_image_sha256": "2d9fdbd8cc16862cd148e18ad7a2d83f1ae3ba7d67b26710496e98c817db299a",
+      "replacement": "complete compact output06/07 SQL/frame/query/archive proof and immutable original recording07; original app62/recording64/current app65 transition fixtures preserved"
+    }
+  ],
+  "preserved_transitions": [
+    "original pending app05 schema62",
+    "actual successful original recording02 schema64",
+    "successful recording07 schema65",
+    "successful Grubbery COW05 schema65; original62 SQL/event prefix preserved"
+  ],
+  "authorization": "user permits removal of unneeded VM archives after lessons and needed state/version transition inputs are retained",
+  "files": [
+    {
+      "case": "omabit-issues-recording-usage-cow-06",
+      "name": "root.qcow2",
+      "sha256": "5d2c2ca8d9df98fce11e871d17d19cf462369d0ae47fdd66d0cee5b92bef1823",
+      "allocated_bytes": 16912384
+    },
+    {
+      "case": "omabit-issues-recording-usage-cow-06",
+      "name": "payload.ext4",
+      "sha256": "a359029f4a019c76d19adffa545a52ba363ce2771f0fb6fd6021fb0daab29d27",
+      "allocated_bytes": 30498816
+    },
+    {
+      "case": "omabit-issues-recording-usage-cow-07",
+      "name": "root.qcow2",
+      "sha256": "2d9fdbd8cc16862cd148e18ad7a2d83f1ae3ba7d67b26710496e98c817db299a",
+      "allocated_bytes": 17108992
+    },
+    {
+      "case": "omabit-issues-recording-usage-cow-07",
+      "name": "payload.ext4",
+      "sha256": "665a47924d5ec99174e1386c6b22220deead34bd8e6f01158963b8c7b430b30c",
+      "allocated_bytes": 30507008
+    }
+  ],
+  "files_removed": 4,
+  "allocated_bytes_reclaimed": 95027200,
+  "retained_pins_verified_before_after": 1481,
+  "full_charge_after": 50090250240
+}

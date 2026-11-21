@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "passed": true,
+  "original_source": "3e7808791c6af9357eb0bc808620b1ec1daca349",
+  "candidate_source": "217275f05af5b00719180c10ce551a7357f555f5",
+  "original_writer_sha256": "0ef2a95dee7cda61cdc5e93f9cdfd83c9a01fa74321f18646b04c5751ee7a30c",
+  "candidate_sha256": "69d9d091a63284d1e5eb15116407c5be1a6cf1dfdf18af39de3aff269a954765",
+  "declared_helper_sha256": "de5786bf670d9a91d189b9fdd57e1ab8e32af0316378313263eb49588c90fd2e",
+  "original_source_manifest_sha256": "32121333f1f695e7276fd3ed5110f5e31f10ef4179576619c33ca15da2e43f77",
+  "original_writer_files": {
+    "runner.sqlite": "2621136b48af3378ed00225595cdbfe385343340e6b6597d3fce6e2f73b7eeaa"
+  },
+  "successor_files": {
+    "runner.sqlite": "a8283a67f3b526dbbc644e2a02fa54d885b37c071554b192f5b4d7e3c83b5e67"
+  },
+  "original_rows_ddl_access_and_uncertainty_preserved": true,
+  "repeated_migration_and_reopen": true,
+  "metadata_only_audit_preserved_original_rows": true,
+  "actual_old_reader_refused_successor_unchanged": true,
+  "scope": "source-only actual62/candidate63 SQLite migration and reader refusal; no native process rebinding, app write, installed upgrade, DEV or stable qualification",
+  "focused_source_checks": {
+    "race": "actual62 fixture migration/corruption, committed-audit process exit/no reply, synthetic60/61/62 preservation and migration rollback passed (12.381s); earlier focused audit replay/concurrency/corruption/64 bound tests passed",
+    "vet": "go vet ./internal/managed passed",
+    "native_effects": "none; runtime observation/binding/API still absent"
+  }
+}

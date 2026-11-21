@@ -11,11 +11,14 @@ Usage: urbit-runner COMMAND
        urbit-runner --development-root /srv/dev/urbit COMMAND
 
 The separate development root requires its own root-owned owner.json. Only
-serve-development, resource-policy and state-schema are allowed in that mode.
+serve-development, resource-policy, state-schema and the internal recording-worker
+are allowed in that mode.
 It never uses the installed host's state, Docker socket or SSH grants.
 
 Commands:
   state-schema               Print this binary's persistent state schema version.
+  recording-worker --job ID --sha256 DIGEST
+                             Internal notify-service entry for one existing private job.
   install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes
                               Install the owner's rootless engine, access and services.
   authorize-desktop --public-key FILE --expected-runner-id ID --ssh-connection TUPLE
@@ -482,6 +485,17 @@ Uncertain or incomplete cleanup requires manual review, not an automatic retry.
 Use --format text for readable progress and results.
 ```
 
+## recording-worker
+
+```text
+Usage: urbit-runner recording-worker --job ID --sha256 DIGEST
+
+Internal entry for the exact main process of a private Type=notify service.
+Reads one existing immutable job below the installed owner's selected state
+root. No roots, commands or native inputs are accepted. Refuses ordinary shell
+invocation. Normal managed launch does not submit recording jobs yet.
+```
+
 ## remote-bootstrap
 
 ```text
@@ -566,7 +580,7 @@ Prints pinned candidate and checkpoint scope without inspecting the host or cont
 ## serve-development
 
 ```text
-Usage: urbit-runner serve-development --acknowledge-development [--resume-running]
+Usage: urbit-runner serve-development --acknowledge-development [--resume-running] [--record-runtime]
 
 Serve the installed pier-owner development runner with fake/comet creation, owned-key
 bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generate
@@ -581,6 +595,13 @@ With --resume-running, startup may replace terminal runtime containers for
 initialized ships whose persisted desired state is running. Each ship gets at most
 one journaled attempt per host boot. Nonzero exits require a recorded healthy prior
 boot; intentionally stopped, interrupted and independently uncertain ships are skipped.
+With --record-runtime, new ordinary launches use the private recording pilot:
+defaults of sixteen 64 MiB sessions and a 2 GiB free-space floor. Audited recording
+controls configure new-launch limits and incident pins; existing workers retain
+their immutable limits. Capacity charges retained jobs conservatively. There is
+no automatic pruning; age-based retirement is not implemented.
+Recording workers outlive management. This pilot does not adopt running containers
+or record project and maintenance runtimes. Native and upgrade qualification is pending.
 
 Warning: known ship-crash bug
 Primarily for development. Leave disabled for routine use: it is unnecessary and adds risk.

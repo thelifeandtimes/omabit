@@ -4,7 +4,7 @@
 No arguments performs no work. Explicit paths and --run are required. The runner
 never opens an existing guest overlay or any host Docker/runner/socket/keyring.
 """
-import argparse,base64,errno,hashlib,json,os,re,shutil,subprocess,time,sys
+import argparse,base64,errno,fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,time,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 GIB=1024**3
@@ -28,10 +28,22 @@ def cpio(f,name,data,mode,ino):
  name=name.encode()+b'\0';fields=[ino,mode,0,0,1,0,len(data),0,0,0,0,len(name),0]
  head=b'070701'+b''.join(('%08x'%v).encode() for v in fields)
  f.write(head+name+b'\0'*((-(len(head)+len(name)))%4));f.write(data+b'\0'*((-len(data))%4))
+def full_charge(additional,cap):
+ # Import lazily: issues-recovery shares only this module's inert file helpers.
+ spec=importlib.util.spec_from_file_location('release_upgrade_budget',ROOT/'scripts/qualification/issues-recovery/run.py')
+ budget_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(budget_module)
+ return budget_module.charge(additional,cap)
+def verify_boot(path):
+ if path.is_symlink() or not path.is_file() or path.resolve()!=path.absolute() or digest(path)!='63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7':raise RuntimeError('exact separately frozen PID1 required')
+ if digest(ROOT/'scripts/qualification/release-upgrade/init/main.go')!='1327c9480aab4a0d6287ec6a2cf86609e6d8182045e59abc811ffaebe2baf643':raise RuntimeError('frozen PID1 source changed')
+ info=subprocess.check_output(['go','version','-m',path],text=True)
+ if '\tvcs.revision=d2bb3ba6c152396c9938c44a28cf90a0c902de72' not in info or '\tvcs.modified=false' not in info:raise RuntimeError('frozen PID1 provenance differs')
+ return {'sha256':digest(path),'source_sha256':digest(ROOT/'scripts/qualification/release-upgrade/init/main.go'),'build_info':info}
 def main():
  p=argparse.ArgumentParser(description=__doc__)
- for n in ('portable','previous','candidate','rootless','output'):p.add_argument('--'+n,type=Path)
+ for n in ('portable','previous','candidate','rootless','output','init'):p.add_argument('--'+n,type=Path)
  p.add_argument('--namespace-tests',type=Path)
+ p.add_argument('--app-workflow',action='store_true',help='create original stable app history before upgrade and verify preservation')
  p.add_argument('--theme-source',type=Path)
  p.add_argument('--dms-source',type=Path)
  p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40,help='48 requires explicit temporary operator authorization')
@@ -39,15 +51,23 @@ def main():
  if not a.run:p.print_help();return
  if os.geteuid()==0:raise RuntimeError('Run as ordinary owner')
  if bool(a.theme_source)!=bool(a.dms_source):p.error('both receiver sources required')
- if any(x is None for x in (a.portable,a.previous,a.candidate,a.rootless,a.output)):p.error('all paths required')
+ if any(x is None for x in (a.portable,a.previous,a.candidate,a.rootless,a.output,a.init)):p.error('all paths required')
  a.portable=a.portable.resolve();a.previous=a.previous.resolve();a.rootless=a.rootless.resolve();a.candidate=a.candidate.resolve()
  labs=Path.home()/'Documents/ChatGPT/omabit-private-docker-labs';evidence=labs.parent/'omabit-qualification-evidence'
  if a.output.parent.resolve()!=labs.resolve() or a.output.exists() or not re.fullmatch(r'patch-upgrade-[0-9]{3}-[a-z0-9-]+',a.output.name):p.error('fresh patch-upgrade-NNN-NAME in the existing labs root required')
  previous=json.loads((a.previous/'release.json').read_text())['version']
  target=json.loads((a.candidate/'release.json').read_text())['version']
  if not all(re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:-rc\.[0-9]+)?',v) for v in (previous,target)) or previous==target:p.error('distinct release versions required')
+ if subprocess.check_output(['git','status','--porcelain'],cwd=ROOT):raise RuntimeError('clean release qualification source required')
+ source=json.loads((a.candidate/'release.json').read_text())['source_commit']
+ if not re.fullmatch('[0-9a-f]{40}',source):raise RuntimeError('exact candidate source required')
+ subprocess.run(['git','merge-base','--is-ancestor',source,'HEAD'],cwd=ROOT,check=True)
+ sys.path.insert(0,str(ROOT/'scripts'));from release_policy import validate_distribution_changes
+ validate_distribution_changes(subprocess.check_output(['git','diff','--name-only',source,'HEAD'],cwd=ROOT,text=True).splitlines())
+ boot_provenance=verify_boot(a.init)
+ lock=os.open('/tmp/omabit-issues-vm-runtime.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  budget=4*GIB;storage_limit=a.storage_budget_gib*GIB
- admission=storage.admit(budget,budget_bytes=storage_limit)
+ admission=full_charge(budget,storage_limit)
  used=admission['charged_bytes']
  meta=json.loads((a.portable/'bundle.json').read_text())
  for n in ('base.qcow2','boot/vmlinuz','boot/initramfs.cpio'):
@@ -101,15 +121,15 @@ def main():
    (dest/'manifest.json').write_text(json.dumps(manifest)+'\n')
    (dest/'application-profile.json').write_text(json.dumps({'version':1,'profile':'qualification040'})+'\n')
  shutil.copytree(ROOT/'native/bootstrap',payload/'bootstrap',ignore=shutil.ignore_patterns('__pycache__'))
- (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests)}))
+ (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests),'app_workflow':a.app_workflow}))
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)
  run(['mkfs.ext4','-q','-F','-d',payload,disk],stdout=subprocess.DEVNULL)
  # Staging files are generated copies/hardlinks; the immutable payload disk is
  # now complete. This is the only automatic removal in the harness.
  shutil.rmtree(payload)
- init=work/'init';env=dict(os.environ,CGO_ENABLED='0')
- run(['go','build','-trimpath','-o',init,'./scripts/qualification/release-upgrade/init'],cwd=ROOT,env=env)
+ init=work/'init';shutil.copy2(a.init,init)
+ if digest(init)!=boot_provenance['sha256']:raise RuntimeError('boot copy changed')
  boot=work/'boot';boot.mkdir()
  # Extract only the existing module list/modules to a private staging directory.
  run(['bsdtar','-xf',a.portable/'boot/initramfs.cpio','-C',boot,'guest-modules','modules'])
@@ -123,9 +143,11 @@ def main():
  base_info=json.loads(subprocess.check_output([tools/'usr/bin/qemu-img','info','--output=json',a.portable/'base.qcow2'],env=tenv,text=True))
  assert base_info['format']=='qcow2' and not base_info.get('backing-filename')
  run([tools/'usr/bin/qemu-img','create','-q','-u','-f','qcow2','-F','qcow2','-b','/base.qcow2',work/'root.qcow2',str(base_info['virtual-size'])],env=tenv)
- cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=300%','--',
- 'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
- receipt={'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml','fleet_guest.py','fleet_client.py','desk_guest.py')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
+ root_limit=((budget-allocated(work)-64*1024**2)//(64*1024**2))*(64*1024**2)
+ if root_limit<2*GIB:raise RuntimeError('fixed inputs leave insufficient root scratch')
+ cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=100%','-p','TasksMax=512','--',
+ 'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/usr/bin/prlimit','--fsize='+str(root_limit)+':'+str(root_limit),'--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
+ receipt={'boot_helper':boot_provenance,'root_logical_file_max':root_limit,'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml','fleet_guest.py','fleet_client.py','desk_guest.py')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  with (work/'serial.log').open('wb') as log:
   proc=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)
@@ -133,8 +155,8 @@ def main():
   try:
    while proc.poll() is None:
     time.sleep(10)
-    storage.admit(0,budget_bytes=storage_limit)
-    if allocated(work)>budget or (work/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2700:
+    full_charge(0,storage_limit)
+    if (work/'root.qcow2').stat().st_size>=root_limit or allocated(work)>budget or (work/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2700:
      raise RuntimeError('Guest budget/deadline exceeded; retained bounded failure evidence')
   except BaseException as error:
    receipt['interruption']=str(error)
@@ -144,7 +166,7 @@ def main():
     proc.wait(timeout=15)
    raise
   receipt['exit']=proc.returncode
- receipt['used_after']=storage.admit(0,budget_bytes=storage_limit)['charged_bytes']
+ receipt['used_after']=full_charge(0,storage_limit)['charged_bytes']
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  lines=(work/'serial.log').read_text(errors='replace').splitlines()
  for line in lines:

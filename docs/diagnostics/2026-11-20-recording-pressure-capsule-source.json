@@ -1,0 +1,31 @@
+{
+  "memory": "M762",
+  "status": "source-passed-native-pending",
+  "checks": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-count=1",
+        "-timeout=3m",
+        "./internal/recording",
+        "./internal/managed",
+        "-run=^(TestCapture.*|TestRecordingServerPreflightRefusalDispatchesNoNativeApply|TestIssuesRecordingSnapshotDisposableVM)$"
+      ],
+      "exit": 0,
+      "seconds": 48.22,
+      "output": "Running as unit: omabit-050-pressure-race-01.scope; invocation ID: cb6ca410d0774600be58f6624c4c93ba\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/recording\t1.040s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t1.510s\n"
+    }
+  ],
+  "inert_pressure_guards": 6,
+  "prior_recording_harness_guards": 8,
+  "source_unchanged_during_checks": true,
+  "charge_after": 48698540032,
+  "evidence": {
+    "path": "/tmp/omabit-050-pressure-source-01.json",
+    "sha256": "634a4dcdeee6be17902c3c061412638290a21a5e70ad6ed159a141bc6016371f"
+  },
+  "limits": "No native pressure VM has run. Current candidate version remains0.4.0; this is development qualification before the final0.5 freeze."
+}

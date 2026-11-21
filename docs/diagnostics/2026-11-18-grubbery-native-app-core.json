@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "date": "2026-11-18",
+  "passed": true,
+  "scope": "fixed fresh native API/source/nexus/state experiment; synthetic lifecycle; not public adapter qualification",
+  "artifact_source": "f00f5fbfbf2e8be6e6c017607f98cb444f1da61c",
+  "harness_source": "5d64d4dffea6787163932758b347cb00e6bddefe",
+  "workflow_sha256": "bbadfdb273839fe941fad9dfc2be49d5c4f7e165c57b08638dbf3e99e5693a73",
+  "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
+  "framework_source_digest": "7d2ae430acd4868bb56268188dff57addcdf4520abcc7aabaa6b9a342b22febc",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "clean_shutdown": true,
+  "bootstrap_passed": true,
+  "claims": {
+    "atomic_plain_parent_marker": true,
+    "desk_followed_both_versions": true,
+    "effect_calls": 28,
+    "known_409_unchanged_marker": true,
+    "local_nexus_compiled": true,
+    "new_code_label_observed": true,
+    "saved_state_preserved_on_update": true
+  },
+  "candidate_sources": [
+    {
+      "version": 1,
+      "files": [
+        {
+          "path": "bill.json",
+          "sha256": "53230be82383539af089e644cabac86f9c66dfbbd89dbc22471b23c70039749b",
+          "bytes": 18
+        },
+        {
+          "path": "nex/state.hoon",
+          "sha256": "be5212ea7b0fdbf49c99dd10d8d1b8842c07f59ca9ff5a7d615c9e347037087c",
+          "bytes": 731
+        }
+      ],
+      "digest": "126120ed3e18a908d03a0c2d72eb557c8896dc1ff25f890bcfac105b434b7cd9"
+    },
+    {
+      "version": 1,
+      "files": [
+        {
+          "path": "bill.json",
+          "sha256": "53230be82383539af089e644cabac86f9c66dfbbd89dbc22471b23c70039749b",
+          "bytes": 18
+        },
+        {
+          "path": "nex/state.hoon",
+          "sha256": "1135350a4ee5ae4276787c40f2ceb7a6931fa80e21c6d4aa0787fae68e98cf87",
+          "bytes": 731
+        }
+      ],
+      "digest": "86ff7b631928a896f5f51be59d39a861d72f11770ce52aaf95bbae015b53266a"
+    }
+  ],
+  "proof_sha256": "150cc7ffbe4b8991c6b143433f6f8822704d9d6cd8695a2fd20dff86aea6f56a",
+  "native_effects_sha256": "a463af480201ffdcf9354c13a61dba8168f5500f0296c82cf1012049027c3da9",
+  "result_sha256": "0f55697d25cfe42b0b8f66441de6c79215c3e78a827ac98960408f29c4b5c08d",
+  "not_qualified": [
+    "managed durable adapter and CLI/MCP mutation parity",
+    "permits, local aliases, HTTP routes and served artifacts",
+    "same-pier runtime restart, peer publication and three-member workflow",
+    "installed upgrade, DEV deployment or stable release"
+  ],
+  "preceding_results": [
+    "Original wrong-version marker capsule remains failed with null following",
+    "Second capsule remains interrupted with uncertain activation and unconfirmed clean shutdown; it was not resumed or replayed"
+  ]
+}

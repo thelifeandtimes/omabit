@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "Focused source race/CLI/SDK/actual frozen predecessor metadata qualification only; no installed/client/provider/DEV/production changes",
+  "operations": [
+    "tests.plans.v1",
+    "tests.plan.v1",
+    "tests.reports.v1",
+    "tests.report.v1"
+  ],
+  "named_plans": [
+    "runtime-lifecycle-v1",
+    "runtime-http-v1"
+  ],
+  "execution_available": false,
+  "historical_reports": {
+    "startup_only_selection": true,
+    "max_reports": 32,
+    "max_file_bytes": 1048576,
+    "owner_private_modes": [
+      "0400",
+      "0600"
+    ],
+    "single_link_physical_ordinary_files_only": true,
+    "exact_complete_sha256": true,
+    "explicit_private_consent": true,
+    "exact_name_plan_digest": true,
+    "raw_errors_logs_paths_names_container_ids_omitted": true,
+    "attested_execution": false,
+    "source_environment_provenance": "unavailable in accepted legacy shape",
+    "phase_categories": "fixed supported categories or other; arbitrary phase names are never copied"
+  },
+  "legacy_constructor_source_equivalence": {
+    "passed": true,
+    "source_commit": "12f789521d7303ed182e43fb3c55e00d7e6dca5f",
+    "body_sha256": "dbf248f287eed1d938b87cf9b5d430a5f4da61d0292d4c4bdd0954725c569e88",
+    "only_exported_function_names_changed": true,
+    "not_compiled_or_runtime_evidence": true
+  },
+  "pending_checks": [
+    "generated help/reference and matching final artifacts",
+    "named bounded test execution and actual named-client/provider connections"
+  ],
+  "runner_schema": 65,
+  "native_retry_qualifies_this_later_interface": false,
+  "persistent_formats_changed": false,
+  "checks": [
+    {
+      "package": "internal/checkplan",
+      "passed": true,
+      "race": true,
+      "seconds": 1.091,
+      "actual_frozen_predecessor_metadata_compare": true,
+      "predecessor_source": "12f789521d7303ed182e43fb3c55e00d7e6dca5f",
+      "predecessor_runner_sha256": "20af5a66f00339d40800d997e9a24c29b7f1c21e9faed17716f5bb9f996d0feb"
+    },
+    {
+      "package": "internal/service",
+      "passed": true,
+      "race": true,
+      "seconds": 2.622
+    },
+    {
+      "package": "internal/mcpserver",
+      "passed": true,
+      "race": true,
+      "seconds": 7.201,
+      "protocols": [
+        "2024-11-05",
+        "2025-03-26",
+        "2025-06-18",
+        "2025-11-25"
+      ]
+    },
+    {
+      "package": "cmd/omabit",
+      "passed": true,
+      "race": true,
+      "seconds": 10.695,
+      "actual_dispatch_and_official_sdk_stdio": true,
+      "protocol": "2025-11-25"
+    },
+    {
+      "package": "backend/cmd/urbit-runner",
+      "passed": true,
+      "race": true,
+      "seconds": 1.017
+    }
+  ],
+  "prior_failed_check": {
+    "package": "cmd/omabit",
+    "passed": false,
+    "seconds": 8.649,
+    "phase": "after every CLI/SDK result matched",
+    "reason": "fixture incorrectly required empty stderr although normal SDK lifecycle diagnostics are explicitly allowed there",
+    "correction": "permit documented diagnostics; require private original content and selected report path absent",
+    "product_changed_to_pass": false
+  },
+  "vet": {
+    "passed": true,
+    "packages": [
+      "internal/checkplan",
+      "internal/service",
+      "internal/mcpserver",
+      "cmd/omabit",
+      "backend/cmd/urbit-runner"
+    ]
+  },
+  "storage": {
+    "cap_bytes": 51539607552,
+    "admitted_reserve_bytes": 805306368,
+    "increase_after_tests_bytes": 577810432,
+    "charged_after_bytes": 51052326912
+  },
+  "tested_source_inputs_sha256": {
+    "backend/cmd/urbit-runner/qualify.go": "beb882641614731250bed8746d183f26c34f16738682421d1cbae9860489fb59",
+    "cmd/omabit/core.go": "cede8ba7369c13e5746d848394c4f9f9a47a11cdf134aee3dc8e73e0ba6fcf20",
+    "cmd/omabit/core_tests_test.go": "bfe2faaaf93fce8765f134573e19146a75f7e6029fb48c87a673bb5175a7eb99",
+    "cmd/omabit/help.go": "7a3412ee794b9b1b50baf245030e3b2de12920538085a6f988e2443a70f23bd7",
+    "internal/checkplan/legacy.go": "cc8be04e872197e8699a9202149236d19a2443efc63fd7722218ce8c853b87f6",
+    "internal/checkplan/plan.go": "4ad09a020b365b226c9a6ecde83898a9184fd3ea140e08475a1875ec5ebc335a",
+    "internal/checkplan/plan_test.go": "b0e73cfcc7b1407ccf1a802a8b7fd1ab3fe0c33b503fea96a98098886f83f765",
+    "internal/checkplan/report.go": "2ed90f8edd1ecdf84af972f15e7c90798e2bf29f8ea2a2e04a33dbe856bbc670",
+    "internal/checkplan/report_file_other.go": "7b1d27db6c7115b48fdd9514fbfb03114eaae45cf113edfd0acc1c2d471a9c58",
+    "internal/checkplan/report_file_unix.go": "7e3db76186ed96b60ac8ae50aaeffc2695d48c2d513332dd2cd9dade6b2192f7",
+    "internal/checkplan/report_test.go": "3ff0c1f8b0df0054162b880c40a8703c2935de6780cdc0d782c99510e65f4b2d",
+    "internal/mcpserver/checkplans_test.go": "72a2b141d450aab924f1f2762611cb6b231f3568ef0ec7a8f9c299680333e245",
+    "internal/service/operations.go": "623bf8cb9f33654550156268d70b8dac44a6692bdbe76d231d5bf78a0abc610c",
+    "internal/service/service.go": "089ddb761f0bd4b029af7df2d2d678dcbaae865c2d789d05dd1c7e44cc754821",
+    "internal/service/tests.go": "be3fa0f30a366b7a6f52cd93035b3c20443cd95ed35f78bd17e54082419c388e",
+    "internal/service/tests_test.go": "f29b87f69b4b293a3eaf83045b45e7ce822b29199a12baa61152e55b17906b3f"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "scope": "first fresh native Grubbery bootstrap admission failure; not framework qualification",
+  "source_commit": "0797e007c95dc59aa506a5509b4dd18c59510b74",
+  "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
+  "framework_source_digest": "7d2ae430acd4868bb56268188dff57addcdf4520abcc7aabaa6b9a342b22febc",
+  "workflow_sha256": "0bf1976610d76f650cd4da4697cba4c6ff7f1b6d0f7c54798b9814730dfb3d71",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "passed": false,
+  "clean_shutdown": true,
+  "workflow_exit": 1,
+  "source_staged_verified": true,
+  "commit_dispatched": false,
+  "activation_dispatched": false,
+  "refusal": "unowned-source-conflicts",
+  "conflict_paths": [
+    "mar/hoon.hoon",
+    "sys.kelvin"
+  ],
+  "proof_sha256": "a4fd52e7fdaf96e65bc395bb823eb1be7d9a71cc0a8e45d835dcf2aa9dcafe53",
+  "result_sha256": "07a8fd1d7fd5779810bcadd79aa80a2492d6b91ef04ac698427cb4f582138b2d",
+  "follow_up": "Exact original scaffold bytes must be read and explicitly adopted through supported gates before replacement. The pin requires Clay desk grubbery; its random-desk incompatibility was found in source review, not observed during this failed run."
+}

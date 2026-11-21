@@ -23,11 +23,14 @@ const usage = `Usage: urbit-runner COMMAND
        urbit-runner --development-root /srv/dev/urbit COMMAND
 
 The separate development root requires its own root-owned owner.json. Only
-serve-development, resource-policy and state-schema are allowed in that mode.
+serve-development, resource-policy, state-schema and the internal recording-worker
+are allowed in that mode.
 It never uses the installed host's state, Docker socket or SSH grants.
 
 Commands:
   state-schema               Print this binary's persistent state schema version.
+  recording-worker --job ID --sha256 DIGEST
+                             Internal notify-service entry for one existing private job.
   install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes
                               Install the owner's rootless engine, access and services.
   authorize-desktop --public-key FILE --expected-runner-id ID --ssh-connection TUPLE
@@ -125,8 +128,8 @@ func main() {
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) > 0 && args[0] == "--development-root" {
-		if len(args) < 3 || (args[2] != "serve-development" && args[2] != "resource-policy" && args[2] != "state-schema") {
-			fmt.Fprintln(stderr, "Usage: urbit-runner --development-root /srv/dev/urbit {serve-development|resource-policy|state-schema}; host installation and production management commands are unavailable in this namespace")
+		if len(args) < 3 || (args[2] != "serve-development" && args[2] != "resource-policy" && args[2] != "state-schema" && args[2] != "recording-worker") {
+			fmt.Fprintln(stderr, "Usage: urbit-runner --development-root /srv/dev/urbit {serve-development|resource-policy|state-schema|recording-worker}; host installation and production management commands are unavailable in this namespace")
 			return 2
 		}
 		if err := ownerhost.ConfigureDevelopment(args[1]); err != nil {
@@ -134,6 +137,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 			return 1
 		}
 		args = args[2:]
+	}
+	if len(args) > 0 && args[0] == "recording-worker" {
+		return runRecordingWorker(ctx, args[1:], stdout, stderr, runtimequalify.RunRecordingService)
 	}
 
 	if len(args) > 0 && args[0] == "resource-policy" {

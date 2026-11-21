@@ -1,0 +1,84 @@
+package recording
+
+// Declared qualification helper added to otherwise unchanged original2eb1b67
+// runtime sources and its metadata_test.go fixture. Never part of a deployment.
+import (
+	"context"
+	"errors"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+)
+
+func originalRecordingRoot(t *testing.T) string {
+	t.Helper()
+	root := os.Getenv("OMABIT_RECORDING_ORIGINAL_ROOT")
+	if !filepath.IsAbs(root) || filepath.Clean(root) != root || !strings.HasPrefix(root, "/tmp/omabit-recording-segments-upgrade-") {
+		t.Fatal("explicit disposable recording qualification path required")
+	}
+	return root
+}
+func TestOriginalRecordingWriterV2(t *testing.T) {
+	root := originalRecordingRoot(t)
+	if _, err := os.Lstat(root); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("fresh original writer directory required", err)
+	}
+	if err := os.Mkdir(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	s, err := OpenStore(root, Limits{MaxSessionBytes: 1 << 20, ReserveFreeBytes: 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	m := attachmentMetadata()
+	w, err := s.Create(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gap, err := (GapEvent{Version: 1, Reason: "transport-interrupted"}).Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	exit, err := (ExitEvent{Version: 1, ContainerID: m.ContainerID, StartedUnixNano: m.AttachedAt.UnixNano(), FinishedUnixNano: m.AttachedAt.Add(time.Second).UnixNano(), Code: 7}).Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, f := range []struct {
+		k Kind
+		b []byte
+	}{{Stdout, []byte("original stdout\r\n\x00\xff\x1b[2K")}, {Stderr, []byte("original stderr\n0wfixture.atom")}, {Gap, gap}, {Exit, exit}} {
+		if _, err = w.Append(f.k, f.b, m.AttachedAt.UnixNano()+int64(i), uint64(i)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err = w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	page, err := s.ReadPage(context.Background(), m.SessionID, nil, 256, 1<<20)
+	if err != nil || len(page.Frames) != 4 || page.WriterPresent {
+		t.Fatal("original writer readback failed", err)
+	}
+}
+func TestOriginalRecordingReaderRefusesSuccessorUnchanged(t *testing.T) {
+	root := originalRecordingRoot(t)
+	s, err := OpenStore(root, Limits{MaxSessionBytes: 1 << 20, ReserveFreeBytes: 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	data, err := os.ReadFile(filepath.Join(root, strings.Repeat("1", 32), "metadata.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = ReadMetadata(data); !errors.Is(err, ErrInvalid) {
+		t.Fatal("original metadata decoder did not refuse successor", err)
+	}
+	// The unchanged original store classifies invalid metadata as ErrCorrupt;
+	// its metadata decoder has the narrower ErrInvalid contract.
+	if _, err = s.ReadPage(context.Background(), strings.Repeat("1", 32), nil, 256, 1<<20); !errors.Is(err, ErrCorrupt) {
+		t.Fatal("original store did not refuse successor metadata", err)
+	}
+}

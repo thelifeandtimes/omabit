@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "status": "failed-whole-native-case-retained-strict-wire-correction-tested",
+  "candidate_source_commit": "5344c5cd2816623b69450f638ee44966a31b9ee4",
+  "whole_failure": "host JSON parser rejects a console-interrupted/truncated full status at column4088; earlier fix bounded only product proof subsection, leaving full inputs in status",
+  "image_sha256": "5d2c2ca8d9df98fce11e871d17d19cf462369d0ae47fdd66d0cee5b92bef1823",
+  "input_sha256": "a359029f4a019c76d19adffa545a52ba363ce2771f0fb6fd6021fb0daab29d27",
+  "scope": "fixture reporting defect; no native product qualification transferred from fragment",
+  "correction": [
+    "new shared serial-status protocol allowlists only source/proof hashes, bounded integer helper exit and boolean gates",
+    "complete private result/proof/inputs remain on guest disk",
+    "maximum status2048bytes, one os.write with complete marker under4096bytes",
+    "host requires exact protocol/source/proof/gates and rejects legacy/foreign/incomplete/extra/duplicate/fragmented success",
+    "save actual process/backing completion before parsing any console result",
+    "new status module staged read-only with harness source hashes; no product/PID1 Go input changes"
+  ],
+  "inert_guards": {
+    "tests": 15,
+    "passed": true,
+    "whole_report_includes_multiple_MiB_private_inputs_and_errors": true
+  },
+  "source_sha256": {
+    "scripts/qualification/recording-usage-cow/status.py": "58a68a4603d4bea3b95dcfd951b613fc19c8972f6568b03d9ad640f6dc0ed084",
+    "scripts/qualification/recording-usage-cow/guest.py": "f472da7023f131a6ea7bf56aef308c60f5b3f5d6b09662c67a98c8d7d52f2492",
+    "scripts/qualification/recording-usage-cow/run.py": "7baa9ba60682c1d029f1db9b17c0e5760707732d0e8b6620d1cbe03cbdcd715f",
+    "scripts/qualification/recording-usage-cow/test_guards.py": "37a5e6c18893be95e39869a6e9a49bd0dfb0e6dd848fca9163fc124bb85801e3"
+  },
+  "independent_retained_proof_verification_pending": true,
+  "fresh_retry_pending": true,
+  "production_installed_dev_and_existing_ships_unchanged": true,
+  "follow_up": {
+    "earlier_case_independent_full_proof_and_preservation_passed": true,
+    "fresh_corrected_whole_case_passed": true,
+    "earlier_whole_status_remains_failed": true,
+    "evidence": "2026-11-19-recording-output-coverage-native.json"
+  }
+}

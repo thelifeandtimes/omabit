@@ -1,0 +1,139 @@
+{
+  "memory": "M776",
+  "status": "passed",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "harness_commit": "ccca8840b40e82f16cfa5051e3992f040f579cca",
+  "host_exit": 0,
+  "product": {
+    "audited_replacement": true,
+    "boundary": "fixed disposable pending app only; no full permits/routes/assets/peers, process-death auth cleanup, installed upgrade or DEV/production qualification",
+    "manager_restart_audit_and_original_replay": true,
+    "one_durable_dispatch_per_original_phase": true,
+    "original_source_completed": true,
+    "second_same_pier_replacement_state": true,
+    "second_source_state_and_code": true,
+    "unknown_phase_observed_without_redispatch": true
+  },
+  "independent": {
+    "original_header_and17_events_preserved": true,
+    "same_pier_binding": true,
+    "exact_saved_runtime_audit": true,
+    "single_dispatch_per_phase": true,
+    "current_operations": 2,
+    "current_events": 63,
+    "current_leases": 0,
+    "schema": 65,
+    "final_intent_and_observation": "stopped",
+    "raw_exports_unchanged": true
+  },
+  "limits": "This exact copied pending-app recovery, two source versions/state, same-pier replacement and manager-restart case only. Broader peers/permits/routes/assets and process-death owner cleanup are separate. Preserved DEV and publication remain gates.",
+  "evidence": {
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-001-app.review-runtime-recovery.v1-request.json": "ed1676624d0e800b64ff50ea3a866c6ec92077a334a97ebbf155706ca8dfddd3",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-001-app.review-runtime-recovery.v1-response.json": "dc59ac653548c80bc3ab5270146d01cfd552ff943da2dbd5bec8826f73215026",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-002-app.apply-runtime-recovery.v1-request.json": "e0c4b6fc0f196c5d5ff0ff2c522b42e1314a27ed35be7bb7951dbe566533acc8",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-002-app.apply-runtime-recovery.v1-response.json": "0aedf52ae207ed87b4b376a5e788407e7eb05ec105ceaf4ab1e01b0c5670ca0b",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-003-app.reconcile-source.v1-request.json": "b500df137d5ecf6ff167fc418c45e78762cb5f01acffcea08c07e38d2d9639f6",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-003-app.reconcile-source.v1-response.json": "c2c36e937b02b4dc594e577349db2c84d92c14b5166c8c1b3898d6b47ca960fa",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-004-app.advance-source.v1-request.json": "a9f0273064ca103c31c9cbaef7c92b5f0a22acdf658a95d2e1f05099aa31d93d",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-004-app.advance-source.v1-response.json": "409f7babc58ca6ddc21d47a308f21a46980451b1a32ef65928bd40b32e6450fd",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-005-app.advance-source.v1-request.json": "56bed62c0250e889686dbba6738ac77bb4b646cf59b9a3a8a27ce4c227945354",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-005-app.advance-source.v1-response.json": "e71056b9127ea1804c8d3e5f6eb3baabdf49ba37cbb7a4fed23d0804ac7a3bff",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-006-app.advance-source.v1-request.json": "acdcfc04ee64d281fa2304d098c0a3d633cff176b67cce1614598b3f21494441",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-006-app.advance-source.v1-response.json": "5258700911f6c94973d60e15d085cd698cc0d8ded9f56b95797b45f2af958dd5",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-007-app.advance-source.v1-request.json": "8fed167b82ddd40f7f5ca5b1f99cd8679bf16c59678681004425aea2dc380e5c",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-007-app.advance-source.v1-response.json": "806eae836219f0654c7be74a136af6fa2c935c9f22f7f9dbc6b360ef5f38e477",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-008-app.advance-source.v1-request.json": "d2bb1fa27fdc0e1f5c04e3cc7d394951c87c39165dc2f981753778112f57b627",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-008-app.advance-source.v1-response.json": "275994853d0c7cbb6f8e04cd6101384d3d383d71f5aabcddd514638cbc44b74a",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-008-app.advance-source.v1-saved-lookup.json": "989c0f3797f4f76f97eb0e1669665e7f55d6518460774831f228183e39dd473c",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-008-app.advance-source.v1-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-009-app.reconcile-source.v1-request.json": "d2bb1fa27fdc0e1f5c04e3cc7d394951c87c39165dc2f981753778112f57b627",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-009-app.reconcile-source.v1-response.json": "d675c6adcca0570a54bd9b216bb3db2a4be45cd04dced1292f8044fddef83ecf",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-010-app.advance-source.v1-request.json": "9791ffa5af5a9c3d04a7287ee669cda034cf0de17b4243053471f80428d7f73d",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-010-app.advance-source.v1-response.json": "275994853d0c7cbb6f8e04cd6101384d3d383d71f5aabcddd514638cbc44b74a",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-010-app.advance-source.v1-saved-lookup.json": "e4695f557059e3084f5203548b34a6ad8d3534470aa65d54447f7749701e30f6",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-010-app.advance-source.v1-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-011-app.reconcile-source.v1-request.json": "9791ffa5af5a9c3d04a7287ee669cda034cf0de17b4243053471f80428d7f73d",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-011-app.reconcile-source.v1-response.json": "fe33fc95917c903f27dcd5dc9e0a122a4348b85ff2c190da0f8c52dd1f613d4c",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-012-app.review-source.v1-request.json": "a965327c0fb3847dd63ac68ca17d8e664f7a1be309c4cba2d2fad13549e11ed0",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-012-app.review-source.v1-response.json": "2f0cf5baf18de41af62398ed257dbd4fa6cd35224ba23b12d47f1ef39ea40d81",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-013-app.begin-source.v1-request.json": "6f44b7cbe1a36d250f790990bc6b6404ececbfdff23f2480e8dca778461a8f3b",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-013-app.begin-source.v1-response.json": "4f6123611a152c72407b5f3c4c9a88b48ebae827e390805217ad52bd2e1b6078",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-014-app.advance-source.v1-request.json": "57c6cb2de20c1f83c21f4fee7d56a126b9926a0bc6d0c717b545241d5ebfb10b",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-014-app.advance-source.v1-response.json": "310038897cccc61d5720e85f2605b7e4e3603e541f9619038a5b513a2a169d21",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-015-app.advance-source.v1-request.json": "ea30ad2740a55d31e21553ce051bba109f9ef1ae78e987560dcce6a62d1680c7",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-015-app.advance-source.v1-response.json": "14f51c6fee13b0ffc22e2a17b53674186963d344f984a902f13e2f0872e4c937",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-016-app.advance-source.v1-request.json": "bc4d40ed4f92b6d0c01e956697a4344fa5fd823434a3459fec43aa0fe7249912",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-016-app.advance-source.v1-response.json": "c2173c4607b6e404a176a1fc5c3a1a5e2dcbb43c91175b3600b509fb8e88d5d6",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-017-app.advance-source.v1-request.json": "2630e91a09412845edd90a847da7d3fced4da17e93b2228c5d8bf411275bf291",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-017-app.advance-source.v1-response.json": "28e9723b240d5126be618e4fbae1fcc70593139ea7ec37d8efe3a1fcc9489e09",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-018-app.advance-source.v1-request.json": "362cb551faa00b099fda251fb8ef6bc7f5733c149742008a512d163df8baac01",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-018-app.advance-source.v1-response.json": "ddcc1c30d025c27381da0982934ac16c015bb05c62d96a896103b6285d68e8cd",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-019-app.advance-source.v1-request.json": "8e57b7a9faf4c306205b08b1fcec0c426da1878529fad92b559548be1049107a",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-019-app.advance-source.v1-response.json": "d0c21420daa4a41b6aba656862dd88d608e0e7dfb504b0ff800793a92f8ba80d",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-020-app.advance-source.v1-request.json": "c02e73053033d82114a15914089c9d4d69b0df0bc04312c078e3c0ea526645af",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-020-app.advance-source.v1-response.json": "7934612285975f8b4492d5570aaa920aee31dd9b6be683926997334fcdd58f6d",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-021-app.advance-source.v1-request.json": "8d51f884473b676a12c97e26f208aacda821893eac28582e850e33bf6b21994c",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-021-app.advance-source.v1-response.json": "fea26f387f0ea770c6860936ef5a65f4e73b7048458b25c6f4d6e2bc62e5da79",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-022-app.advance-source.v1-request.json": "0c3ac1d74e90bba1d6fbb70eefc8b1ba4a66820f806c5c57c3e7d301cd883ccf",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-022-app.advance-source.v1-response.json": "91e6b11276337feb316f53351f5ef4ad60ff91bbedaabefa958f8a297b2580ea",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-023-app.runtime-recovery.v1-request.json": "507006cecc8f82f4e5ebcffe01b865314b2b64b29e3018027e6733f9f65849c5",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-023-app.runtime-recovery.v1-response.json": "aa329a9044c8af45479c4b380efb8a35ca824bcb19cac6b26e15cd2a39843520",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-024-app.advance-source.v1-request.json": "1520a4f97b44a94eef2d4861eb54d6028eb230170e90c2198e502662d684facc",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-024-app.advance-source.v1-response.json": "8eca49a958d18be0b75d69f51e62a2f646c6aee7028358e31ab86bc1d85f4529",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-025-app.advance-source.v1-request.json": "57c6cb2de20c1f83c21f4fee7d56a126b9926a0bc6d0c717b545241d5ebfb10b",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/call-025-app.advance-source.v1-response.json": "37b0a5d6e1aa355c0c4b8385883139e5492bf1d91019db07ba13813577b35988",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/commands.jsonl": "1f5931a1d45510b1ea6d541723059067885ba76d603091341393efc7ea87df03",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/proof.json": "ad356109707db9aff4d18c4b742bd657f621992b3c3c8286adb208704ec12c16",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/result.json": "908950268c5ceda0bded643935039bb0de8c7faa9b901ae0e8aa806752e2b4b9",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/files/runner.sqlite": "5fb704d2e61f728934ae61bf20942620734964020562c5d534cd6325ea19f94f",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/result.json": "1f5a805a406933087071646486f7ad59c7c40804c981c6826324d57b4d845d06",
+    "/tmp/omabit-issues-runtime-cow06-evidence-01/command.json": "ce9559210e3460947e6cb89572e3a42037a65e56a8a6fb5c3f446de1ae58bb77",
+    "/tmp/omabit-issues-runtime-cow-06/host.json": "ac4cf5c9bbd58f4ad5609582ab7e2ba52785706cd29c4989fbf4f9ccfea47c9b",
+    "/tmp/omabit-issues-runtime-cow-06/result.json": "908950268c5ceda0bded643935039bb0de8c7faa9b901ae0e8aa806752e2b4b9",
+    "/tmp/omabit-issues-runtime-cow-06/serial.log": "e1d566fbe25aed8ba6d66942743b00826bc0e8afc2d2275028264a9354f5e4d2",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/qualification050-candidate02/extract-grubbery06.py": "ce3617769313777d8eb0c8d83ffd4cba01762d75aabf7523eac3fe2e63d4cdd1",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/qualification050-candidate02/verify-grubbery06.py": "09169221cece05a38f10628be1cc71441a1dd684bad508d4a50a316c304e5a24"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Independent source/SQL/proof/command evidence retained; original app62/current65 fixtures preserved. Never resume this ended overlay.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-06/root.qcow2",
+        "sha256": "a13b97dcfd01e7a0b7fef71808e98283b10d3c8496d758c10db4598818dec24c",
+        "allocated_bytes": 279646208
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-06/payload.ext4",
+        "sha256": "c92cac0a9d64100f9759fac99cf34977a20623f3865caa81ae936bfbcc2e42d0",
+        "allocated_bytes": 48152576
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-06/init",
+        "sha256": "04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee",
+        "allocated_bytes": 2633728
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-06/initramfs.cpio",
+        "sha256": "f8c8ed0d483367c2e9190fac82dba16b1e732994e4b03758f0cf6391e4524abe",
+        "allocated_bytes": 7639040
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow06-evidence-01/initramfs.cpio",
+        "sha256": "77180505ece2d31d2e97cb640e6241519aab8ea71db447488dce82cff8102d6a",
+        "allocated_bytes": 7872512
+      }
+    ],
+    "reclaimed_bytes": 345944064,
+    "after": {
+      "charged_bytes": 48996470784,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 0,
+      "total_with_reserves": 48996470784
+    },
+    "full_charge_record": {
+      "path": "/tmp/omabit-050-grubbery-retirement06-charge.json",
+      "sha256": "62ca3e2a04b985e3aa1247278e899a60901034747368e4828dfdaa2bc4e8e798"
+    }
+  }
+}

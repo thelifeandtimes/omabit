@@ -1,0 +1,121 @@
+{
+  "scope": "inert native workloads only; no Docker/Urbit/installed lifecycle qualification",
+  "probe_complete": true,
+  "versions": {
+    "script": "script from util-linux 2.42.4",
+    "tmux": "tmux 3.8"
+  },
+  "cases": {
+    "pipe": {
+      "raw_bytes": 18109,
+      "raw_sha256": "1b3e82e189f9e90f37961ac160ed6231edf9b34ce6c40d6a01a1a0816a3a974d",
+      "burst_350_lines": true,
+      "long_line_12288": true,
+      "original_diagnostic_atom": true,
+      "original_fake_credentials": true,
+      "terminal_redraw_bytes": true,
+      "stderr_marker": true,
+      "final_signal_marker": true,
+      "signal": {
+        "signal": 15,
+        "planned_exit": 7,
+        "final_write": "accepted"
+      },
+      "timing_covers_all_raw_bytes": true,
+      "timing_events": 9,
+      "timing_basis": "recorder receive clock; cross-stream order is observation order",
+      "wrapper_exit": 7,
+      "stop_target": "owned workload",
+      "separate_stream_identity": true,
+      "observed_workload_exit": 7
+    },
+    "pty": {
+      "raw_bytes": 18466,
+      "raw_sha256": "08e4ca82ee42684080c639f270f6b9bef0a08a0050404e4a14f6e25233dc1d6f",
+      "burst_350_lines": true,
+      "long_line_12288": true,
+      "original_diagnostic_atom": true,
+      "original_fake_credentials": true,
+      "terminal_redraw_bytes": true,
+      "stderr_marker": true,
+      "final_signal_marker": true,
+      "signal": {
+        "signal": 15,
+        "planned_exit": 7,
+        "final_write": "accepted"
+      },
+      "timing_covers_all_raw_bytes": true,
+      "timing_events": 27,
+      "timing_basis": "recorder receive clock; cross-stream order is observation order",
+      "wrapper_exit": 7,
+      "stop_target": "owned workload",
+      "separate_stream_identity": false,
+      "observed_workload_exit": 7
+    },
+    "script": {
+      "raw_bytes": 18647,
+      "raw_sha256": "cc482d0af59ae793c8aa706b5d120ffc4ca75cf9abf091396dc0b2c7c2726de4",
+      "burst_350_lines": true,
+      "long_line_12288": true,
+      "original_diagnostic_atom": true,
+      "original_fake_credentials": true,
+      "terminal_redraw_bytes": true,
+      "stderr_marker": true,
+      "final_signal_marker": false,
+      "signal": {
+        "signal": 15,
+        "planned_exit": 7,
+        "final_write": "accepted"
+      },
+      "timing_events": 89,
+      "script_timed_bytes": 18446,
+      "timing_basis": "script classic timing; raw file also has untimed wrapper header/footer",
+      "wrapper_exit": 0,
+      "stop_target": "owned script wrapper",
+      "separate_stream_identity": false,
+      "observed_workload_exit": 7
+    },
+    "tmux": {
+      "raw_bytes": 18446,
+      "raw_sha256": "0bdfcb006c2596f5b92eb143fc01a4eef5d23eedd1330ef6231c63480cbdb888",
+      "burst_350_lines": true,
+      "long_line_12288": true,
+      "original_diagnostic_atom": true,
+      "original_fake_credentials": true,
+      "terminal_redraw_bytes": true,
+      "stderr_marker": true,
+      "final_signal_marker": false,
+      "signal": {
+        "signal": 1,
+        "planned_exit": 129,
+        "final_write": "failed",
+        "write_errno": 5
+      },
+      "timing_covers_all_raw_bytes": true,
+      "timing_events": 15,
+      "timing_basis": "recorder receive clock; cross-stream order is observation order",
+      "wrapper_exit": 0,
+      "wrapper_exit_basis": "new-session client exited after submission; not pane completion",
+      "stop_target": "own private tmux server",
+      "separate_stream_identity": false,
+      "observed_workload_exit": 129
+    }
+  },
+  "version": 1,
+  "id": "recording-backend-inert-v1",
+  "inputs_sha256": {
+    "pipe_capture.py": "865f130316dcfc28333821e137bf65431179e92b65e0ae349d6f6226d4838c78",
+    "workload.py": "b353943745e833e4fc0d4a8fb1289dc1933dba9583fe02d51f0bc867f66cf4e8",
+    "probe.py": "980699932d83c2befe3288210951e9cd55926eb2bb57fd0884e6143783e42f6f"
+  },
+  "private_result_sha256": "44d552b3321718d644babc435eba4a022d1a228e08585bbb77ae06113e2af1bd",
+  "limits": [
+    "fixed inert workloads only",
+    "256MiB memory; no swap; one CPU;64 tasks",
+    "new user/PID/mount/network namespaces; loopback only",
+    "16MiB declared storage scratch under temporary48GiB aggregate budget",
+    "private HOME, tmux socket, state and output; no existing service/ship/session access",
+    "clock is recorder observation time, not process write time",
+    "no Docker, actual Vere, recorder-failure, attach/detach, host-restart or retention qualification"
+  ]
+}

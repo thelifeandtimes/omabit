@@ -16,15 +16,21 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/buildmeta"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 type backend interface {
 	Apply(context.Context, string, runtimequalify.ManagedState, func(runtimequalify.ManagedState) error) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error)
 	Observe(context.Context, runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error)
+}
+
+type recordingBackend interface {
+	ApplyWithRecording(context.Context, string, runtimequalify.ManagedState, func(runtimequalify.ManagedState) error, runtimequalify.ManagedRecordingLifecycle) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error)
 }
 
 type realBackend struct{}
@@ -34,6 +40,10 @@ func (realBackend) Apply(ctx context.Context, action string, state runtimequalif
 }
 func (realBackend) Observe(ctx context.Context, state runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
 	return runtimequalify.ObserveManaged(ctx, state)
+}
+
+func (realBackend) ApplyWithRecording(ctx context.Context, action string, state runtimequalify.ManagedState, persist func(runtimequalify.ManagedState) error, lifecycle runtimequalify.ManagedRecordingLifecycle) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
+	return runtimequalify.ApplyManagedWithRecording(ctx, action, state, persist, lifecycle)
 }
 
 // Server serves only the private local management API. Its host/state lock must
@@ -56,6 +66,11 @@ type Server struct {
 	updateBulk, updateWorkers int
 	executableSHA256          string
 	hostCompatibility         hostCompatibilityCache
+	recording                 func(protocol.Operation) runtimequalify.ManagedRecordingLifecycle
+	recordingPreflight        func(context.Context, protocol.Operation) error
+	recordingCapacity         func(context.Context, string) (recording.Capacity, error)
+	projectAllocations        map[string]projectAllocationSample
+	projectAllocationActive   bool
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -86,6 +101,12 @@ func newServerMode(dir string, b backend, interval time.Duration, comets bool) (
 }
 
 func newServerWithStartup(dir string, b backend, interval time.Duration, comets bool, bootID string) (*Server, error) {
+	return newServerConfigured(dir, b, interval, comets, bootID, nil)
+}
+
+// Configuration finishes before any observation, startup or schedule goroutine.
+// The nil configuration is the existing, unrecorded server behavior.
+func newServerConfigured(dir string, b backend, interval time.Duration, comets bool, bootID string, configure func(*Server) error) (*Server, error) {
 	s, err := openStore(dir)
 	if err != nil {
 		return nil, err
@@ -162,6 +183,13 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 	ctx, cancel := context.WithCancel(context.Background())
 	r := &Server{s: s, b: b, ctx: ctx, cancel: cancel, workGate: make(chan struct{}, 1), uid: uint32(os.Geteuid()), bootID: bootID}
 	r.updateFence, r.executableSHA256 = fence, digest
+	if configure != nil {
+		if err := configure(r); err != nil {
+			cancel()
+			s.close()
+			return nil, err
+		}
+	}
 	if len(resume) > 0 {
 		r.wg.Add(1)
 		go r.resumeStartup(resume, interval)
@@ -266,13 +294,28 @@ func (r *Server) launch(op protocol.Operation) {
 			}
 			return
 		}
-		state, observation, err := r.b.Apply(r.ctx, actual.Kind, instance.Runtime, func(state runtimequalify.ManagedState) error {
+		persist := func(state runtimequalify.ManagedState) error {
 			if err := r.s.runtimeUpdate(actual.InstanceID, actual.ID, state); err != nil {
 				r.failed.Store(true)
 				return errors.New("resource intent journal failed; operation stopped")
 			}
 			return nil
-		})
+		}
+		state, observation := instance.Runtime, runtimequalify.ManagedObservation{}
+		if r.recording != nil && (actual.Kind == "start" || actual.Kind == "startup-resume" || actual.Kind == "stop") {
+			if b, ok := r.b.(recordingBackend); ok {
+				if r.recordingPreflight != nil {
+					err = r.recordingPreflight(r.ctx, actual)
+				}
+				if err == nil {
+					state, observation, err = b.ApplyWithRecording(r.ctx, actual.Kind, state, persist, r.recording(actual))
+				}
+			} else {
+				err = errors.New("selected backend does not support recording lifecycle")
+			}
+		} else {
+			state, observation, err = r.b.Apply(r.ctx, actual.Kind, state, persist)
+		}
 		if err := r.s.finish(actual, state, observation, err, r.ctx.Err() != nil); err != nil {
 			r.failed.Store(true)
 		}
@@ -332,8 +375,18 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
-		features = append(features, "maintenance-schedules")
-		features = append(features, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
+		if r.recording != nil {
+			features = append(features, "runtime-recording-pilot-v1")
+		}
+		if _, ok := r.b.(recordingReadBackend); ok {
+			features = append(features, protocol.RecordingReadFeature)
+		}
+		if _, ok := r.b.(recordingExportBackend); ok {
+			features = append(features, protocol.RecordingExportFeature)
+		}
+		features = append(features, "maintenance-schedules", protocol.RecordingControlFeature)
+		features = append(features, r.projectAllocationFeatures()...)
+		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
 		if _, ok := r.b.(projectDependenciesBackend); ok {
 			features = append(features, protocol.ProjectDependenciesFeature)
@@ -342,10 +395,17 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature, protocol.GrubberyAppReceiptsFeature)
+		features = append(features, protocol.GrubberyRuntimeReceiptsFeature)
+		if r.grubberyRuntimeRecoveryAvailable() {
+			features = append(features, protocol.GrubberyRuntimeRecoveryFeature)
+		}
+		if r.grubberyAppSourceAvailable() {
+			features = append(features, protocol.GrubberyAppSourceFeature)
+		}
 		if _, ok := r.b.(deskBackend); ok {
 			features = append(features, protocol.ShipRoutesFeature, protocol.ShipRouteCodeFeature)
-			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.DeskAdoptionFeature, protocol.DeskReceiverFeature, protocol.DeskFrontendFeature)
+			features = append(features, protocol.DeskCreateFeature, protocol.DeskSourceExportFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.DeskAdoptionFeature, protocol.DeskReceiverFeature, protocol.DeskFrontendFeature)
 		}
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
@@ -389,7 +449,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.keys != "" {
 			features = append(features, "ssh-key-grants")
 		}
-		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
+		respond(w, 200, protocol.Hello{Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
@@ -432,6 +492,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if project, ok := protocol.ProjectActionID(req.URL.Path); ok && req.Method == http.MethodPost {
 		r.serveProjectAction(w, req, actor, role, project)
+		return
+	}
+	if project, member, operation, probe, ok := protocol.ProjectMemberDiagnosisIDs(req.URL.Path); ok && req.Method == http.MethodGet {
+		r.serveProjectMemberDiagnosis(w, req, actor, role, project, member, operation, probe)
+		return
+	}
+	if project, ok := protocol.ProjectStopReconcileID(req.URL.Path); ok && req.Method == http.MethodPost {
+		r.serveProjectStopReconcile(w, req, actor, role, project)
 		return
 	}
 	if id, ok := protocol.ProjectRecoverySourceID(req.URL.Path); ok && req.Method == http.MethodGet {
@@ -479,6 +547,22 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		respond(w, http.StatusOK, inventory)
 		return
 	}
+	if req.Method == http.MethodPost && req.URL.Path == protocol.ProjectAllocationPath {
+		r.serveProjectAllocation(w, req, role)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingControlStatusPath || req.URL.Path == protocol.RecordingControlApplyPath || req.URL.Path == protocol.RecordingControlLookupPath) {
+		r.serveRecordingControls(w, req, actor, role)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingExportManifestPath || req.URL.Path == protocol.RecordingExportPartPath) {
+		r.serveRecordingExport(w, req, role)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingCatalogPath || req.URL.Path == protocol.RecordingPagePath) {
+		r.serveRecordings(w, req, role)
+		return
+	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/snapshot" {
 		snapshot, err := r.s.snapshot()
 		if err != nil {
@@ -509,8 +593,28 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
 		return
 	}
+	if protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) {
+		r.serveGrubberyRuntimeRecovery(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.GrubberyRuntimeRecoveriesPath+"/") {
+		r.serveGrubberyRuntimeReceipt(w, req, role)
+		return
+	}
+	if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) {
+		r.serveGrubberyAppSource(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.GrubberyAppOperationsPath+"/") {
+		r.serveGrubberyAppReceipt(w, req, role)
+		return
+	}
 	if req.Method == http.MethodGet && strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") {
 		r.serveDeskReceipt(w, req, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") && strings.HasSuffix(req.URL.Path, "/reconcile") {
+		r.serveDeskReconciliation(w, req, actor, role)
 		return
 	}
 	r.mu.Lock()
@@ -537,6 +641,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.DeskSettingsPath {
 		r.serveDeskSettings(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskSourceExportPath {
+		r.serveDeskSourceExport(w, req, role)
 		return
 	}
 	if req.URL.Path == protocol.DeskSourcePath {
@@ -601,10 +709,6 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.DeskOperationsPath {
 		r.serveDeskOperation(w, req, actor, role)
-		return
-	}
-	if strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") && strings.HasSuffix(req.URL.Path, "/reconcile") {
-		r.serveDeskReconciliation(w, req, actor, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {

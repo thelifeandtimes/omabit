@@ -46,11 +46,14 @@ Item {
     if panel:
         files["plugins/omabit/Panel.qml"] = panel
     if skills:
-        for name in ("omabit-operator", "omabit-plugin-developer"):
+        names = ["omabit-operator", "omabit-plugin-developer"]
+        if skills == "three":
+            names.append("omabit-app-developer")
+        for name in names:
             files["skills/" + name + "/SKILL.md"] = b"# Fixture skill\n"
         if skills != "legacy":
             files["SKILLS.json"] = json.dumps({"format": 1, "version": version, "source_commit": "a" * 40,
-                "skills": ["omabit-operator", "omabit-plugin-developer"],
+                "skills": names,
                 "files": {name: hashlib.sha256(data).hexdigest() for name,data in files.items() if name.startswith("skills/")}}).encode()
     archive = directory / (prefix + ".tar.gz")
     with tarfile.open(archive, "w:gz") as stream:
@@ -128,6 +131,20 @@ class DesktopTests(unittest.TestCase):
         first = self.desktop.prepare()
         self.assertFalse((Path(first["directory"]) / "skills").exists())
         self.assertEqual(self.desktop.prepare(), first)
+
+    def test_third_skill_survives_cache_and_uses_authenticated_bytes(self):
+        metadata, archive, _ = bundle(self.root / "three-skills", "0.4.0-rc.1", skills="three")
+        release = self.desktop.import_release(metadata, archive)["release"]
+        self.desktop.select("default", release)
+        path = Path(self.desktop.prepare()["directory"])
+        skill = path / "skills/omabit-app-developer/SKILL.md"
+        self.assertEqual(skill.read_text(), "# Fixture skill\n")
+        skill.chmod(0o600);skill.write_text("changed third skill")
+        inventory = desktop.read_json(path / "inventory.json")
+        inventory["files"]["skills/omabit-app-developer/SKILL.md"] = desktop.runtime.digest(skill)
+        desktop.atomic_json(path / "inventory.json", inventory)
+        with self.assertRaisesRegex(ValueError, "authenticated archive"):
+            self.desktop.prepare()
 
     def test_selection_is_not_activation_and_stale_acks_cannot_commit(self):
         plan = self.desktop.resolve()

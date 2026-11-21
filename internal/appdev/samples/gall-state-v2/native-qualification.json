@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "gall-state-v2-native-2026-11-17",
+  "status": "passed",
+  "definition_sha256": "b5759d7e6c22f4dc117220497eb4f7c0025499dbf7e9c2abbbd88e35946eb5ef",
+  "source_digest": "00638373f95a3ea52da34c81883f553dc467aaa426fa06fd05cfcce3dd1f6738",
+  "scope": "single fresh native fake; cold activation before compiler probes; real kernel/API/store/collector/staging; synthetic managed lifecycle backend",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "workflow_sha256": "66943cbb01f6620f1fe56d26e55d04785c79549ad96cfdca519c16a6c929cd71",
+  "proof_sha256": "2cb4a8aa9c92f50c5730fb896d389cb6131e3cb9425707e3b276c72786f2bda7",
+  "clean_shutdown": true,
+  "claims": [
+    "default create block dispatched no native creation",
+    "frozen bounded stage and hash-bound commit",
+    "native agent, bill and custom mark compilation",
+    "cold local activation before compiler warmup; separate live agent observation",
+    "authenticated JSON scry, acknowledged poke and watch facts",
+    "duplicate and object payload nacks preserve state",
+    "new on-load marker after changed source commit; state retained",
+    "clean owned same-pier native restart with exact PID/start/executable/pier bindings",
+    "existing owner session and fresh subscription reconcile after restart",
+    "second acknowledged write and exact revision2 state after restart",
+    "own channel cleanup and logout",
+    "zero Unix mount requests; autocommit inactive; eight source files, 5528 bytes"
+  ],
+  "not_qualified": [
+    "managed Docker/container lifecycle and transport",
+    "installed upgrade or production deployment",
+    "two/three-peer sample behavior",
+    "abrupt power loss",
+    "API or state-version migration",
+    "Grubbery",
+    "named product client/browser interoperability"
+  ]
+}

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
 )
 
 // DeskRuntime binds typed desk calls to one verified process and its private
@@ -24,6 +25,9 @@ type DeskRuntime struct {
 	q                                               *qualifier
 	check                                           func(context.Context) error
 	hostOrigin                                      func(context.Context) (string, error)
+	process                                         func(context.Context) (grubbery.RuntimeProcess, error)
+	grubberyOriginal                                *grubbery.Binding
+	grubberyReadOnly                                bool
 }
 
 func OpenManagedDesk(ctx context.Context, state ManagedState, expectedContainer string) (*DeskRuntime, error) {
@@ -101,6 +105,28 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 	if err = s.check(ctx); err != nil {
 		return nil, err
 	}
+	s.process = deskProcessReader(s, q.engineEvidence.ID, q.r.VereVersion, deskProcessBootReader(q), func(ctx context.Context) (container, any, error) {
+		current, err := q.inspect(ctx, index)
+		if err != nil || !reflect.DeepEqual(current, selected) {
+			return container{}, nil, errDeskProcess
+		}
+		network, err := q.inspectNetwork(ctx)
+		if err != nil {
+			return container{}, nil, err
+		}
+		if err = q.containment(current, q.r.Containers[index].Kind); err != nil {
+			return container{}, nil, err
+		}
+		currentPorts, err := q.readHTTPPorts()
+		if err != nil || currentPorts != ports {
+			return container{}, nil, errHTTPPorts
+		}
+		return current, struct {
+			Container container
+			Network   bridge
+			Ports     string
+		}{current, network, currentPorts}, nil
+	})
 	return s, nil
 }
 func managedDeskShip(state ManagedState) string {

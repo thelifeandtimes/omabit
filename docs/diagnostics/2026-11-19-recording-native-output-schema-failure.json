@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "passed": false,
+  "artifact_source": "282c3b372d0289858c3ea7e3ceb1296808a97420",
+  "harness_source": "0d1359ca6761fd6136be0ae91c897ed193070052",
+  "case": "ordinary-capture-active-worker-upgrade-policy-api-v1",
+  "root_sha256": "cfbde62ef60b84a6ee3d058c570998fb0ee9f2506492dbd89a47d07895747b2c",
+  "payload_sha256": "30b4779fe9b5d97ffdbb1b8ca9a8bc294ec4ed7da75c541ffad67c6dfdec9086",
+  "result_sha256": "8d727d4a0544f95d0b8cf0748b95506825d82f0d7287822ab4b5a4fa18002813",
+  "commands_sha256": "cf68c119a828e56373bd1de09b8e91318ca72fc51cf843fd6f35fc1ad4edbd18",
+  "failure_stage": "first nonempty original recording window through shared CLI facade",
+  "error_code": "invalid_output",
+  "confirmed_cause": "jsonschema-go inferred []byte as null/array while encoding/json emits a base64 string; nonempty original window rejected by shared output validation",
+  "earlier_checks_reached_and_passed": {
+    "exact_fixture_override_withdraw_restore": true,
+    "schema64_to65_activation": true,
+    "engine_container_worker_and_history_preserved": true,
+    "saved_controls_and_catalog": true,
+    "first_clean_stop_and_recorder_drain": true
+  },
+  "first_session": {
+    "frames": 148,
+    "stdout_bytes": 2812,
+    "stderr_bytes": 337,
+    "exit_frames": 1,
+    "gap_frames": 0,
+    "tail": "snapshot-eof"
+  },
+  "unreached": [
+    "raw API comparison",
+    "control apply/replay/lookup and pin",
+    "second launch with selected limits",
+    "old reader refusal after closed65"
+  ],
+  "read_only_extraction_passed": true,
+  "source_and_backing_unchanged": true,
+  "raw_image_retained": true,
+  "scope": "Fresh offline fixture only. Actual upgrade preservation and first Stop checks precede the failed API read; no whole-case pass, controls qualification, installed DEV or production change is claimed."
+}

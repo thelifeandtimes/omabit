@@ -1,0 +1,99 @@
+package runtimequalify
+
+// Declared filesystem qualification helper for unchanged85ac7c6 production and
+// test sources. Synthetic job/metadata inputs; no actual engine or worker unit.
+import (
+	"encoding/json"
+	"errors"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
+)
+
+func originalClaimRoot(t *testing.T) string {
+	t.Helper()
+	root := os.Getenv("OMABIT_RECORDING_CLAIM_UPGRADE_ROOT")
+	if !filepath.IsAbs(root) || filepath.Clean(root) != root || !strings.HasPrefix(root, "/tmp/omabit-recording-claim-upgrade-") {
+		t.Fatal("explicit fresh claim qualification root required")
+	}
+	return root
+}
+
+func TestOriginalRecordingClaimWriter(t *testing.T) {
+	root := originalClaimRoot(t)
+	job, _, _, m := recordingJobFixture(t)
+	job.ID = strings.Repeat("1", 32)
+	job.State.Runtime.Directory = "/fixture/recording/runtime/" + job.State.ID
+	job.State.Runtime.PillPath = filepath.Join(job.State.Runtime.Directory, runtimecandidate.PillName)
+	m.SessionID, m.AttachedAt = strings.Repeat("2", 32), time.Unix(1700000000, 456).UTC()
+	m.Identity.RecorderNamespaces = recording.HostNamespaces{User: 1, Mount: 2, PID: 3, Network: 4}
+	if job.Validate() != nil || !job.MatchesAdmission(m) {
+		t.Fatal("synthetic qualification job lost its original admission")
+	}
+	path := filepath.Join(root, "original")
+	if err := os.Mkdir(path, 0700); err != nil {
+		t.Fatal("fresh writer root required", err)
+	}
+	s, err := OpenRecordingJobs(path, 8, 1<<20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	digest, err := s.Create(job)
+	if err != nil {
+		t.Fatal(err)
+	}
+	worker := RecordingWorkerIdentity{ExecutableSHA256: job.ExecutableSHA256, PID: 4242, HostBootID: m.Identity.HostBootID, Namespaces: m.Identity.RecorderNamespaces}
+	lease, err := s.Claim(job.ID, digest, worker)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = lease.Ready(m); err != nil {
+		t.Fatal(err)
+	}
+	if err = lease.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = s.ReadReady(job.ID, digest); err != nil {
+		t.Fatal("original writer's saved readiness failed", err)
+	}
+	raw, err := m.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(root, "metadata.json"), raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	context, _ := json.Marshal(struct{ JobID, SHA256 string }{job.ID, digest})
+	if err = os.WriteFile(filepath.Join(root, "selection.json"), context, 0600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestOriginalRecordingClaimReaderRefusesSuccessor(t *testing.T) {
+	root := originalClaimRoot(t)
+	raw, err := os.ReadFile(filepath.Join(root, "selection.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var selection struct{ JobID, SHA256 string }
+	if json.Unmarshal(raw, &selection) != nil {
+		t.Fatal("invalid explicit selection")
+	}
+	s, err := OpenRecordingJobs(filepath.Join(root, "successor"), 8, 1<<20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	if _, err = s.Read(selection.JobID, selection.SHA256); err != nil {
+		t.Fatal("successor changed the original job format", err)
+	}
+	if _, err = s.ReadReady(selection.JobID, selection.SHA256); !errors.Is(err, ErrRecordingJobStorage) {
+		t.Fatal("original reader admitted successor claim", err)
+	}
+}

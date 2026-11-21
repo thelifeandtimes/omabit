@@ -1,0 +1,217 @@
+{
+  "memory": "M765",
+  "status": "whole-case-failed-by-lock-file-count",
+  "source_commit": "c88784cc490294067aaac786a2af89ace1e95c27",
+  "harness_commit": "aa3049dc0177d21705081f8004251daedaa422c0",
+  "cases": {
+    "burst": {
+      "independent_original_decoder_matches": true,
+      "zero_writer_lock": "empty-file hash retained in guest proof; non-content marker intentionally excluded from fixed exports",
+      "encoded_bytes": 1596788,
+      "segments": 30,
+      "stdout_bytes": 1575653,
+      "stderr_bytes": 2193,
+      "capture": {
+        "session_id": "72e10d0e2bfb89406c4cd1a5d78e6ba4",
+        "attachment_acknowledged": true,
+        "ready_acknowledged": true,
+        "stats": {
+          "TransportFrames": 245,
+          "RecordedChunks": 245,
+          "OriginalBytes": 1577846,
+          "KnownUnrecordedBytes": 0,
+          "AtFrameBoundary": true
+        },
+        "gap_saved": false,
+        "exit_saved": true,
+        "closed_durably": true
+      }
+    },
+    "session-limit": {
+      "independent_original_decoder_matches": true,
+      "zero_writer_lock": "empty-file hash retained in guest proof; non-content marker intentionally excluded from fixed exports",
+      "encoded_bytes": 1030603,
+      "segments": 18,
+      "stdout_bytes": 1010684,
+      "stderr_bytes": 160,
+      "capture": {
+        "session_id": "ff0589155bd40103fdacfe12db38a358",
+        "attachment_acknowledged": true,
+        "ready_acknowledged": true,
+        "stats": {
+          "TransportFrames": 286,
+          "RecordedChunks": 286,
+          "OriginalBytes": 1010844,
+          "KnownUnrecordedBytes": 29725,
+          "AtFrameBoundary": false
+        },
+        "gap_reason": "disk-pressure",
+        "gap_saved": true,
+        "exit_saved": false,
+        "closed_durably": true
+      }
+    },
+    "free-space": {
+      "independent_original_decoder_matches": true,
+      "zero_writer_lock": "empty-file hash retained in guest proof; non-content marker intentionally excluded from fixed exports",
+      "encoded_bytes": 2233,
+      "segments": 1,
+      "stdout_bytes": 730,
+      "stderr_bytes": 160,
+      "capture": {
+        "session_id": "fb301c432e74a251f62185110166632c",
+        "attachment_acknowledged": true,
+        "ready_acknowledged": true,
+        "stats": {
+          "TransportFrames": 20,
+          "RecordedChunks": 20,
+          "OriginalBytes": 890,
+          "KnownUnrecordedBytes": 29,
+          "AtFrameBoundary": false
+        },
+        "gap_reason": "disk-pressure",
+        "gap_saved": false,
+        "exit_saved": false,
+        "closed_durably": true
+      }
+    }
+  },
+  "pressure": {
+    "allocated_filler_bytes": 132526080,
+    "free_before": 668348416,
+    "free_after": 535822336,
+    "reserve_bytes": 536870912
+  },
+  "refusal": {
+    "three_original_jobs": true,
+    "actual_full_native_container_inventory_empty_before_and_after": true,
+    "harness_defect": "len(iterdir()) counts the root admission.lock as a fourth job; source writer creates this zero-byte lock. Earlier extraction intentionally exports content JSON only.",
+    "saved_original_failed_capacity_receipt": true,
+    "public_observation": "unknown/recovery_required with requested running intent, consistent with generic failed Start; not evidence of a newly created container",
+    "next": "Fresh retry separates the empty admission.lock from three job directories and compares all immutable job-file hashes, then performs final Stop/intent and capacity checks. No product behavior changed."
+  },
+  "limits": "Selected burst/session/isolated-filesystem pressure gates pass independently; whole case remains failed. Final capacity inventory, final intent and final combined release/upgrade remain unqualified.",
+  "evidence": {
+    "/tmp/omabit-050-pressure-evidence-02/files/managed/runner.sqlite": "6fd44b85e4752a9901330d632f9c3af22423a8bb3c77dc422e845bb52b275849",
+    "/tmp/omabit-050-pressure-evidence-02/files/managed/runner.sqlite-shm": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+    "/tmp/omabit-050-pressure-evidence-02/files/managed/runner.sqlite-wal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/730c25eaafb9221789036aa74a7b4a7b/claim.json": "7fa00d3ce5f9b35d8285f2da4ec4c8b6c304afc8bd08ec5a6de4a7e5bed8e7e7",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/730c25eaafb9221789036aa74a7b4a7b/job.json": "01f952341eb4d711e24f76cfbc1f0fd66eb9ab1b6466e4997e0ec3371b750ec9",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/730c25eaafb9221789036aa74a7b4a7b/ready.json": "58a0b329e163f298a525073d7488e70e90bb2081f72ad06e9e91a30274f99e2a",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/730c25eaafb9221789036aa74a7b4a7b/result.json": "bfbbd3d8ae397d3dd8fd643b68ca30ce27b289cb8b23491c0371d94be44abc28",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/730c25eaafb9221789036aa74a7b4a7b/session.json": "3c98df667573d05fdc35ec66f4eebbf53d50715318352fa8ce53dad390a6be39",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/d90d2a282c928ada30d8af9f5d8f73b3/claim.json": "d86158e60b257e10eb8464e5fed6ce47170bc5dfae26b3c58f14fbd90524e9cb",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/d90d2a282c928ada30d8af9f5d8f73b3/job.json": "8d609c20a7741141c9611fa4feecdb36bc9cf283ee77c529caa2184364fb2955",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/d90d2a282c928ada30d8af9f5d8f73b3/ready.json": "c3d7b480e6da81ffbb58e55418dac75ac46ac3dd00a2f54fa1ba85e3a16bfdc7",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/d90d2a282c928ada30d8af9f5d8f73b3/result.json": "025e5a887014fabd32600a1c8bb3409a65d3772000e858625d17db82846e60a3",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/d90d2a282c928ada30d8af9f5d8f73b3/session.json": "c344b8ce33d9b30a722bca11829303fd26eb2acf480497f2098698900ce40c70",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/ef27b72b535f4f2b410cee68ee57ba05/claim.json": "11f174ef186bbdb53cf768b48f065c4c19cc209e0e86a1ee22d1fb77b13c504f",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/ef27b72b535f4f2b410cee68ee57ba05/job.json": "6a502e0e112eadd80945ce716899daa03d675b64689387ef534ea90f2a8cc072",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/ef27b72b535f4f2b410cee68ee57ba05/ready.json": "57d7d14f00ac1be7b060789ee374c2ef74d5d7025deb294583aa966899d0e35c",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/ef27b72b535f4f2b410cee68ee57ba05/result.json": "064531b9a28efa5e3a1638f6ae1bbdfed52d0a6a6f845ed4d48e6af393d6a748",
+    "/tmp/omabit-050-pressure-evidence-02/files/recording-jobs/ef27b72b535f4f2b410cee68ee57ba05/session.json": "ca2db8f3282d278dfe91fe4ead26923e3f05713af88911ffa5898e520208ffd2",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/commands.jsonl": "8c0b228b93a614361e699dfc9a3ae634063aacce26427f1c8386bb9cdd8134a2",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000002.obr": "3c885176839af7b8a6d0c8fbad418dfd743b02f922bdbc6424fa55da0a412a17",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000003.obr": "6836ba076c768947f1d1c1c956400431d3fdc5bda6a91787acf02c16d21ca7e7",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000004.obr": "ed701dc4b098c9f5905d503565b1745370b2a5fb8730c4ac558a1a9bbb95258f",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000005.obr": "dc38820f8d4aa276eaf0720d4950344603e12d98257b6dda5b3995ba6ac04b1a",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000006.obr": "77395346a54a777c423962a76e7eca65dd20b72fad8ab0e6b8d49a675fd64091",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000007.obr": "09810762ff95de075335359fe1c1d9c5a1c4973c97eff63846ef2cef988950f3",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000008.obr": "c949f847e8dbd39b03423b514c80d645c50363be37400f3c1c4c2cd8e33fbd6b",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000009.obr": "1b82b3deec71b7b743183921f912d8aebc3ec67e571590236bfbd1a535610df4",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000010.obr": "351d30308506ef4b2272e3cc05bd89d556eb0d3ea086d638b5dbb6402ae684b7",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000011.obr": "0389aff57701226039ebb5016467f6c67aa2f3a90c1c060d0f2e3e9f02bacc7d",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000012.obr": "5a0f4ad7ab69f5a8249f6bc9cc0c93e47ae9b0b205a8a96ba3c5fbf99d171afd",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000013.obr": "bab6a090ed1bacc83197138e1fc60b88c0abf380e346cf7dc8dc3cedb2719229",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000014.obr": "f8b474c4ce3b9db27461324582efd2ab533f09dab6afae9ae459e523df3bc328",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000015.obr": "65602dad26632b8d85cca2f58f0856400182b22f8c17ff54dfec883426b05b81",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000016.obr": "775cca193435bed215d3bd0ed17e97dbb50066bcbdf7813e776069e65233221a",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000017.obr": "353d6a87c23e3f084e84e0764ecba5244756866b41945713f3db10f478715078",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000018.obr": "d182769f4a590397e20c2415e27da42b84c07401c635c201cc78640df3e37fc3",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000019.obr": "30ed4b30c0e7befe78c81103398e25ec7e822ad081ef3c5432282884843c58ba",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000020.obr": "a95fbf3e90c1fc0d6ccd7cdef55d650b249ec10a3290fe5f2b0657955e1c8e50",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000021.obr": "c73e48b53d327f02bfb3de03f94c0a8f0c7c1d476c5d2ea6e486494e002b3f3d",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000022.obr": "592146bd7e14fa45bf63cf7ee93d8b8a09e7e5a49341da3be9ad78c7b5490290",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000023.obr": "f3c4bdaf3ae56fac06e39b076da488eab6b303457ad66638b461dc4749388809",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000024.obr": "435e663335a1e8c8b15bea4b13d3c4e42f971e50cb54ca3a330b4bd5f4094dff",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000025.obr": "6ccfbe4d7d5cd9f92cc27abc2aa1f3515fb1ded3c763d86ad9dda04e00429d9b",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000026.obr": "2aa48da34824ac1b6a2e0a70d49ed29580a1ff2187285ab4df4687ebf9971181",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000027.obr": "28eed796fb104c40737a67aa42a8051c6a2c23ef98a99c48e862405b4badae4f",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000028.obr": "2a0e785084889fb23b3cdbe9a86fdbe1ce48d7fb3278233436f01fba81f5877f",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000029.obr": "776f9985cec859b185e7ed2166b31f0e8b59db5e5b41129634636f144c39e018",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames-00000030.obr": "566dfdaea9fb2bb28d69f4f98845ef36586e00f24c94a567d49c856dcdc50741",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/frames.obr": "149a5da64ae850901ead069f724af637880c41fb733e808b412fcdc0219a2562",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/72e10d0e2bfb89406c4cd1a5d78e6ba4/metadata.json": "a34b125ae4011bb0e7448b2f0fcea057a0f86596bc0a9a7a901b6a7f798264b9",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/fb301c432e74a251f62185110166632c/frames.obr": "6de7f0e74181121ff324046140a58238b27d4cf61c1d59fe4c1f8f3ab79ea478",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/fb301c432e74a251f62185110166632c/metadata.json": "2611427a12856060bbb9092a71665414fa58e8480738e3a0722de21aba7db9d6",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000002.obr": "06facb0f917fea73afa04574be693449b821c66847fb224da54b92be194a404a",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000003.obr": "db6a558a1052271be0d9bc5c8e935e3aac51f8b5d34369250bb7f536fea8bb13",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000004.obr": "3f7e1348118f1c268f350a290c55c892160126827613a5e91d0a59a09c6246c3",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000005.obr": "1b6279226116dc9aef35afdd28fe152b5c8aa69083158a75af2cc999ffc5872d",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000006.obr": "8346e1a1325ead8d0df2f6b502cad0816317d5efccb315eb9922196025bcf99f",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000007.obr": "fbc05c6621d8360555af72df7d7c37ee7ca3220d0357722d10146e72a448d162",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000008.obr": "756907d71d09164ab51563776ce335964bf8983e5a2159e7fe9b548b4540a019",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000009.obr": "a1793b85eb96ea3e55fde65453bd7d5ea8338c321a96b0eef9a1338259015f64",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000010.obr": "8fb7d8f5fcc238833b453dbecf4581fa94086fee02a04c2739aa82c352618122",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000011.obr": "3d5e784a91f724f86ee81786374eab304595ed7a1076748eef4b61cda364251c",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000012.obr": "3613f2dfc8bc52d787d28d87b26913383e7aa40eb7331a8825d169186a2dedf7",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000013.obr": "2e0650e9a214150173d83c275a0935c4cd3d5b1ea28805048acf45df5d7d41a2",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000014.obr": "fd2d5f09a281731de1a994704e974b9b265e2da3d90839baf5a9a23a522b8c20",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000015.obr": "faeb8a189eb4e293d7a465360f42cdfcd56660ea4d6231e2e12f768e101c64e7",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000016.obr": "03fbef86617a0bf91c2ae0e21598d0f45d6c3137f0f14ca761f3e7132c969b75",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000017.obr": "c4ab195f531c4c7bb69756899d88969c1ea1837d8d4437bdf57d16fb2ecba8c2",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames-00000018.obr": "cb8ad83f1a80966d6baf45c860828ee40f186923aa25c9cc21e1860e269abd47",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/frames.obr": "8a4ec85df47fb778a5cf6c570925899a75c5b6a26ca9dd6772e4c8ac5327dbb3",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/final-recording-files/ff0589155bd40103fdacfe12db38a358/metadata.json": "96a305931e8fb0257a9df206b7c492a30ad1929a53da243fcbf4286beb8c588c",
+    "/tmp/omabit-050-pressure-evidence-02/files/results/result.json": "f87de762a5cbb3c60301b61cac1748c22dd9ae7b55ceba3ab7336066f47d6edb",
+    "/tmp/omabit-050-pressure-evidence-02/result.json": "0258eaf6bebe958bd1bd4f4f2498799bb301bbd6ad660a30de9de537feedc974",
+    "/tmp/omabit-050-pressure-evidence-02/command.json": "6fc6bc5b02d8e4f777d4c1819ce0e84a044eda0e358870caacaf2f7d0a61d190",
+    "/tmp/omabit-issues-recording-pressure-vm-02/host.json": "00b6046477b81c9fec7a86cc9b383dc88bb44a5c7f809e37d454273b0f9accee",
+    "/tmp/omabit-issues-recording-pressure-vm-02/result.json": "9d2e92d086c5171cd3ab36e743b70231edd3da33645415fbe0341a5dc90eaa4c",
+    "/tmp/omabit-issues-recording-pressure-vm-02/serial.log": "35c594698afa92fe660471949a63e05fb5ad9c586235b7bad8b05bed980528c5",
+    "/tmp/omabit-050-handoff/extract-pressure02.py": "c010dd835255b278755a2a8d22e1764c61edf378501ef5b667ca33187c23505f",
+    "/tmp/omabit-050-handoff/verify-pressure02.py": "8f5a86eba2b94e640fdd374c561f91bf5e267a3765a11c6801a3820e734b10ca"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Exact original recordings, jobs, SQL, commands, all case proofs and source/input pins independently retained. Failed disposable root adds no required original transition fixture; immutable pristine/app62/current65/recording64/65 fixtures remain. Never resume ended capsules.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-02/root.qcow2",
+        "sha256": "5a792abf09c49b46960f4af371a657d15e5f4707dd95366aa1bc7fbf583c9e1a",
+        "allocated_bytes": 1225920512
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-02/payload.ext4",
+        "sha256": "bff497d93cfcd01f60442aa7d3e9d6542e6b92020f7c3e51fb1b54fd0e37d8a8",
+        "allocated_bytes": 315478016
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-02/init",
+        "sha256": "63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7",
+        "allocated_bytes": 4096000
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-02/initramfs.cpio",
+        "sha256": "04c117a7edfd613a3088298887213049f5b0a6314f601989642ce69c93285eda",
+        "allocated_bytes": 9101312
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-02/initramfs.cpio",
+        "sha256": "e74bda86f79921741a1a1f824d1160ebd944ac57736b9c6ddb9e3ac46f8cca4d",
+        "allocated_bytes": 8024064
+      }
+    ],
+    "reclaimed_bytes": 1562619904,
+    "after": {
+      "charged_bytes": 49122045952,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 0,
+      "total_with_reserves": 49122045952
+    },
+    "full_charge_record": {
+      "path": "/tmp/omabit-050-pressure-retirement02-charge.json",
+      "sha256": "f232443c27f8f1d9cf64f097e42aaf2076399581edaca32a2ded3b11e950a178"
+    }
+  }
+}

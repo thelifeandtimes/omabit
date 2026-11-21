@@ -118,10 +118,21 @@ func Snapshot(directory string) (Manifest, error) {
 		return Manifest{}, err
 	}
 	defer root.Close()
+	return SnapshotRoot(root)
+}
+
+// SnapshotRoot observes an already opened source directory. Callers can pin a
+// user-approved root for a long-lived service without resolving its path again.
+// The caller retains ownership of root. The same traversal and byte limits as
+// Snapshot apply; no link or special file is admitted into the source manifest.
+func SnapshotRoot(root *os.Root) (Manifest, error) {
+	if root == nil {
+		return Manifest{}, errors.New("source root required")
+	}
 	files := []File{}
 	var total int64
 	entries := 0
-	err = fs.WalkDir(root.FS(), ".", func(name string, d fs.DirEntry, walkErr error) error {
+	err := fs.WalkDir(root.FS(), ".", func(name string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}

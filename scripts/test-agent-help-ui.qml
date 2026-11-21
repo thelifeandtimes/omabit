@@ -8,6 +8,7 @@ Item {
   readonly property var agent:service.agentHelp
   property int phase:0
   property bool persistentAgent:false
+  property int expectedSkillCount:3
   property double launchedAt:0
   property int ticks:0
   property bool captured:false
@@ -23,11 +24,12 @@ Item {
         test.check(!a.error,a.error)
         if(test.phase===0 && a.value){
           test.check(a.value.agent==="opencode" && a.target==="/data/config/opencode/skills","Default agent or installation directory incorrect")
-          test.find(w.contentItem,"agent-skill-install-omabit-operator").clicked();test.phase=1
-        }else if(test.phase===1 && a.value.skills[0].state==="installed"){
-          test.find(w.contentItem,"agent-skill-install-omabit-plugin-developer").clicked();test.phase=2
-        }else if(test.phase===2 && a.value.skills.every(function(s){return s.state==="installed"})){
-          test.find(w.contentItem,"agent-help-launch").clicked();test.phase=3
+          test.check(a.value.skills.length===test.expectedSkillCount,"Fixture skill inventory differs")
+          test.phase=1
+        }else if(test.phase===1){
+          var pending=a.value.skills.filter(function(s){return s.state!=="installed"})
+          if(pending.length){test.find(w.contentItem,"agent-skill-install-"+pending[0].name).clicked()}
+          else{test.find(w.contentItem,"agent-help-launch").clicked();test.phase=3}
         }else if(test.phase===3 && a.message.indexOf("Opened opencode")===0){
           test.service.remoteMode="offline";a.refresh();test.phase=4
         }else if(test.phase===4 && a.value.agent===""){
@@ -49,7 +51,7 @@ Item {
           test.captured=false;w.contentItem.grabToImage(function(result){test.captured=result.saveToFile("/data/state/agent-skills.png")});test.phase=10
         }else if(test.phase===10 && test.captured && test.persistentAgent){
           test.service.activationEnabled=false;w.visible=false;test.phase=11
-        }else if(test.phase===10 && test.captured || test.phase===11 && Date.now()-test.launchedAt>22000){console.log("PASS: agent help uses the default launcher, preserves the profile, installs both complete skills and explains no default");Qt.quit()}
+        }else if(test.phase===10 && test.captured || test.phase===11 && Date.now()-test.launchedAt>22000){console.log("PASS: agent help uses the default launcher, preserves the profile, installs all complete skills and explains no default");Qt.quit()}
       }catch(e){console.error("FAIL: "+e.message+" "+e.stack);Qt.exit(1)}
     }
   }

@@ -144,6 +144,13 @@ func (r *Server) discardDeskStage(w http.ResponseWriter, req *http.Request, acto
 	// Hold the mutation lock through deletion. Conservatively retain all stages
 	// for a target while any desk effect is unresolved, including another actor's.
 	guard := func(stage deskwork.StageReceipt) error {
+		inUse, err := (grubberyJournal{r.s}).StageInUse(req.Context(), stage.Intent.ID)
+		if err != nil {
+			return err
+		}
+		if inUse {
+			return conflict("app_outcome_unresolved", "retain source for the exact unfinished app operation")
+		}
 		ids, err := deskOperationIDs(r.s.db)
 		if err != nil {
 			return err

@@ -1,0 +1,80 @@
+package managed
+import("encoding/json";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify";"bytes";"os";"strings";"testing";"time";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shiproute")
+func TestDeskOriginalWriter(t *testing.T) {
+ if StateSchemaVersion!=59 {t.Fatal("not the original schema59 writer")}
+ if err:=os.Mkdir("/tmp/schema-state",0700);err!=nil{t.Fatal(err)}
+ s,err:=testOpenStore("/tmp/schema-state");if err!=nil{t.Fatal(err)};defer s.close()
+ if _,_,err=s.register("fixture",registration("alpha","original-register",18080));err!=nil{t.Fatal(err)}
+ _,err=s.putAppPolicy("fixture",apppolicy.Update{Scope:"desk",Target:apppolicy.Target{InstanceID:"alpha",Desk:"example"},Gates:apppolicy.Gates{CreateDesk:apppolicy.Inherit,Commit:apppolicy.Allow,Publish:apppolicy.Block}});if err!=nil{t.Fatal(err)}
+ r,_,err:=s.createDeskOperation("fixture",deskIntentFixture());if err!=nil{t.Fatal(err)}
+ _,err=s.appendDeskStep(r,deskStep(r,"dispatched"));if err!=nil{t.Fatal(err)}
+ target:=apppolicy.Target{InstanceID:"alpha",Desk:"example"};setting:=deskwork.DefaultSetting(target);setting.Desk.Instructions="Compile and check the receiver before release";_,err=s.putDeskSetting("desktop",deskwork.SettingUpdate{Target:target,Desk:setting.Desk});if err!=nil{t.Fatal(err)}
+ baseline:=sourceBaselineFixture();baseline.Binding.SettingsRevision=1;if err=s.saveSourceBaseline(baseline);err!=nil{t.Fatal(err)}
+ record:=deploymentRecordFixture(t);record.Intent.Intent.ID=strings.Repeat("e",64);record.Intent.Intent.Target.Desk="preview";record.Intent.SourceName="preview"
+ op,_,err:=s.createDeskDeployment(record);if err!=nil{t.Fatal(err)};completeDeploymentFixture(t,s,record,op)
+ recordRelease:=releaseRecordFixture(t);recordRelease.Intent.Intent.ID=strings.Repeat("f",64);recordRelease.Intent.Intent.Target.Desk="release"
+ recordRelease.Review.DeskSetting=deskwork.DefaultSetting(recordRelease.Intent.Intent.Target);recordRelease.Review.DeskSetting.Desk.Publication="source";g02Check(t,recordRelease.Review.Seal());recordRelease.Intent.ReviewDigest=recordRelease.Review.Digest
+ opRelease,_,err:=s.createDeskRelease(recordRelease);g02Check(t,err);opRelease,err=s.appendDeskStep(opRelease,deskStep(opRelease,"dispatched"));g02Check(t,err);opRelease,err=s.appendDeskStep(opRelease,deskStep(opRelease,"acknowledged"));g02Check(t,err)
+ after:=recordRelease.Review.Observation;after.Publication="published";app:=recordRelease.Review.Application
+ _,err=s.appendDeskStep(opRelease,deskwork.Step{Kind:opRelease.Intent.Action,State:"observed",At:time.Now().UTC(),Observation:&after,Application:&app});g02Check(t,err)
+ recordAdoption:=adoptionRecordFixture(t);recordAdoption.Intent.Intent.ID=strings.Repeat("9",64);recordAdoption.Intent.Intent.Target.Desk="adopt";recordAdoption.Intent.SourceName="adopt"
+ policy,err:=loadAppPolicy(s.db);g02Check(t,err)
+ policy,err=s.putAppPolicy("fixture",apppolicy.Update{ExpectedRevision:policy.Revision,Scope:"desk",Target:recordAdoption.Intent.Intent.Target,Gates:apppolicy.Gates{CreateDesk:apppolicy.Inherit,Commit:apppolicy.Allow,Publish:apppolicy.Block}});g02Check(t,err);recordAdoption.Intent.Intent.PolicyRevision=policy.Revision
+ adopted,err:=s.adoptDeskSource(recordAdoption);g02Check(t,err);if adopted.Steps[len(adopted.Steps)-1].State!="observed"{t.Fatal(adopted)}
+ for n,phase:=range []string{"observed","dispatched"}{
+  receiver:=receiverRecordFixture(t);receiver.Intent.Intent.ID=strings.Repeat(string(rune('7'+n)),64);receiver.Intent.Intent.Target.Desk="receiver-"+phase
+  receiver.Review.DeskSetting=deskwork.DefaultSetting(receiver.Intent.Intent.Target);g02Check(t,receiver.Review.Seal());receiver.Intent.ReviewDigest=receiver.Review.Digest
+  op,_,err:=s.createDeskReceiver(receiver);g02Check(t,err);op,err=s.appendDeskStep(op,deskStep(op,"dispatched"));g02Check(t,err)
+  if phase=="observed"{
+   op,err=s.appendDeskStep(op,deskStep(op,"acknowledged"));g02Check(t,err)
+   after:=deskwork.Observation{Exists:true,Revision:1,ClayHash:receiver.Intent.Publisher.ExpectedHash,Publication:"private"}
+   app:=deskwork.AppState{Zest:"live",SourceRevision:1,SourceShip:receiver.Intent.Publisher.Ship,SourceDesk:receiver.Intent.Publisher.Desk,ExpectedAgents:[]string{},Agents:[]deskwork.AppAgent{},FrontendMode:"none",FrontendState:"unavailable"}
+   _,err=s.appendDeskStep(op,deskwork.Step{Kind:"install-remote",State:"observed",At:time.Now().UTC(),Observation:&after,Application:&app});g02Check(t,err)
+  }
+ }
+
+
+
+ for n,phase:=range []string{"observed","dispatched"}{
+  f:=frontendRecordFixture(t);f.Intent.Intent.ID=strings.Repeat(string(rune('5'+n)),64);f.Intent.Intent.Target.Desk="frontend-"+phase;f.Review.Stage.Target=f.Intent.Intent.Target
+  f.Review.DeskSetting=deskwork.DefaultSetting(f.Intent.Intent.Target);g02Check(t,f.Review.Seal());f.Intent.ReviewDigest=f.Review.Digest
+  op,_,err:=s.createDeskFrontend(f);g02Check(t,err);op,err=s.appendDeskStep(op,deskStep(op,"dispatched"));g02Check(t,err)
+  if phase=="observed" {
+   op,err=s.appendDeskStep(op,deskwork.Step{Kind:op.Intent.Action,State:"acknowledged",At:time.Now().UTC(),FrontendTransfer:&deskwork.FrontendTransfer{Attempted:true,Acknowledged:true,SessionCleanup:"confirmed"}});g02Check(t,err)
+   after:=f.Review.Observation;after.Revision++;after.ClayHash="0v4"
+   app:=f.Review.Application;app.SourceRevision=after.Revision;app.DocketHash="0v5";app.FrontendDocketHash="0v5"
+   frontend:=f.Review.Frontend;frontend.SourceRevision=after.Revision;frontend.Declared.GlobHash=f.Review.ExpectedGlobHash;frontend.Declared.DocketHash="0v5";frontend.Current=frontend.Declared
+   _,err=s.appendDeskStep(op,deskwork.Step{Kind:op.Intent.Action,State:"observed",At:time.Now().UTC(),Observation:&after,Application:&app,Frontend:&frontend,FrontendSourceDigest:f.Review.UnchangedSourceDigest,VerifiedSourceDigest:f.Review.ArtifactDigest});g02Check(t,err)
+  }
+ }
+
+}
+func TestResourceOriginalRoutes(t *testing.T) {
+ s,err:=testOpenStore("/tmp/schema-state");g02Check(t,err);defer s.close()
+ u:=shiproute.Update{Binding:shiproute.Binding{RunnerID:s.runnerID,Target:apppolicy.Target{InstanceID:"alpha"},Ship:"~zod",Continuity:strings.Repeat("c",64)},Settings:shiproute.DefaultSettings()};u.Settings.DisabledAutomatic=[]string{"managed-http"}
+ _,err=s.putShipRoutes("fixture",u);g02Check(t,err)
+}
+func TestDeskOlderReaderRefusesUnchanged(t *testing.T) {
+ path:="/tmp/schema-state/runner.sqlite";before,err:=os.ReadFile(path);if err!=nil{t.Fatal(err)}
+ if s,err:=testOpenStore("/tmp/schema-state");err==nil{s.close();t.Fatal("older reader accepted newer state")}
+ after,err:=os.ReadFile(path);if err!=nil||!bytes.Equal(before,after){t.Fatal("refused reader changed state",err)}
+}
+
+func TestStopOriginal59Project(t *testing.T) {
+ if StateSchemaVersion!=59 {t.Fatal("not original59")}
+ s,err:=testOpenStore("/tmp/schema-state");g02Check(t,err);defer s.close()
+ p,_,_:=readyStopProject(t,s)
+ selected,err:=s.projectFleetSelection(p.ID,"");g02Check(t,err)
+ state,err:=runtimequalify.SeedProjectExpansion(selected);g02Check(t,err)
+ state.Members[0].Initialized=memberReadinessProof(t,s,p.ID,state.Members[0].Member.InstanceID).Storage
+ state.Members[0].Phase="stop-dispatched"
+ now:=time.Now().UTC()
+ op:=protocol.Operation{ID:"op-original59-stop",ProjectID:p.ID,InstanceID:state.Members[0].Member.InstanceID,Actor:"actor",RequestID:"original59-stop",Kind:"stop-project-ship",Status:"interrupted",ConfigRevision:p.Revision,CreatedAt:now,FinishedAt:&now,Message:"Original59 interrupted stop diagnostic retained"}
+ body,err:=json.Marshal(state);g02Check(t,err)
+ tx,err:=s.db.Begin();g02Check(t,err);defer tx.Rollback()
+ _,err=tx.Exec("INSERT INTO project_expansions(project_id,body) VALUES(?,?)",p.ID,body);g02Check(t,err)
+ digest,err:=p.Plan.Digest();g02Check(t,err)
+ input:=protocol.ProjectActionRequest{Kind:"member-stop",InstanceID:op.InstanceID,ContainerID:state.Members[0].Creator.Container.ID,ExpectedRevision:p.Revision,ReviewDigest:digest,RequestID:op.RequestID,ConfirmAction:true}
+ fingerprint,err:=json.Marshal(struct{Project string;Request protocol.ProjectActionRequest}{p.ID,input});g02Check(t,err)
+ g02Check(t,insertOperation(tx,op,string(fingerprint)));g02Check(t,tx.Commit())
+}

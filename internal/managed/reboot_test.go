@@ -240,6 +240,7 @@ func TestSchema14UpgradePreservesRecordsWithoutInventingBootEvidence(t *testing.
 	if err := s.db.QueryRow("SELECT body FROM instances WHERE id='alpha'").Scan(&before); err != nil {
 		t.Fatal(err)
 	}
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	if _, err := s.db.Exec("PRAGMA user_version=14"); err != nil {
 		t.Fatal(err)
 	}

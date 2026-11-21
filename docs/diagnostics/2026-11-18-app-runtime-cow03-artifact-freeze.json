@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "source_commit": "6e810bc937e57a9f5ff521c8957502fdceb71bb5",
+  "clean_before_after": true,
+  "tracked_ordinary_source_inputs": 3781,
+  "private_manifest_sha256": "25b425a5e1e051dbc726097e5e1cfdd6bb09caa6054d86ed723191796f62fef7",
+  "artifacts": {
+    "omabit": {
+      "sha256": "99e49dfa47662a5db5b09a1aa731171e862573b16049ed5cf33c4c4632c6ec18",
+      "bytes": 17191175
+    },
+    "urbit-collector": {
+      "sha256": "52f9ee1bebc77a1cf834768c417b2db59b494c8947eaf5858cf0e1c0d2a7ec3b",
+      "bytes": 9031943
+    },
+    "urbit-runner": {
+      "sha256": "da31f97354f8060e865f180aac10dcd0ad2314caea0e89128aa4ad686193d133",
+      "bytes": 20562183
+    },
+    "managed.test": {
+      "sha256": "f1b57a49ccb0e7d82d175907b339dfcf5f7e4b95edfd96d72a09a5c50a043b92",
+      "bytes": 29503751
+    }
+  },
+  "schema": 63,
+  "storage": {
+    "charged_bytes": 50487672832,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 1006632960,
+    "total_with_reserves": 51494305792
+  },
+  "limits": {
+    "capsule_scratch_bytes": 939524096,
+    "host_build_reserve_bytes": 67108864,
+    "root_hard_logical_bytes": 805306368,
+    "whole_helper_minutes": 90,
+    "product_rpc_minutes": 4,
+    "vm_deadline_seconds": 6100,
+    "supervisor_deadline_seconds": 6300
+  },
+  "cache_reclaim": {
+    "objects": 30,
+    "freed_allocated_bytes": 109260800,
+    "newest_per_package_retained": 2
+  },
+  "lossless_executable_archives": {
+    "files": 16,
+    "freed_allocated_bytes": 208166912,
+    "all_inflation_verified": true,
+    "all_full_VM_SQL_receipt_log_source_files_preserved": true,
+    "current_candidate03_raw_unchanged": true,
+    "peak_archive_allocated_bytes": 124825600
+  },
+  "scope": "matching source artifacts and resource admission only; complete native two-version/restart workflow remains pending; no installed upgrade/DEV/production deployment"
+}

@@ -56,7 +56,7 @@ func ValidProjectOperationSummary(op ProjectOperationSummary, p ProjectReservati
 	member := false
 	switch op.Kind {
 	case "register-project", "prepare-project", "start-project-anchor", "recover-project-anchor", "observe-project-recovery", "continue-project-recovery":
-	case "add-project-member", "start-project-ship", "stop-project-ship", "prepare-project-member-storage", "launch-project-member", "observe-project-member", "stop-project-member", "observe-project-member-stop-exit", "retire-project-member", "resume-project-member", "observe-resumed-project-member", "observe-current-project-member", "recover-project-member":
+	case "reconcile-project-ship-stop", "add-project-member", "start-project-ship", "stop-project-ship", "prepare-project-member-storage", "launch-project-member", "observe-project-member", "stop-project-member", "observe-project-member-stop-exit", "retire-project-member", "resume-project-member", "observe-resumed-project-member", "observe-current-project-member", "recover-project-member":
 		member = true
 	default:
 		return false

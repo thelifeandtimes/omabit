@@ -1,0 +1,49 @@
+package managed
+
+// Declared SOURCE qualification helper for unchanged schema62 production code.
+// Metadata/SQLite only; never opens a runtime, runner service or user pier.
+import (
+ "bytes"
+ "encoding/json"
+ "os"
+ "path/filepath"
+ "reflect"
+ "strings"
+ "testing"
+)
+func runtimeOriginal62Root(t *testing.T) string {
+ t.Helper();root:=os.Getenv("OMABIT_APP_RUNTIME_UPGRADE_ROOT")
+ if !filepath.IsAbs(root)||filepath.Clean(root)!=root||!strings.HasPrefix(root,"/tmp/omabit-app-runtime-upgrade-") {t.Fatal("explicit disposable source fixture required")}
+ return root
+}
+func TestOriginal62AppRuntimeWriter(t *testing.T) {
+ root:=runtimeOriginal62Root(t);dir:=filepath.Join(root,"original")
+ if StateSchemaVersion!=62 {t.Fatal("wrong actual original writer")}
+ if _,err:=os.Lstat(dir);!os.IsNotExist(err) {t.Fatal("fresh original writer output required")}
+ g02Check(t,os.Mkdir(dir,0700))
+ loadOriginal60AppFixture(t,dir)
+ s,err:=testOpenStore(dir);g02Check(t,err)
+ record,_:=grubberyFixture(t,s)
+ j:=grubberyJournal{s}
+ record,err=j.Create(t.Context(),record);g02Check(t,err)
+ record=appAppendFixture(t,j,record,record.Plan.Steps[0],"dispatched")
+ record=appAppendFixture(t,j,record,record.Plan.Steps[0],"acknowledged")
+ before:=appAllRows(t,s.db)
+ g02Check(t,s.close())
+ s,err=testOpenStore(dir);g02Check(t,err)
+ got,err:=(grubberyJournal{s}).Load(t.Context(),record.Plan.RequestID);g02Check(t,err)
+ if !reflect.DeepEqual(record,got)||!reflect.DeepEqual(before,appAllRows(t,s.db)) {t.Fatal("actual original62 lost its acknowledged phase/ancestry")}
+ g02Check(t,s.close())
+ raw,err:=json.MarshalIndent(map[string]any{"version":1,"schema":62,"original_record":record,"all_original_rows":before,"scope":"actual original62 writer with synthetic interrupted app metadata and original60/59 history; no native/runtime qualification"},"","  ");g02Check(t,err)
+ g02Check(t,os.WriteFile(filepath.Join(root,"original-report.json"),append(raw,'\n'),0600))
+}
+func TestOriginal62ReaderRefusesAppRuntime63Unchanged(t *testing.T) {
+ root:=runtimeOriginal62Root(t);dir:=filepath.Join(root,"successor")
+ if StateSchemaVersion!=62 {t.Fatal("wrong actual original reader")}
+ db:=g02RawDB(t,dir);var schema int;g02Check(t,db.QueryRow("PRAGMA user_version").Scan(&schema));g02Check(t,db.Close())
+ if schema!=63 {t.Fatal("successor fixture is not63")}
+ before,err:=os.ReadFile(filepath.Join(dir,"runner.sqlite"));g02Check(t,err)
+ if s,err:=testOpenStore(dir);err==nil {s.close();t.Fatal("actual62 writer admitted63")}
+ after,err:=os.ReadFile(filepath.Join(dir,"runner.sqlite"));g02Check(t,err)
+ if !bytes.Equal(before,after) {t.Fatal("original reader changed successor closed database")}
+}

@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "status": "failed-whole-case-preserved",
+  "candidate_source_commit": "4c0b16e9d81311269db57664aa6906187eb23cc1",
+  "scope": "fixed read-only recording07-backed closed native derived export fixture",
+  "observed_guest_status": "serial first fragment reports passed=true; this does not establish whole native qualification",
+  "host_failure": "journald splits oversized complete private proof JSON; host marker parser raises JSONDecodeError: Unterminated string",
+  "exact_task_scopes_ended": true,
+  "retained_image_sha256": "43408feeb568ab4fa45493d68fc28ec2a335b62751637b8a935af5701ca15c9b",
+  "retained_input_sha256": "cb0794073421fd5c7c8f07bd80002f953093ba3fa2a839c8041ae3c4da6aef2f",
+  "independent_verification_pending": true,
+  "correction": "retain full private proof on disk; serial status allowlists boolean gates/count plus separately pinned proof SHA-256",
+  "inert_guards_after_correction": {
+    "tests": 12,
+    "passed": true,
+    "includes_large_private_proof_and_every_gate_refusal": true
+  },
+  "retry_pending": true,
+  "production_and_installed_dev_unchanged": true,
+  "follow_up": {
+    "independent_retained_proof_and_preservation_checks_passed": true,
+    "fresh_corrected_whole_retry_passed": true,
+    "evidence": "2026-11-19-recording-derived-export-native.json",
+    "original_whole_status_remains_failed": true
+  }
+}

@@ -9368,3 +9368,5335 @@ redundant build/download copies were retired with manifests. Compact results and
 hashes remain. Charged storage with the new running review VM was39.485GiB before
 small verification downloads, which were also retired. Both existing DEV roots,
 all historical/manual environments, protected ships and production remain intact.
+
+## M579 — Exact interrupted-stop recovery contract (2026-11-17, source-qualified)
+
+Issues #16/#17 expose a recovery gap after an expanded-member clean Stop. An
+inert fixture reproduces the reported observation failure shape when exit occurs
+between preliminary/bracketed reads or during a namespace probe. This supports
+that race mechanism, not a proven predicate for the historical incident. Fleet
+inspection now binds the process and retries only a verified transition, with
+all ownership checks repeated. SSH receipt lookup now retains its guard on
+project endpoints; unsupported guarded writes refuse before client dispatch.
+
+Schema60 adds pre-signal bindings and independent reconciliation receipts. Saved
+diagnosis, live review, exact apply, original receipt lookup and ordinary Start
+have distinct contracts. Recovery binds the original typed request/container,
+preserves the interrupted operation and clears only its verified fence. Legacy
+admission-window evidence remains explicitly distinct from new process capture.
+Reopen/admission validate resolution ancestry; corruption and stale review refuse.
+
+Pinned original0.4.0/schema59 writer preservation and actual older-reader refusal
+pass. The frozen fixture records the writer, helper and SQL hashes with explicit
+supersession. Actual collector lost-reply/replay, focused managed/runtime/bridge
+race checks, the full client race suite and affected-package vet pass using inert
+fixtures. CLI help generation is networkless and creates no state. See
+[the supported source contract](project-member-recovery.md). Disposable real-runtime
+recovery and an installed non-destructive upgrade are still required. No installed
+deployment or broader issue completion is established by this source checkpoint.
+
+## M580 — Selected-runner preflight and temporary budget (2026-11-17)
+
+Issue21's preflight now distinguishes unavailable policy/API support, missing desk
+operation adapters, a missing framework adapter, operator role and exact saved
+policy scope. It contacts only the pinned selected enrollment and never boots a
+project or changes policy. A future ship grant is not inferred from environment
+compatibility. Targeted reads retain project creator/generation; all results limit
+their assurance to capability and saved policy. See
+[the source contract](app-development-preflight.md). Gall uses existing typed desk
+primitives; Grubbery remains unavailable pending its versioned adapter.
+
+Optional managed Hello metadata identifies the executable's compiled provenance,
+hash and schema separately from the client. It is an authenticated self-report,
+not verified release provenance; absent older-peer metadata stays unknown. Inert
+selected-runner/policy-scope/identity/role tests, managed API provenance, offline
+help and affected vet pass. This does not identify the historical incident's
+runner or establish an installed matching deployment or native app execution.
+
+The user explicitly authorized48GiB aggregate evidence/DEV storage for this goal,
+with one runtime experiment active and production/existing ships untouched.
+[Experiment isolation](experiment-isolation.md) records the scoped exception; the
+normal40GiB default is unchanged. This is separate from M577's expired allowance.
+
+## M581 — Shared CLI/MCP source checkpoint (2026-11-17)
+
+Issue19 now has a typed service facade, a maintained public CLI inventory with
+explicit exclusions, canonical inferred input/output schemas and version1 result
+envelopes. `omabit call` and the official SDK1.8.0 stdio adapter invoke those same
+handlers. Per-call target pins, server allowlists, role/capability/policy admission,
+exact original request IDs and bounded results are retained. Existing CLI output
+contracts remain separate and unchanged. See [coverage and limits](core-interfaces.md).
+
+Focused fixtures found and corrected a schema-number mismatch without dispatch:
+json.Number was classified as string by the inferred-schema library. Exact int64/
+uint64 conversion now preserves review/revision/inode values above2^53. Canonical
+output validation also runs before returning a successful envelope. Arbitrary
+transport/runtime diagnostic text is not reflected into model-visible errors.
+
+Actual CLI dispatch and SDK stdio subprocess fixtures agree on saved policy and
+input/capability/role/policy refusals. Four legacy protocol revisions negotiate;
+newer2026 negotiation, named-client products and HTTP remain unqualified. Pinned
+BUILD/SKILLS resources and ordinary tool reads serve the same rehashed Markdown;
+legacy two-skill bundles remain accepted and changed/linked/unlisted resources
+refuse. Reading guidance never installs it or grants authority.
+
+The built Omabit MCP adapter submitted a reconciliation, lost its reply, closed,
+then the built CLI found the exact receipt after authoritative store/manager
+reopen with no observation backend. The old interruption remained unchanged and
+lookup performed no additional observation/effect. This is real API/SQLite and an inert runtime
+observer. An initial fixture directory mode failure was corrected without
+weakening socket checks. A combined rerun also exposed a non-atomic observer
+counter in the earlier collector fixture; it now uses an atomic counter. Focused
+race, static and networkless-help checks pass;
+CI explicitly builds helpers for this cross-interface test. Source staging,
+compound workflows, named qualification, live Urbit, installed upgrades and broader
+catalog coverage remain later slices. Production and manual-review state were not
+changed; this checkpoint does not complete issue19 or authorize publication.
+
+## M582 — Independently usable third skill delivery (2026-11-17)
+
+Issue18's `omabit-app-developer` now routes actual Gall/Grubbery source into
+preflight, staged-source/policy and recovery guidance. The entry point is backend
+focused and does not require an Omarchy frontend or sibling global skill install.
+Its shared app/operations/Urgit references are generated from canonical operator
+files, with exact-sync and independent local-link checks. Gall sample/native
+execution and the Grubbery adapter remain unfinished; the latter is explicitly
+unavailable in preflight and guidance. See [the per-issue status](issues-16-21-progress.md).
+
+`SKILLSET.json` requires the full three-skill inventory in new source packaging;
+historical exports without it retain the pair. Agent Help accepts both verified
+manifests, lists their actual inventory and routes app-development Help to the
+third entry when present. Custom/edited installation preservation is unchanged.
+Seven packaging, twelve helper/installation, fifteen native-bootstrap and nine
+native-plugin fixtures pass. The system-Python skill validator passes; the other
+Python lacked PyYAML, so no global package was installed to run it.
+
+The first full-panel offscreen run exposed the QML reader's old two-skill bound.
+The corrected reader validates either exact manifest inventory. A fresh networkless
+private-HOME/XDG fixture installs all three complete skills through actual controls,
+launches only inert agents and renders their distinct responsibilities. A separate
+historical-pair fixture verifies continued UI use. Failed fixture evidence is
+retained. No real agent, global skill directory, installed plugin or service was
+changed. These delivery tests do not qualify either application runtime workflow.
+
+## M583 — Frozen bounded Gall sample source (2026-11-17)
+
+`app.sample.v1` returns the compiled `gall-state-v1` definition, exact source
+manifest, hashes and notices through the same CLI/MCP handler. The4097-byte,
+five-file staging payload contains the state fixture, bill mark, desk bill and
+only its two required libraries. Source accepted by the canonical staging scanner
+is distinct from current Hoon compilation/runtime evidence; the sample explicitly
+reports current-workflow-pending. No source read deploys or executes anything.
+
+The three upstream scaffolding files are pinned to Urbit commit35f70d7 and their
+bytes match the earlier native fixture hashes. This corrects an implicit dependency
+on the base desk's libraries without adding a full repository mount. Upstream
+license/provenance is retained separately from the Clay payload. Source/hash and
+CLI/stdio parity race fixtures pass; native app state/reload/restart and current
+managed-runtime execution remain to qualify. Fresh native inputs were located in
+the existing immutable cache and independently rehashed; no new runtime was
+started. Private paths and storage measurements remain outside Git.
+
+## M584 — Gall JSON v2 native loop (2026-11-17)
+
+The separate eight-file5528-byte `gall-state-v2` sample passes the named fresh
+native loop: scoped policy, staged commit, separate native compilation, activation,
+authenticated read/poke/watch, deliberate rejection without state change, changed
+code/on-load verification, clean same-pier restart and state/session/subscription
+reconciliation. Own channels/session and final runtime shut down cleanly. Native
+effect inputs are audited before dispatch; no Unix mount occurs and autocommit
+stays inactive. Frozen v1 bytes/status remain unchanged. The separate report binds
+the definition/source/runtime/test/proof hashes and is returned with v2 through
+the shared CLI/MCP sample handler. Its authoring-time pending field is immutable;
+the later qualification report states the actual scope.
+
+Seven sequential capsules exposed and retained two unresolved activation receipts,
+a custom mark JSON mold-shadowing error, a new diagnostic's unavailable type alias,
+and missing JSON/MIME scaffold conversions before the complete pass. The final
+seventh capsule also passed cold activation before the read-only compiler probes.
+Later success
+does not rewrite uncertain originals or prove their cause. All six stop cleanly.
+See the [native diagnostic and limits](diagnostics/2026-11-17-gall-state-v2-native.md).
+Managed lifecycle is synthetic; container/installed upgrade,
+multi-peer behavior, state migration, clients and Grubbery remain unqualified.
+This supersedes M583's pending native scope only for v2's exact reported inputs.
+The48GiB temporary aggregate cap, shared-cache accounting, one active capsule,
+4GiB/no-swap/one-core boundaries were enforced. Production/manual-review state
+and all excluded ships remained untouched.
+
+## M585 — Confined shared staging parity (2026-11-17)
+
+Shared `desk.plan-stage.v1` and `desk.stage.v1` now reuse the existing collector,
+manifest/bundle and runner cache contracts. CLI/MCP startup must explicitly open
+named local source roots; calls select only relative ordinary subtrees. Pinned
+directory handles prevent root-path replacement from rebinding a running server.
+Traversal, absolute tool paths, links, unexpected files and existing byte/tree
+limits refuse. Planning transfers no source; staging changes cache/journal only,
+with no Clay commit or Unix mount. Complete source selection and native plan are
+returned together. Typed pre-upload failures establish no upload dispatch; later
+transport failures retain uncertainty and the original stage ID/digest.
+
+The actual CLI dispatcher plans, official-SDK stdio MCP uploads with its response
+deliberately discarded, and CLI reads the same verified durable receipt without
+source authority. Changed source refuses before a second upload. Confinement,
+directory replacement, links, bundles, existing collector compatibility and
+cross-interface tests pass under the race detector. These inert tests complement
+M584's real collector/staging native composition; they do not establish named
+product-client, installed upgrade or complete issue19 coverage. See
+[current interface coverage](core-interfaces.md). No new persistent format or
+policy grant is introduced by pinned local roots.
+
+## M586 — Recording lifecycle prototype (2026-11-17, provisional)
+
+Four sequential private inert capsules compare pipe, controlling PTY, installed
+script2.42.4 and tmux3.8. They create no ship/container and cannot access host
+HOME, sockets or existing tmux. The final run retains350-line bursts,12288-byte
+lines, diagnostic atoms, fake credential strings, redraws and stderr in all
+backends. Monotonic timing/offsets cover all raw pipe/PTY/tmux bytes with a UTC
+origin. Pipes retain stream identity; PTYs combine streams and transform LF.
+
+Signalling the script wrapper yields actual inner exit7 but wrapper0 and omits an
+accepted final write. Stopping the private tmux server delivers HUP, observes
+inner129 and an EIO final write; its client0 means submission only. Direct pipe
+and PTY TERM preserve observed7 and final output. The first pipe trial timed out;
+its cause remains unresolved, while the next three pass with exact owned-target/
+signal-mask and later adopted-child exit evidence. Do not erase the failure or
+infer a universal behavior from these installed versions/stop paths.
+
+Proceed provisionally with a runner-owned external stream recorder attached before
+container Start, preserving the native signal/TTY/lifecycle contract. Actual
+Docker buffering/bootstrap, recorder loss, host restart, retention/pressure,
+persistent format, APIs/UI/export and installed upgrade remain open. This is an
+architecture prototype, not shipped recording support or production permission.
+See [recording contract and evidence](runtime-recordings.md). Capsules enforce
+256MiB/no swap/one CPU/64 tasks,16MiB declared scratch and the temporary48GiB
+aggregate cap. Only known private child/server PIDs are signalled/reaped; no host
+process or tmux inventory is taken. All capsule parents exit after collection.
+
+## M587 — Recording frame/transport source foundation (2026-11-17)
+
+`internal/recording` adds bounded original-byte frames with exact session/metadata
+and segment anchors, sequence, receive wall/monotonic timing, stream kind and a
+chained digest. Failed/short writes poison the encoder; partial/corrupt readers
+retain the last complete offset/digest and never rewrite or accept a partial tail
+as EOF. Encoded completion is distinct from durable filesystem sync. Wall-clock
+reversal is allowed independently of monotonic ordering. Gap/exit payloads remain
+opaque here and need typed storage/runtime validation.
+
+A separate non-TTY Docker decoder preserves raw stream labels, bursts, long lines,
+diagnostic/fake credential text, controls and invalid UTF-8 without tail/line limits
+or redaction. Declared transport payloads stream through64KiB chunks. Interrupted
+payload prefixes remain recorded, write failure reports known missing bytes, and
+there is no automatic replay. EOF is not proof of process exit. The library opens
+no host path or transport and runs no effect. Focused race and static checks cover
+partial boundaries, corruption, rebinding/reordering, bounded lengths, injected
+disk-pressure/short writes, segment linkage and cancellation.
+
+This source foundation creates no production/DEV recording, persistent migration
+or Hello capability. Owner-private filesystem/index/locking/cursors, lifecycle and
+gap validation, retention/reserves, sync/reopen, runtime capture, APIs/UI/export and
+actual Docker/Vere/installed upgrade remain open. See
+[format scope](runtime-recordings.md). M586's backend choice stays provisional;
+these unit tests do not broaden its native fixture claim.
+
+## M588 — Shared bounded project creation (2026-11-17)
+
+The legacy progress loop and new CLI/MCP begin/advance/status/wait operations now
+share one coordinator and the original deterministic native request IDs. Begin
+checks required phase adapters before reservation; optional declared application
+preflight refuses before boot, while generic projects remain usable. Advance
+submits at most one missing phase. Guarded original reservation lookup, complete
+history/actor/revision/digest checks and contiguous receipt phases prevent a new
+intent from being inferred after disconnect. Failed/interrupted phases stop at
+their original receipt. Bounded saved-receipt waits never advance or cancel work.
+Initial completed receipts do not establish current runtime/application health.
+
+Race fixtures reconstruct the coordinator at every lost phase reply and reject
+foreign, duplicate, out-of-order and truncated history. Actual CLI/official-SDK
+stdio subprocesses exercise app refusal, generic reservation, lost prepare reply,
+process exit, CLI lookup, MCP wait/reconnect, subsequent phase and interrupted
+refusal without repeating an effect. Legacy progress/resume fixtures pass.
+These are inert protocol tests; installed-runtime creation/recovery/upgrade still
+requires the separately isolated disposable guest. No new persistent workflow
+format or native lifecycle contract is introduced. This narrows M581/M585's
+compound-creation coverage gap, without claiming issue19 complete.
+
+## M589 — Guarded installed upgrade/Stop harness (2026-11-17, unqualified)
+
+A new offline guest gate binds actual published0.4.0 tools, matching immutable
+runtime/pills and a clean exact development source snapshot. It reuses only the
+verified pristine not-onboarded base through a fresh COW overlay, with no NIC or
+host state/socket access. One CPU,8GiB guest/10GiB scope RAM, no swap, bounded
+scratch/log/time and aggregate shared-cache accounting are explicit admission
+inputs. The authorized48GiB ceiling is scoped to this goal. Host/default refusal
+tests, syntax, Go compile/skip and static checks pass; **no VM result is claimed**.
+
+The test-only manager delegates to the real backend and blocks before the final
+stopped-phase save after a verified native clean exit. Its parent checks exact
+child UID/PID/start/executable before killing it. A second helper refuses recovery
+observation during exact replay. Both require the precise guest marker, source
+pin and fresh two-fake project. There is no production fault switch or database
+repair. Published and candidate installed executables remain distinct from this
+dependency-injected test helper. Go test lacks automatic VCS metadata, so its
+link-time source binding is checked separately before and inside the guest.
+
+The planned gate checks running/stopped upgrade preservation, older-reader
+refusal, a real interrupted Stop, supported reviewed resolution, immutable
+original/linked receipts, one native SIGTERM, exact guarded SSH replay after
+reopen, same-pier resume and clean final shutdown. See the
+[gate contract](../scripts/qualification/issues-recovery/README.md). Qualification
+must record actual outcomes and failed originals separately; these source guards
+do not resolve M579/M580's live/installed deployment gates by themselves.
+
+## M590 — First installed guest failure and bounded inspection (2026-11-17)
+
+The first source-pinned guest at aa71757 installs the actual0.4.0 runner and pinned
+image, but the first fresh recommended fake Start fails during pill preparation
+with a bounded Docker-command failure. No candidate install, upgrade preservation
+or Stop recovery gate is reached. The powered-off original failure disk/receipts
+remain evidence. The single virtual CPU may reject the unchanged default two-CPU
+contract; this remains a hypothesis. The next capsule uses three virtual CPUs
+inside the same one-core host quota; no product resource contract is weakened.
+
+Full raw conversion admission refused before creating a copy because mapped
+nonzero ranges exceeded available scratch. A separate512MiB no-NIC reader mounts
+the static failure filesystem read-only/noload under a dedicated PID1 and exports
+only two fixed bounded saved files. Its first guard rejected a final command-line
+token followed by newline, before opening the disk; exact token parsing fixes it.
+The next reader succeeds with the original overlay hash unchanged and no services
+or ships started. Reproducible inert staging is retired with a private manifest;
+the original failure overlay/receipts/results and immutable base stay preserved.
+See the [compact failure evidence](diagnostics/2026-11-17-issues-upgrade-first-capsule.json).
+This updates M589 with an actual failure, not an installed-support claim.
+
+## M591 — Bounded shareable Stop diagnostic view (2026-11-17)
+
+The shared CLI/API and MCP catalog expose `project.stop-diagnostic-bundle.v1` over
+the exact saved operator diagnosis. A pure enumerated projection strips all exact
+private bindings, actor/request/member text, endpoints/paths, arbitrary messages,
+database bodies and sealed reviews. Known and unknown categories use fixed
+messages; saved state never gains live observation fields. A bundle states that
+it is not an action review. Reconciliation still requires the private exact fresh
+review; exporting a view sends no probe, signal or policy grant and publishes
+nothing. This is specific to expanded-member Stop, not universal phase diagnosis.
+
+Focused source/race/static checks and actual CLI/official-SDK stdio parity pass,
+including operator refusal and private sentinel text throughout the raw input.
+OOM/exit facts stay distinct from historical status and never become Start or
+clean-stop authority. No persistent format or installed runner change is needed.
+
+## M592 — Second guest reaches real baseline; correct historical ID use (2026-11-17)
+
+The second fresh guest at d9b536e boots two recommended fake ships using the actual
+published0.4.0 runner, then successfully stops one. The three-virtual-CPU/one-core
+quota topology passes the first capsule's early Docker failure point. This supports
+M590's topology hypothesis without recovering the original suppressed predicate.
+Before candidate installation, the harness wrongly inspects the stopped fake's
+retained historical container ID; supported Stop has removed that container.
+Its bounded Docker diagnostic is “no such object.” This is a harness error, not
+upgrade failure. Correct baseline process inspection to running rows only; retain
+saved stopped intent, pier/configuration and history comparisons independently.
+
+The failed original is inspected read-only/noload with no old services restarted.
+Its saved commands/results and original schema59 SQLite/WAL/SHM bytes are archived
+privately before any full-disk compaction. Retire only classified superseded
+generated full disks/staging with a manifest; preserve the immutable base, original
+store fixture, full compact failure evidence and unrelated/manual-review state.
+No candidate install or upgrade/Stop-recovery pass is claimed by this checkpoint.
+The [second compact failure record](diagnostics/2026-11-17-issues-upgrade-second-capsule.json)
+binds the archived original59 store (two instances/five operations), complete
+commands/results and read-only inspection hashes. Integrity and byte preservation
+are checked before full-disk retirement. This narrows M589's original process
+baseline to live containers without weakening stopped-state preservation.
+
+## M593 — Typed recording attachment/lifecycle metadata (2026-11-17)
+
+Source-only recording frames now validate canonical version1 gap/exit payloads,
+rejecting ambiguous/unknown fields, alternate encodings and unsupported metadata
+before write. A correct checksum cannot promote semantically invalid lifecycle
+data. Unknown missing-byte counts remain unknown and full uint64 counts stay
+exact. Stream EOF and failed Start without a launched process cannot become an
+observed exit. OOM/dead/native-error facts remain distinct; recorded wall time can
+reverse without changing monotonic receive order.
+
+Bounded canonical attachment metadata binds runner/target/configuration, original
+operation/request, prepared container, launch/image/runtime/transport and clock
+origin, with no argv/environment/secret-content fields. Exact metadata/session
+hashes bind a segment; replaced identity/revision/artifact/clock refuses. UTC
+normalization is stable. Ownership, live admission, later segment/gap continuity,
+pre-container failure diagnostics and every persistent/runtime/API/UI/retention
+gate remain separate responsibilities. No path is opened or runtime launched.
+
+Focused race/static tests pass for payload semantics/corruption, unknown coverage,
+raw-output preservation, integer precision, identity/revision/artifact rebinding,
+clock changes, unsupported metadata and forbidden arbitrary credential fields.
+This supersedes M587's opaque lifecycle-payload scope only; there is still no
+advertised/shipped recording capability or existing persistent-format migration.
+The running installed-upgrade capsule remains frozen at d24c960 and does not
+qualify this later source-only library change. See the
+[current recording contract](runtime-recordings.md).
+
+## M594 — Exact installed upgrade section passes; staged recovery continuation (2026-11-17)
+
+The third fresh guest qualifies the installed d24c960 snapshot's0.4.0/schema59→60
+ordinary-fake path. Running/stopped intent, registrations, configuration, history,
+access, engine invocation and running container process survive actual installer
+activation and a later manager restart. The actual old writer refuses60 without
+changing its dump. Both upgrade witnesses then stop through supported APIs. This
+supersedes the installed-upgrade deferral only for these exact artifact/scope
+claims; native interrupted-project migration, recovery/app state and desktop/DEV
+remain unqualified. The [artifact-bound record](diagnostics/2026-11-17-issues-installed-upgrade-section.json)
+keeps the later scenario failure separate from its passed upgrade section.
+
+Before a recovery project, the harness tries a duplicate enrollment of the same
+runner and correctly receives the registry's conflict refusal. Switch the exact
+existing fixture connection through supported `runner-edit` with runner ID and
+revision; do not weaken enrollment protection. Read-only/noload inspection and
+private original60-store integrity/byte preservation pass. Original failure
+evidence remains unchanged.
+
+The recovery-only continuation uses a new fresh candidate-only guest with3GiB
+scratch and the same four frozen artifacts, explicitly linked to the passed
+upgrade section. The harness and artifact commits are recorded separately; later
+source-library changes are not qualified by this frozen result. Unit guards
+refuse changed artifacts/source, failed preservation or old-reader evidence, and
+changed enrollment identity before editing. No combined/native recovery pass is
+claimed until that separate case completes. Production/manual-review state and
+excluded ships remain untouched.
+
+To fit the continuation without removing a selected pier or full reference, the
+completed upgrade QCOW is recompressed with its original/base bound read-only.
+The first512MiB processing scope hits its memory cap; the original stays unchanged
+and only the unverified derivative is discarded. A2GiB/no-swap/one-core retry
+passes full QEMU virtual-block comparison and preserves the backing/input hashes
+before replacing the archive representation. About1GiB is freed, with original
+store/command/result archives retained. This is a content-identical storage
+derivation, not a guest restart, filesystem repair or pier mutation.
+
+## M595 — Installed native clean-stop recovery passes (2026-11-17)
+
+The fresh recovery-only case passes on the exact four d24c960 artifacts linked to
+M594's passed upgrade section. Restricted access switches with exact connection
+ID/revision. Selected installed Gall preflight passes before project creation,
+without granting app policy. A fresh original fake and added peer boot; the
+original process remains unchanged. A separately hashed test manager delegates
+to real native code, blocks after a clean exit before the final phase save, and
+only that owned child is killed. The installed manager reopens normal state and
+retains the interrupted Stop/fence. No database edit or repair is performed.
+
+Saved diagnosis, fresh exact retained-intent review and ordinary API reconciliation
+pass. A new successful linked receipt resolves only that fence; the original stays
+interrupted. Reconciliation changes no native process. Exact restricted-SSH replay
+works after store/manager reopen with a deliberately refusing observer, then again
+under the installed binary. Docker events for the exact owned container show one
+SIGTERM. Supported Start resumes the same verified pier and ship with an ordinary
+new container, leaving its peer process unchanged. Both fresh ships stop cleanly;
+the final installed executable SHA and schema60 match. See the
+[artifact-bound native evidence](diagnostics/2026-11-17-issues-native-stop-recovery.json).
+
+This supersedes M579/M589/M594's native recovery deferral only for the clean new
+retained-intent path. The interrupted process is the test helper, not the installed
+executable; real native backend/API/SQLite/SSH and installed reopen/recovery are
+composed explicitly. The historical race remains a hypothesis; native forced read
+timing, legacy missing-intent runtime migration, full native refusal/dropped-reply
+matrices, managed app-state, later artifacts and desktop/DEV remain outside this
+case. Source/inert matrices remain distinct. Recordings/Grubbery/broader interfaces
+and containment are still active work; this is not issue-wide goal completion.
+
+## M596 — Bind each bounded creation call to one native phase (2026-11-17)
+
+The initial M588 advance input could mean “next missing phase at call time.” If
+the reply was lost and its phase finished before retry, an unchanged call could
+select the next phase. Tighten this unpublished shared interface: advance now
+requires the exact `native_request_id` returned by begin/status. Repeating a
+completed ID returns only that original historical completed handle, without
+submission or dependency preparation. Another phase needs its newly selected ID;
+foreign/future/out-of-order bindings refuse before dispatch. Legacy progress
+orchestration, native request derivation and durable formats remain unchanged.
+
+The regression completes a deliberately lost-reply phase before any read/retry,
+then verifies repeated calls cannot move ahead. Actual CLI/official-SDK stdio
+tests enforce the same rule and require explicit selection for the next phase;
+missing bindings refuse. Existing pending/interrupted/history/wait cases pass
+under the race detector. This supersedes M588's ambiguous advance-call semantics.
+It is a later client/core source change, not part of the frozen d24c960 native
+artifact qualification. Matching final artifacts/interfaces remain required.
+
+## M597 — Private recording files and verified source paging (2026-11-17)
+
+The unwired Linux recording store pins a private owner directory, exclusively
+creates unique sessions and syncs immutable metadata/header/directory entries.
+Append serializes original frames, checks stream/container and current file/lock
+identity, admits explicit byte/free-space ceilings, and fsyncs before success.
+Changed, exposed, linked, unexpectedly resized or replaced files refuse; a failed
+writer becomes unusable. Existing/incomplete sessions are never reused or repaired.
+
+Cursor pages verify the bounded original prefix and exact metadata/sequence/digest.
+Reopen/reconnect and live concurrent paging retain raw bytes without duplication.
+Partial/corrupt tails stay visible and unchanged; a lost cursor refuses without
+rewind. Writer presence and snapshot EOF are separate from runtime exit. Source
+race/static checks pass for privacy/binding, long lines/raw atoms/controls, paging,
+replacement/links, quota and reserve refusals. Test temporary roots were initially
+0755 and correctly refused; fixtures explicitly become0700 rather than loosening
+the store's ownership rule.
+
+This is one bounded segment with a verified scan, not a persistent index/rotation,
+writer continuation, per-host/ship retention, incident pins, authorization API or
+capture daemon. Before-container errors, runtime lifecycle, pressure recovery,
+fsync/power/crash qualification, safe views/exports and UI remain open. Free-space
+admission is not an exclusive filesystem reservation. No runtime or installed
+state is touched; only synthetic temporary recording files are created in tests.
+This narrows M587/M593's filesystem/cursor gap without advertising issue20 support.
+
+## M598 — Freeze Grubbery source before live adapter qualification (2026-11-17)
+
+Review of nisfeb/grubbery7f7701d546ce115eea5f37f66465b362cb121774 finds a
+different HTTP/namespace contract from the ff2b66b exercise. Its documents embed
+older code references; actual pinned Hoon is authoritative. Independently verified
+all1515archive blobs against the exact Git tree, then froze only the1443-file,
+8013304-byte Clay desk manifest with the upstream MIT notice. Private downloaded
+source stays outside Git and live mounts; the compiled definition contains hashes.
+
+Shared offline framework metadata and confined source verification reject missing,
+changed, additional, linked or unsupported files. A caller cannot replace the
+compiled definition with its own manifest. Existing stage planning/transfer still
+independently bind source bytes. Focused source/race/static checks and actual
+CLI/official-SDK stdio parity verify the complete downloaded desk without creating
+registry state or connecting to a ship. No framework source is executed or installed.
+
+This narrows issue18's reproducible-input gap, not its native readiness gap.
+Build/code namespace, loaded instance/state, shell-owned approvals, actual weirs,
+discovery/aliases and served bytes remain distinct. Approval is replacement of the
+selected declared subset, with a separate reload; trusted built-ins are not a
+substitute for closed desk apps. Grubbery preflight remains unavailable pending
+versioned live effects, durable uncertain-write recovery and native qualification.
+
+## M599 — Bound the fresh Grubbery bootstrap gate (2026-11-17)
+
+Add a separately named fresh-only bootstrap capsule for M598's exact complete
+framework desk. Host/copy/kernel source checks precede API staging, commit and
+cold activation. No Unix mount, app-specific write or permit authoring is allowed
+in this gate. Lost activation replies retain the original receipt and permit only
+bounded observation/reconciliation. A fixed kernel diagnostic read is independent
+of the shell; its owner session is cleaned up. Host/source/admission tests pass;
+this records the harness before execution, not a native bootstrap pass.
+
+Storage admission first refuses the proposed archive-processing allowance before
+creating a converter. Retire only task-owned inert staging, exact duplicate
+immutable inputs and superseded non-frozen source-test executables, with private
+per-file hash/inode manifests. Keep all selected piers/VMs and original stores.
+The completed recovery-only VM is then recompressed under2GiB/no-swap/one core.
+Full virtual-block comparison passes, original/base hashes stay unchanged before
+replacement, and the original SQLite archive still matches its recorded SHA.
+The retained representation saves1581604864bytes; the public native recovery
+record explicitly links old and new overlay hashes. No guest is booted or mounted
+during this storage derivation. Native Grubbery results remain pending.
+
+## M600 — Preserve scaffold ownership before framework replacement (2026-11-17)
+
+The first fresh Grubbery gate stages the exact source, then correctly refuses its
+commit: mar/hoon.hoon and sys.kelvin differ from unowned fresh-desk scaffold files.
+No framework commit or activation is dispatched; shutdown is clean. Preserve that
+original failure. Source review separately finds the framework reads a literal
+grubbery Clay desk; random names cannot satisfy that pin. The next fresh-only gate
+uses the required name and keeps every other native namespace boundary.
+
+Add a typed, pure historical Clay source read with explicit paths and64-file,
+256KiB bounds, then API/client/collection/shared-service bindings. Operator role
+and exact process/pier/Clay baseline bracket the read. Clients reject changed
+identity, paths, revision, bytes/hash or timestamps. The output contains explicit
+canonical base64, including empty/binary bytes. An initial []byte wire shape fails
+the inferred output schema in actual interface testing; the explicit base64 field
+fixes this before native use. Source/race/static checks, actual CLI/stdio parity
+and the private API refusal/no-mutation matrix pass.
+
+The native continuation will export only the two original conflicts, stage them,
+explicitly adopt their verified equality under the existing policy gate, then
+review a new full-framework commit. This does not acquire unspecified ownership,
+mount source or replace differing files by relaxing the conflict planner. Source
+export is private operator data, not a shareable/redacted export. Its current
+fixtures do not establish native conversion or bootstrap success; those results
+remain pending. Grubbery preflight is still unavailable.
+
+## M601 — Fit the bootstrap continuation before process admission (2026-11-17)
+
+After M600's source checks, the host refuses the proposed2GiB reservation before
+creating a capsule, copying inputs or starting a scope. No second native result
+exists yet. Retire only the completed task-owned source-export race fixture
+executable with its private hash/inode manifest. Reduce this fresh single-ship
+bootstrap's declared additional scratch to1.5GiB; preserve the48GiB aggregate cap,
+periodic allocation checks, memory/deadline/one-active-runtime rules and original
+failed capsule. Exceeding either scratch or aggregate storage still interrupts
+the new owned experiment and retains its uncertain/failure evidence. This is a
+smaller admitted experiment, not an unmeasured allowance or a native pass.
+
+## M602 — Pinned native Grubbery bootstrap passes with explicit limits (2026-11-17)
+
+The fresh f9ca8a7 test artifact under the separately pinned a658341 admission
+harness passes within1.5GiB declared scratch and48GiB aggregate storage. The Go
+artifact inputs are unchanged between those commits. The exact complete framework
+desk is reverified. Ordinary API source export reads the two original scaffold
+files; narrow explicit staged adoption verifies their equality without changing
+Clay. Full framework commit is observed with the frozen source digest and no
+ownership conflicts. Autocommit remains inactive; no Unix source mount is created.
+
+Cold activation exceeds its HTTP reply. The original receipt progresses through
+planned/dispatched/uncertain/observed with exactly one native dispatch; supported
+read-only reconciliation completes it without reinstallation. Both declared Gall
+agents are live. An independently authenticated fixed kernel HTTP diagnostic read
+reports1335root-code files,0failures (223vases/1112assets), including compiled
+shell, desk and nexus-web. The private owner session logs out and the fresh Vere
+shuts down cleanly. See the exact-input native bootstrap JSON diagnostic.
+
+The original runtime also reports four failures under /apps/shell/tools/code.
+Those are a separate namespace, not disproven by a clean root-code report; the
+four individual errors were not queried in this capsule. Preserve that warning
+and the original pre-adoption failure. This supersedes M599–M601's bootstrap and
+native source-read deferral only. App deployment/state/permits/routes/assets,
+publication/discovery/peers, managed lifecycle, installed/DEV qualification and
+issue18 completion remain open. Grubbery preflight still reports unavailable.
+
+## M603 — Separate bounded app code and stable state identity (2026-11-17)
+
+The source-only Grubbery adapter contracts now distinguish an app code namespace
+from a framework Clay desk. Review requires the exact staged manifest and at most
+64files/512KiB (64KiB each), a bounded duplicate-free bill and locally supplied
+nexus source for every declared instance. Framework/repository root metadata,
+controller-owned version markers, unresolved external nexuses, changed bytes,
+nested code bundles and oversized/partial stages refuse. Binary assets remain
+lossless. These checks establish input boundaries, not native compilation.
+
+Stable candidate namespace addresses bind runner/mode, exact pier continuity,
+project creator/generation/member, framework desk and explicit app ID. Actor,
+container, configuration, policy and framework-receipt updates do not rename saved
+app state. Immutable source releases are outside the live desk mirror/data and
+have distinct original-request addresses. A derived name is never proof of
+ownership: persistent ownership, current native observations and refusal of an
+existing unowned root are still required before effects. Pure race/static tests
+check these boundaries and the exact match to the frozen framework contract.
+
+No app namespace, HTTP write, permission, persistent format or advertised live
+capability changes in this slice. Durable step dispatch/reconciliation, runtime
+and public interface wiring, the native app sample and its full update/restart/
+permit/route/peer qualification remain active work.
+
+## M604 — Construct exact staged app phases without granting dispatch (2026-11-17)
+
+The unwired pinned Grubbery planner now derives an immutable release tree from
+the original request, with stable per-step IDs and a complete plan digest. Code
+files carry the native hoon blot; binary assets remain mime, and HTML/JS/CSS/JSON
+have explicit MIME. Compile observation precedes the controller's version marker,
+then the framework source fiber is poked as json rather than overwritten as mime.
+An exact followed-source read remains separate from application readiness.
+
+Existing unowned/conflicting roots or changed ownership markers refuse planning.
+Updates create new immutable code and leave prior code and saved instance data
+untouched. The plan contains no sand/permit/alias/cull effect and never force-
+overwrites a source file. Tampered paths, control bodies, source, bindings, epoch,
+step IDs/order or digest refuse request construction. Focused source race/static
+checks pass. These are pure constructors, not a dispatch authority or a native
+app test; derived markers still require actual persistent ownership and fresh
+native observation before effects.
+
+Next integrate an authoritative durable coordinator: claim the app namespace,
+save dispatch before I/O, admit only the exact original step, preserve uncertain
+writes, reconcile by bounded read and replay completed receipts without source
+cache/runtime calls. Persistent/migration and runtime/interface wiring remain
+required. No namespace is created and no HTTP request, policy or installed
+capability changes in this slice. M602 remains bootstrap-only evidence.
+
+## M605 — Guard exact app dispatch and cache-free receipt recovery (2026-11-18)
+
+The source-only app coordinator now defines atomic namespace claiming and
+revision-CAS append contracts, immutable creation headers and hash-chained phase
+events. Dispatch is allowed only for the exact selected pending original phase,
+after exact staged-byte validation and fresh trusted admission. Only the worker
+that wins the dispatch CAS may call the native adapter; losing callers return
+saved progress. Dispatch carries explicit plan/step context rather than shared
+mutable target selection. Unknown native outcomes retain their original events.
+
+Completed/uncertain advance replay, matched Begin replay and saved lookup use no
+source cache, probe or native dispatch. Read-only reconciliation needs no cache,
+accepts only exact bound after-evidence, and appends one resolution without
+replacing the original dispatch/uncertainty. Repeated unproved reads append no
+duplicate history. A different unfinished operation cannot claim the app namespace;
+only full original phase completion releases its lease. Changed Begin bodies,
+targets/actors, future/foreign phases, bytes and malformed history refuse.
+
+Focused race/static fixtures pass for concurrent claims, native reply loss,
+coordinator reopen, journal commit/reply loss before native I/O, full completion,
+corrupt/reordered/rebound header/event chains, clock correction and cache loss.
+The model store tests transaction semantics only: no SQLite/fsync durability,
+migration or native app deployment is implied. Source caps are checked before
+hashing oversized data, and attested metadata validation stays separate from
+new-write byte authority. Next wire the persistent runner store/lease, migration
+and exact native transport/observers plus public interfaces, then qualify the app
+sample. No persistent format, namespace, policy, runtime or advertised capability
+changes in this slice; M602 remains the qualified bootstrap boundary.
+
+## M606 — Derive app ownership from original phase receipts (2026-11-18)
+
+The source-only ownership projection requires observed original marker effects,
+exact stable namespace identity and every source/version predecessor in trusted
+creation order. A reservation, dispatched marker or uncertain marker creates no
+ownership. Read-only marker reconciliation can establish its original proof;
+later updates retain that proof and advance only the completed source generation.
+Missing, duplicate, reordered or incomplete predecessor history refuses. The
+focused race/static tests pass, including partial marker history and updates.
+
+Persist this as immutable operation headers and append-only phase events with a
+transactional namespace lease; derive current ownership instead of adding a
+second independently mutable ownership row. Schema61 must preserve all existing
+schema60/59 history and make older writers refuse. Exact original60-writer fixture,
+rollback/reopen/corruption and matching-artifact qualification are still required.
+The native adapter must independently check the actual namespace and current role,
+framework/process/pier, policy and resource limits; a saved projection alone is
+never runtime authority. Safe abandonment of failed compilation before source
+activation also remains required before exposing the app workflow. No persistent
+format or advertised capability changes in this source-only slice.
+
+## M607 — Audit preactivation abandonment and freeze original60 (2026-11-18)
+
+The source coordinator can abandon a reserved intent without runtime access. Once
+writes exist, every submitted write and created-root marker must have its exact
+original after-proof, and a trusted bounded read must establish the original live
+source baseline unchanged. Unknown writes and any dispatched source activation
+refuse abandonment. Failed compile/read uncertainty can remain in immutable
+history. An appended terminal audit releases only that namespace lease; it grants
+no deletion, marker adoption or native effect. Source ownership origins remain,
+while the applied generation does not advance. A replacement uses a new original
+request/release and preserves failed staging plus live application data.
+
+Focused race tests cover cache-free terminal replay, changed baseline refusal,
+retained marker ancestry, unknown writes/activation, and stale worker dispatch CAS
+loss to abandonment. This is source-only; the durable store and native observer
+remain required. M605's completion-only lease rule is superseded by this narrow
+validated preactivation alternative. Abandonment is distinct from source-followed
+completion and cannot become application readiness.
+
+Before schema61 changes, actual frozen d24c960 source with a declared synthetic
+helper wrote a populated60 fixture containing original59 history plus a real
+linked Stop reconciliation. The isolated writer passed with no host service or
+native ship access. Its source, helper, executable, SQL and packed fixture hashes
+and row counts are recorded under testdata/grubbery-app-original60. One unexecuted
+wrong-working-directory build was classified and replaced before this run;
+private provenance records that correction. Preservation, rollback, repeated
+reopen and genuine original-reader refusal remain required for the successor.
+
+## M608 — Persist immutable app phases and qualify schema61 ancestry (2026-11-18)
+
+Schema61 adds separate app intent headers, append-only chained events, exact
+namespace leases and a transactional creation clock. Header stamps bind creation
+order and immutable context. Opening validates the complete original marker and
+version ancestry, framework commit receipt/source/pier baseline, clock, events
+and leases. Missing/corrupt/mixed state refuses without repair. There is no
+mutable current-owner row, queued app replay or native call during opening.
+Creation claims the namespace atomically; revision CAS appends an event and
+releases only the exact terminal owner's lease in the same transaction. The
+SQLite store retains FULL-synchronous acknowledgement and private existing store
+ownership requirements. This adapter remains internal and unwired to public app
+mutation APIs; live Grubbery preflight remains unavailable.
+
+Focused race/static gates pass for immutable header/history across repeated
+reopen, concurrent phase CAS, failed append rollback, namespace conflict,
+completed and abandoned lease release, wrong runner/mode/framework/pier/baseline,
+missing/rebound evidence, schema/table/event/clock/lease corruption, and an actual
+child process exiting immediately after dispatch commit without closing SQLite.
+That last case retains the original dispatched fence and cache/backend-free
+replay; it does not establish host power-loss behavior. Retained original59 and
+actual original60 writer fixtures preserve every original row, linked Stop
+resolution and exact replay, with rollback/refusal of unknown successor tables.
+
+The fresh actual60→61 rehearsal passes with a populated uncertain app journal;
+the genuine d24c960 reader refuses61 without changing closed database bytes.
+Source inputs, helper/artifact hashes and limits are linked in the source
+[migration evidence](diagnostics/2026-11-18-grubbery-app-store-migration.json).
+Its first capsule correctly refused a reused synthetic test receipt ID, then
+received a distinct deterministic fixture ID. Two subsequent sidecar comparisons
+found only empty verifier-created WAL/SHM removal, with identical main database
+bytes. Immutable reads of fully closed fixtures correct the verifier; no database
+or sidecar repair/deletion was used to obtain the passing result. Earlier failures
+and before/after hashes remain in private evidence.
+
+The older source inventory now explicitly targets61; RC.12/schema20 qualification
+and its release pins remain frozen. Original-writer preservation/replay and
+invalid-identity/future-schema byte-preservation regressions pass through the
+retained schema45 inventory. Focused synthetic compatibility, legacy runtime
+settings and import-completion reopen tests also pass. Those synthetic tests omit
+only verified-empty successor app tables before assigning an older test marker;
+they never claim original-writer evidence or authorize relabeling a user store.
+The first combined regression group exceeded its aggregate four-minute deadline;
+separate bounded groups subsequently pass with individual results retained.
+
+This extends development source-reader evidence for retained59/60 state, not
+installed/native Grubbery qualification or a stable support promise. Matching
+final artifacts, native admission/observers/transport, actual app source and
+permit/route/served-byte/state/restart/peer gates remain active. Production and
+installed DEV artifacts/state have not changed.
+
+## M609 — Retire superseded task piers before app contract tests (2026-11-18)
+
+After M608's source gates, retire only the completed fresh-fake Gall dependency
+failure and first Grubbery precommit ownership-refusal piers. Later passing cold/
+warm Gall and exact Grubbery bootstrap references retain their full piers. Every
+removed file and directory is bound in a private device/inode/allocation/hash
+manifest; original runner stores, receipts, source inputs, logs, guard and shutdown
+results remain byte-verified. Both removed piers had confirmed clean shutdown.
+A redundant task-local pill and duplicate host workflow executable are verified
+against retained exact references before removal. A completed source-test binary
+is also retired with its source and passing logs preserved. This frees about1.4GiB;
+no installed/manual-review/production data, unrelated experiment or user ship is
+part of this retirement. All original failure results remain failures.
+
+The next single-peer app contract case still needs declared storage admission
+under the temporary48GiB goal ceiling. M608 establishes source persistence only.
+Before public app writes, distinguish a native pre-effect refusal from a lost
+reply, and establish exact native ownership after uncertain root creation. An
+existing derived namespace or matching content alone must not become adoption.
+Native parent creation, root markers, code compilation, followed source and
+retained application state need fresh isolated contract tests; these are research
+questions, not qualified behavior. The four nested shell-tool failures remain
+unclassified. No native app capability or installed update is implied.
+
+## M610 — Prepare a fixed fresh Grubbery app contract case (2026-11-18)
+
+A separately named native case now composes the exact framework bootstrap with
+fixed private HTTP contract checks. It records each request hash before one send,
+uses an ephemeral owner session, refuses redirects/replay and remains confined to
+the fresh guarded kernel. Proposed checks cover atomic plain-parent/marker file
+creation, separate nested-tool compilation diagnostics, a tiny local JSON-state
+nexus, immutable versioned source, a closed framework desk wrapper, explicit
+source following, a known duplicate-create refusal, code-label change and saved
+state across source update. No permit/alias/route/public app API is introduced.
+
+Launcher syntax and its11 input/isolation tests pass; the candidate is not yet
+native-qualified. Its native operations are a contract experiment with synthetic
+runner/lifecycle bindings, not the supported production adapter or public sample.
+Original bootstrap-only case identity remains separate. One fresh capsule, the
+existing4GiB/no-swap/one-core boundary, original pinned inputs, bounded deadlines
+and1.5GiB declared scratch still apply under the temporary48GiB goal cap. Unknown
+outcomes preserve original evidence and terminate through the owned supervisor;
+there is no mutation retry, source mount or adoption of existing namespaces.
+
+## M611 — Freeze actual61 history before correcting the app plan (2026-11-18)
+
+Pinned source review identifies a concrete draft-plan defect: +version-text in
+Grubbery7f7701d accepts an object's `version` string/number, while plan1 writes
+only `epoch` and `source_digest`. That object does not signal a release. Native
+qualification has not established otherwise, and public app dispatch remains
+unavailable. Correct this through a new explicit plan/journal generation; retain
+old intent/receipt bytes and refuse a fresh legacy pending dispatch rather than
+silently rewriting its payload. Known native pre-effect refusal also needs a
+state distinct from an unconfirmed transport outcome before supported dispatch.
+
+Before those changes, freeze the populated actual61 journal1 database from M608's
+passing original-writer rehearsal, with original59/60 ancestry and uncertainty.
+Every compiled product Go input matches frozen6407cda; exact invoked test helpers,
+artifact/build-input/SQL/packed hashes and source scope are recorded alongside it.
+The original reader executable remains retained. Successor preservation and real
+old61-reader refusal still need qualification; the fixture alone makes no such
+claim and contains no installed or native application state.
+
+The fresh app-contract launch first refused its scratch reservation about5MiB
+over the temporary cap, before capsule creation. A redundant31MiB historical
+source extraction was verified against every original Git blob and declared
+helper before retirement, preserving the actual old60 writer, fixture and source
+commit. The unchanged frozen app experiment then admitted within48GiB. It is the
+only active runtime case. Its result remains pending; preserve the original run
+and do not infer app behavior from bootstrap progress or source review.
+
+## M612 — Correct version signals without rewriting legacy app intents (2026-11-18)
+
+The first frozen app-contract capsule ends failed with clean shutdown. Exact
+framework bootstrap passes again; one file make creates its plain parent and
+marker, and the tiny local state nexus compiles as a vase with four native
+scaffold marks. Following remains null with the prototype's missing `version`
+field, consistent with pinned +version-text. No saved-state/update/route/permit/
+peer or managed adapter claim follows. The original source, effects, failure and
+proof are retained; see [the partial native record](diagnostics/2026-11-18-grubbery-app-contract-first-capsule.json).
+The separate nested tool report identifies pytz, its rules/calendar dependents
+and read-terminal's incompatible extra to-lines arm. These pinned modules remain
+unavailable; neither framework bytes nor their failure status is changed.
+
+New app plan/journal2 carries an original-request-bound native `version` value
+alongside epoch and source digest. Its first plain-root marker uses the observed
+single file/parent call, still requiring refusal of an existing unowned root.
+Legacy plan1 is reproduced exactly for history validation; fresh pending dispatch
+and native request construction refuse instead of rewriting old source payloads.
+Saved uncertainty replay, bound read-only recovery and narrow safe abandonment
+remain available. Schema62 fences older writers unconditionally while preserving
+the same61 table shape, original headers/events/leases and observed marker ancestry.
+
+A validated pre-effect native rejection is now an immutable `refused` state with
+its response digest, distinct from lost/unknown transport. Repeating it loads no
+source and performs no native call. Later matching content cannot reconcile it
+into ownership. A rejected first write can be audited as no-effect abandonment,
+releasing its exact lease while retaining original dispatch/refusal history.
+Any dispatched activation still forbids abandonment. A trusted native adapter
+must classify only complete supported pre-effect responses; errors/5xx are not
+proof of rejection. No public mutation adapter is enabled by this source change.
+
+Focused pure/source race and real SQLite tests pass for native-readable markers,
+request binding, atomic-marker planning, known-refusal persistence/reopen, no
+later adoption, legacy refusal/replay, lease release, original61 preservation and
+corruption rollback. The fresh actual60→62 rehearsal preserves original rows and
+uncertainty; genuine60 and61 readers refuse populated62 unchanged. Exact test
+artifacts/source hashes and limits are in the [migration record](diagnostics/2026-11-18-grubbery-app-store62-migration.json).
+The corrected native contract case, native observers/transport and full app/
+permit/route/state/restart/peer/installed/DEV gates remain active. Earlier schema61
+and native failure evidence stay bound to their original artifacts.
+
+## M613 — Preserve compact full evidence and prepare corrected native case (2026-11-18)
+
+The original bootstrap-only full pier is superseded by the later app-contract
+capsule's independently passing exact bootstrap section. Its original store,
+source artifacts, receipt/proof and logs remain byte-verified while only that
+fresh fake pier and verified duplicate task inputs are retired. Keep the current
+failed app-contract full pier intact. Private before/after manifests bind every
+retired object and preserve the original outcomes and source identities.
+
+The completed Gall cold reference is retained as a full sparse lossless archive,
+not discarded. A bounded1GiB/no-swap/one-core archive scope verifies all15 file
+contents against original SHA256, every directory and ownership/mode, plus original
+store/proof hashes before retiring the expanded tree. The archive retains about
+193MiB instead of563MiB; original metadata/inodes and exact archive hash are in its
+private manifest. It is evidence only: restoration creates new filesystem objects
+and never grants runtime ownership or automatic resume authority. Tombstones
+prevent older capsule launch instructions from reusing retired/archived trees.
+No installed, manual-review, production or unrelated user data is involved.
+
+The separate grubbery-app-contract-v2 case keeps the original failed prototype
+available and supplies the explicit native version value/original request in its
+new marker. Launcher input/isolation tests pass; native following, saved state
+and source-update behavior remain pending for this corrected case. Preserve the
+same fresh single-peer boundary and declare full scratch before launching it.
+The framework pin and unavailable nested tool modules remain unchanged.
+
+## M614 — Preserve interrupted activation and separate supervisor lifetime (2026-11-18)
+
+The second fresh app-contract capsule's caller exits143 during framework
+activation, before app checks. Its exact owned scope is confirmed inactive/dead
+with no cgroup; the scope journal records about180seconds wall time and3.3GiB
+peak below its4GiB cap. Cause is unestablished. An external command lifetime is a
+hypothesis, not proof of a runtime/app defect. No clean-shutdown/final-exit receipt
+was saved, so clean shutdown stays unconfirmed. The original activation receipt
+is uncertain; no install or app write is replayed. A copied complete SQLite/WAL
+snapshot passes quick_check while every original database file remains unchanged.
+See [the interruption record](diagnostics/2026-11-18-grubbery-app-contract-launcher-interruption.json).
+
+The source qualification launcher now converts SIGTERM into a recorded exception
+and cleanup path. An inert owned-child signal test verifies finally execution;
+all12 launcher tests pass. A separate fresh-only background entry submits a
+transient user supervisor with512MiB/no swap/25%-CPU and1250second deadline,
+retaining source/artifact/command hashes and private logs. Its child still needs
+the original independent4GiB/no-swap/one-core namespace/storage admission. This
+keeps the long native experiment independent of a short-lived CLI/MCP/tool caller;
+it does not install or change an existing service. The next capsule is fresh,
+with the same frozen f00f5fb helper and a separately frozen harness.
+
+Storage remains under48GiB without changing the ceiling. The completed first
+app-contract failure retains its full1450-file pier as a verified sparse lossless
+archive (about253MiB), and remains a failure. Original source-reader executables
+are also verified lossless archives; decompress to fresh private executables and
+verify original hashes before another actual-reader rehearsal. Preserve the full
+unconfirmed second pier and original WAL/receipts. Only verified duplicate task
+inputs are retired. These archives/tombstones grant no runtime resume authority;
+production, existing user ships and installed DEV remain unchanged.
+
+## M615 — Qualify native source following and retained app state (2026-11-18)
+
+A new fresh capsule under the independent supervisor passes using the same frozen
+f00f5fb helper and corrected version marker. Exact source compile, plain-parent
+marker creation, two immutable release versions, framework desk following,
+initial/saved JSON state, unchanged saved entry after code update, new code label
+and known duplicate-create409 with unchanged marker all pass. The workflow makes
+28 bounded native calls and the owned ship shuts down cleanly. Pinned framework,
+Vere/pill, source/artifact/proof/effect hashes and limits are in the
+[native core record](diagnostics/2026-11-18-grubbery-native-app-core.json).
+The earlier null-version failure stays failed; the separate interrupted capsule
+stays uncertain and was neither resumed nor reinstalled.
+
+This is kernel/API contract evidence with synthetic lifecycle/runner bindings.
+It does not qualify the durable managed adapter, public CLI/MCP mutation parity,
+permits/aliases/routes/served artifacts, runtime restart, peers, installed upgrades
+or DEV. Grubbery preflight remains unavailable. The four nested tool modules
+remain failed and do not become healthy because this tiny app works. Next wire
+only these typed checked native operations to exact durable phase selection and
+fresh runtime/policy/namespace observations, then qualify the remaining workflow.
+
+## M616 — Bind native app calls and observations without advertising dispatch (2026-11-18)
+
+New internal typed reads derive only selected app roots, markers, source/version,
+original phase after-reads and the bounded staged manifest. They carry full binding
+and original plan/step digests, work without source bytes, and cannot accept caller
+URLs/commands or construct writes. The owner-session client constructs exact phase
+requests from verified bytes, preserves binary payloads, never retries, separates
+complete pinned pre-effect rejections from uncertainty, and treats404 reads as
+absence rather than ownership. Private response bodies and compiler errors are
+excluded from implicit JSON output; fixed errors do not reflect transport details.
+
+The unwired Linux transport pins one method/path/query/content-type/body hash to
+one already verified private container endpoint. The existing desk HTTP routes
+are not widened. Cookie and binary payload remain on separate stdin descriptors;
+fixed curl disables config/proxy/redirect/retry. Process, pier and framework
+baseline are checked around ephemeral owner-session requests. Session cleanup is
+reported confirmed/unconfirmed; the future managed adapter must retain its outcome
+rather than invent successful cleanup. No public policy or live capability changes.
+
+Bounded native JSON/tree/build decoders reject duplicate/case-alias/unknown fields,
+changed namespaces, counts, paths, marks and compile status. Exact numeric spelling
+preserves large identity integers. Application source and the kernel's four forced
+foundational marks remain distinct; attempts to override those marks refuse before
+I/O. A parsed compile report alone is insufficient: staged bytes, namespace
+ownership and fresh runtime/policy admission still need independent checks. The
+backend must also handle directories proven generated by its own code-namespace
+creator, not adopt an arbitrary preexisting path by matching content.
+
+Focused race/static gates pass for constructor authority, changed bytes/target/
+headers, known4xx versus5xx/lost reply, no repeated write, cache-free absence reads,
+actual fixed-curl binary/query/cookie preservation, source/tree/compile evidence,
+large integers and private-error output. These are source/inert/local-HTTP checks,
+not real Docker transport or durable managed app workflow qualification. Next wire
+the trusted store/policy/native observer coordinator and API/CLI/MCP parity. M615
+remains the native kernel-only boundary; Grubbery preflight is still unavailable.
+
+## M617 — Coordinate checked native app evidence with immutable runner history (2026-11-18)
+
+A private native Backend now derives expected source structure and original
+ownership from the complete namespace journal in durable creation order. Actual
+root/marker, immutable source and pinned foundational bytes, source configuration,
+followed version and live-mirror bytes are checked independently. Compilation
+requires its own exact native report and cannot hide changed served source.
+Unknown paths/marks/nexuses, replaced markers, incomplete reads, mismatched
+hashes and unconfirmed owner-session cleanup refuse. Reads have explicit512-call,
+1MiB-response/4096-node bounds and require the outer deadline; no history is
+pruned to make an observation pass. Original observed code-namespace creation
+plus fresh exact foundational source proves its generated mar directory without
+another create. This narrowly supersedes the earlier exactly-one-call Dispatch
+comment: at most one app call, or a digest of that original derived provenance.
+It does not adopt an arbitrary existing directory or change old plans/events.
+
+The Linux runner factory binds this observer to authenticated role/actor, exact
+runner/mode/target/config/container/pier, original pinned framework commit,
+separate observed activation, live framework agents and fresh Commit policy.
+The lifecycle/policy mutex remains mandatory across the Execution call. Creating
+the adapter does not grant writes; read-only reconcile/abandon can remain usable
+after Commit revocation. New effects still recheck current authority. Private
+cache loading checks actor, target, workflow/settings and complete source bytes.
+A focused fixture exposed that the frontend reader requires index.html: the
+shared confined byte reader now serves both paths while frontend validation
+retains its index/MIME rules. No mark conversion or live Unix mount is introduced.
+
+The existing stage-discard API now retains a stage used by any unfinished app
+operation, including known refusal until supported abandonment. Terminal replay
+remains independent of that cache. SQLite history checks the complete journal
+in one transaction and never accepts caller ownership projections or substitutes
+request-ID sorting for durable creation order.
+
+Focused race gates pass for complete two-release source following, exact original
+ownership, generated-directory provenance, wrong native markers/paths/foundations/
+cleanup/authority, compiler/version versus mirror bytes, and uncertain native
+reply recovery without source or redispatch. Isolated runner/SQLite gates pass
+across normal reopen, unavailable source cache and revoked Commit, preserving the
+original uncertain chain and single write. Guard drift/refusal, missing activation,
+unresolved framework operations, stage retention/discard and creation-order history
+are tested. The underlying native runtime is inert in these tests; this is not
+real Docker/native coordinator or public CLI/MCP qualification. No persistent
+format/schema, live capability, installed artifact, DEV or production change.
+Next qualify the managed coordinator against the pinned fresh native kernel and
+then expose exact phase operations with shared interface evidence. M615 stays
+kernel-only evidence; Grubbery preflight remains unavailable.
+
+## M618 — Prepare a separately supervised native coordinator gate and compact retained evidence (2026-11-18)
+
+The new explicit grubbery-managed-coordinator-v1 capsule bootstraps the same
+frozen framework, then uses the private managed factory/SQLite/cache/policy guard
+and exact original phase handles against actual typed native owner HTTP calls.
+Each call checks the fresh private fixture and closes its own owner session.
+It reuses the M615 JSON-state nexus fixture; the refactored v1 source was compared
+byte-for-byte with that qualified capsule. No product API/capability, Docker/curl
+transport or installed lifecycle claim follows from this new test. Source compile
+and twelve launcher tests pass; the new native case has not run at this decision.
+Bounded last-read diagnostic bytes stay private and separate from response JSON.
+Unknown phases only get original read-only reconciliation, never write retries.
+
+The background supervisor now captures its actual named unit's properties just
+after submission, identifying whether it was still live. Later collected-unit
+stubs cannot establish the limits that applied during a run. The new smaller
+single-candidate case declares1.25GiB scratch based on the completed app03
+allocation (about1.1GiB with copied inputs and pier), retaining the same live
+allocation monitor and hard refusal. Other Grubbery cases keep1.5GiB. The scoped
+48GiB goal cap, one runtime experiment,4GiB/no-swap/one-core native boundary and
+all production/existing-ship exclusions remain unchanged.
+
+To make room, three completed app03 input copies were verified against retained
+canonical hashes before retirement. Its complete cleanly stopped pier and the
+interrupted app02 pier now have sparse lossless archives, verified across every
+original file byte and directory metadata before removing expanded copies.
+The latter's failed result, unconfirmed shutdown and original uncertain activation
+remain unchanged; archiving grants no restore/resume or filesystem ownership.
+All original SQLite/WAL/SHM, proofs, logs and source manifests remain. The two
+archives verify1450 and1452 files respectively. The ended owned scopes were
+checked explicitly; no existing ship, process inventory or native service was
+used. Three old task executables were also losslessly compressed with verified
+original hashes and manifests, including the original wrong-marker/bootstrap
+helpers. No retained canonical Vere/pill input was removed. Detailed private
+manifests bind paths, device/inode, before/after hashes, preserved dependencies
+and the bounded archival services. Admission is required again before launch;
+temporary headroom is not approval for another experiment or a higher cap.
+
+## M619 — Preserve the first coordinator capsule's fixture refusal and correct its closed guard (2026-11-18)
+
+The dca9e8d native coordinator helper failed immediately in nativeDeskGuard:
+its separate fixture-identity case list had not been extended along with the
+launcher. Namespace, loopback/no-host-access and scope-admission checks still
+ran; the guard then refused the literal framework desk for the new named case.
+No framework/app operation or app store was reached. The new fake stopped cleanly.
+The [original failed result](diagnostics/2026-11-18-grubbery-coordinator-fixture-refusal.json)
+is retained, not relabeled as a native/product pass.
+
+The correction adds only the explicit coordinator case to the existing identity
+guard. A direct source regression verifies that case and the existing supported
+identities, wrong framework case/desk, traversal and changed Vere pin. It does
+not bypass any namespace/process/pier/resource/ownership requirement. This
+corrected harness needs a new fresh capsule; M618 is preparation only.
+
+The obsolete pre-app fake and verified duplicate inputs were classified by exact
+identity, helper/input hash, clean-shutdown result, ended owned scope and the
+absence of an app store before retirement. Original failed results, logs,
+source/input hashes and a lossless verified helper remain; private manifests
+record each filesystem object and retained canonical inputs. No receipt or
+existing ship was changed. The failed capsule is explicitly non-resumable.
+
+## M620 — Native empty code namespaces disconfirm the eager-foundation model (2026-11-18)
+
+The e1e4b5d fresh coordinator capsule passes the closed fixture guard and actual
+framework create/adopt/commit/activation observations. The managed private factory
+then observes the original source marker and release parent through real native
+HTTP and persists their proofs. Its third phase receives the code-namespace
+creation acknowledgement but after-observation refuses: the actual native tree
+is an empty code neck. M617's inert model/projection expected the foundational
+marks at namespace creation. That timing assumption is disconfirmed. The
+[failed native result](diagnostics/2026-11-18-grubbery-coordinator-empty-code-tree.json)
+retains dispatched/acknowledged/uncertain events; no next phase or repeated write
+was issued. The fresh ship stops cleanly. This is not a native coordinator pass.
+
+M617's generated-mark-directory model and its related at-most-one-call exception
+remain source/inert evidence only, not a qualified native contract. Before
+changing production logic, the new explicit source-layout kernel case observes
+trees and raw file bytes before/after each fixed source write, version and live
+mirror, with separate bounded foundational-source reads and compiler results.
+It uses a fresh unrelated diagnostic namespace and the already exercised v2
+state workflow, not a repair/resubmission of the uncertain managed operation.
+The new case is included in both launcher and closed fixture guard. No capability
+or public source effect is enabled by adding this diagnostic gate.
+
+A later native run's admission first refuses36.5MiB over the48GiB cap after the
+helper rebuild. Six obsolete complete framework input copies in ended tombstoned
+task capsules are verified against every original input hash and the retained
+1443-file canonical pin before retirement, freeing73,900,032allocated bytes.
+Original SQL/history/proofs/logs and canonical framework/Vere/pill remain. Private
+manifests preserve all removed filesystem identities and dependency hashes.
+Original failed results are never rewritten to make qualification pass.
+
+M620 retention follow-through: select the corrected app03 pass and current
+managed02 observation failure alongside the Gall07 reference. Retire the now
+obsolete wrong-marker app01 and caller-interruption app02 whole-pier archives,
+while retaining their original failed results, SQL/WAL/history, logs/proofs/input
+hashes and exact helper bytes. Their original archive verification remains a
+historical fact; replacement tombstones explicitly link retirement and preserve
+the previous tombstone hash/body in the private manifest. No canonical source,
+Vere, pill or running input depends on these archives. Current managed02's full
+pier is then losslessly archived and verified across1450 files before retiring
+its expanded copy; every original app receipt and native diagnostic body remains.
+This is compact forensic evidence, not authority to recreate filesystem identity
+or resume an archived ship. The next runtime still needs fresh admission.
+
+## M621 — Native foundational sources and materialized trees are separate views (2026-11-18)
+
+The [b4b01c6 fresh layout contract](diagnostics/2026-11-18-grubbery-native-source-layout.json)
+passes74 bounded calls and clean shutdown. Immediately after code-namespace
+creation the materialized tree is empty, while all four foundational sources are
+already directly readable with the exact pinned framework byte counts/hashes.
+They remain absent from the materialized tree after bill/nexus/version writes
+and in both live code mirrors, while their compiler results are present/clean.
+Submitted app Hoon/mime bytes read back exactly. Version following, saved-state
+poke/read and preservation on the second source update still pass.
+
+This refines M620: the eager materialized-tree assumption was wrong, rather than
+establishing that foundation generation happens later. Keep native source-tree,
+virtual derived-source and compiler-cache evidence independent. Correct the
+projection/model to verify pinned foundational bytes through separate bound reads;
+never manufacture their materialized directory or use matching bytes to adopt an
+unowned namespace. Custom-mark directory semantics need their own exact proof
+before claiming those phases. M617's inert generated-directory result remains
+unqualified. This is a kernel contract, not a managed coordinator, Docker/curl,
+public interface, permit/route/restart/peer/installed pass; capability stays closed.
+
+M621 implementation follow-through: the code-namespace projection no longer
+invents a materialized mar directory/files. Separate constructor-bound direct
+reads verify every virtual foundational grub against the pinned original bytes
+on release and live-mirror checks. The source-tree helper and inert model now
+represent that same separation; the compiler report still requires all four
+foundational artifacts. The unconditional generated-directory skip is removed:
+one native call per selected phase, no implicit directory adoption. A new race
+regression introduces a materialized directory containing all matching pinned
+bytes and confirms that it cannot acquire ownership through those hashes.
+Custom-mark directory semantics remain unqualified. The next fresh managed gate
+also has a separate fixed kernel diagnostic after the minimal coordinator loop
+to observe an explicit custom-mark create, raw source and compile, without
+repairing the earlier pending operation or accepting caller proof. No schema,
+existing header/event or live capability changes.
+
+## M622 — Make original recording bytes an explicit JSON encoding choice (2026-11-18)
+
+Unwired Frame/Page metadata JSON now omits raw data rather than implicitly
+base64-encoding it. A separate bounded ExportOriginalFrame encoding preserves
+original octets and frame timing/kind/digest metadata in an independent copy.
+The binary format, retained bytes and decoder remain unchanged. Source/race
+checks pass for omission of raw/fake-secret bytes, exact explicit export including
+controls/NUL/invalid UTF-8, no mutation alias and refusal of invalid/oversize frames.
+This is not redaction, authorization, whole-session export or verified capture;
+public callers must independently select verified retained data and enforce
+current target/operator/explicit raw-export grants. No runtime/API/UI is enabled.
+
+Read-only integration review also identifies the v1 metadata's missing full
+project generation/creator, native ship/pier and engine/namespace binding. A
+successor needs original-reader preservation/refusal before live capture. Current
+pages rescan prefixes; any index must state its actual verified coverage and not
+claim a skipped old prefix was reread. Storage reserve refusal cannot guarantee
+that a subsequent gap itself persists. Coverage state, retention, safe pressure
+recovery and independent exit/drain remain required. Docker CLI29.7.2's pinned
+upstream run flow attaches before start and drains output after exit; this is a
+primary-source implementation guide, not qualified Omabit recording behavior.
+Private notes retain those follow-ups and upstream links. The active native app
+helper remains the separately frozen ac3eec2 artifact; this later recorder-only
+source change is outside its qualification scope.
+
+M621 retention follow-through keeps the corrected app03 and Gall07 full references.
+The completed source-layout01 full diagnostic pier/duplicate inputs are now
+obsolete and retired with full file identities/hashes, preserving original
+qualified proof/SQL/history/logs and exact helper. The explained managed02
+whole-pier forensic archive is also retired; original acknowledged/uncertain SQL,
+native response bodies, proofs/logs/input hashes and exact helper remain intact.
+Replacement tombstones link superseded archive claims explicitly. No canonical
+source/Vere/pill, current experiment, user ship or production service was changed.
+
+## M623 — Corrected private managed native source phases pass (2026-11-18)
+
+The [frozen ac3eec2 coordinator gate](diagnostics/2026-11-18-grubbery-managed-native-source.json)
+passes all12 original phases, each dispatched once and observed, with real private
+SQLite/cache/policy/ownership/byte/compile/version/live-mirror checks against the
+pinned kernel. The fresh ship stops cleanly. Virtual foundational bytes remain
+separate from materialized source. No earlier uncertain header or event is
+repaired, rewritten or relabeled; those failed capsules remain failed.
+
+A separate fixed kernel namespace confirms the custom-mark question: its mar
+fold is absent before explicit creation, the single create returns201, then the
+submitted exact custom source is the only materialized mark while four virtual
+pinned sources remain compiler inputs. All five compile cleanly. This confirms
+removing the unconditional generated-directory skip; it does not by itself
+qualify a managed custom-mark source operation. Native per-call owner cleanup
+must finish before evidence is accepted. Process-death cleanup remains unqualified.
+
+This gate invokes the private managed coordinator through a native owner HTTP
+fixture with synthetic lifecycle and exact typed sources; it does not exercise
+product Docker/curl, public CLI/MCP, managed second-version/state/restart, permits,
+aliases/routes/assets, peers or installed upgrades. The later recorder-only M622
+commit is outside the frozen artifact. Grubbery capability remains unavailable.
+Next expose saved app receipts and exact phase interfaces with parity, then
+qualify their actual Docker transport and the remaining workflow boundaries.
+
+## M624 — Saved app receipts through shared public interfaces (2026-11-18)
+
+`app.source-operation.v1` now reads the original Grubbery record through the
+runner API, pinned client/registry, generic CLI and official-SDK stdio adapter.
+Its distinct receipt feature grants no live adapter readiness. Current operator
+access suffices for saved inspection; original creator attribution and all
+uncertainty remain unchanged. Reads validate the complete SQLite journal in one
+snapshot, outside the lifecycle mutex, without source cache or runtime access.
+Restricted SSH already allows operator requests and excludes this path for
+observers; no broader observer authority was added.
+
+Focused race gates pass for actual CLI/stdio byte parity, startup allowlists,
+observer/missing-feature refusals before receipt reads, changed response identity
+and corrupt history. An isolated actual SQLite/HTTP gate preserves original
+uncertainty and returns while the lifecycle mutex is held, with no runtime or
+cache. Catalog/access regression checks pass. This is source/inert interface
+evidence, not installed SSH/native app dispatch or final-artifact qualification.
+The48GiB admission counted51,095,093,248 bytes before these focused builds; no
+runtime experiment or deployment was started.
+
+## M625 — Exact original app phases through typed source APIs (2026-11-18)
+
+Review derives its actor, pinned framework receipt/observed baseline, pier and
+policy at the runner; staged bytes remain private and access-bound. Begin writes
+the unchanged plan/namespace lease without an app effect. Advance selects exactly
+one original phase, with durable dispatch before I/O. Saved replay precedes live
+admission. Reconcile never dispatches or loads source; safe abandonment preserves
+live/source state and its original journal. Current actor comes from transport,
+never from the body. Original actor/process/config remain required; observation
+across same-pier restart and grant rotation is still unqualified.
+
+Actual isolated SQLite/HTTP race tests pass for review without journal/native
+writes, lost reply and single dispatch, skipped-phase refusal, original digest
+and actor binding, missing cache/revoked Commit recovery, original uncertainty
+preservation, completed-phase replay and pristine abandonment/replay. Actual CLI
+and official-SDK stdio parity pass for all five typed operations; explicit MCP
+mutation enablement also gates journal-only calls. Restricted SSH tests pass for
+20KiB plans,96KiB overflow refusal, same-connection missing-feature refusal,
+observer denial and unchanged ordinary4KiB limits. Catalog/access regressions
+and affected Go vet pass. No persistent format changes were made.
+
+`grubbery-app-source-v1` denotes these APIs separately from full workflow readiness;
+preflight remains unavailable. These are source/inert gates, not a new native
+product or installed qualification. Product Docker/curl, managed state/update/
+restart, durable owner cleanup, permits/routes/assets/peers and final-artifact
+upgrades/DEV remain outstanding. Frozen M623 remains scoped to ac3eec2.
+
+Storage reached51,464,445,952 charged bytes during focused builds, below48GiB.
+Two completed source-only test helpers were losslessly archived with SHA/inode
+manifests. An initial atime-inclusive comparison refused before unlink; the
+corrected immutable identity comparison verifies both archive inflations.
+The known managed03 runtime and supervisor are inactive. Only its exact duplicate
+pill/Vere/host helper were retired after canonical hashes were reverified,
+freeing270,315,520 allocated bytes; original SQL/pier/proofs/logs remain unchanged.
+No user ship, installed service, production plugin or manual-review state changed.
+
+## M626 — Prepare public native update/restart gate within the budget (2026-11-18)
+
+A new explicitly guarded `grubbery-public-workflow-v1` case will exercise the
+actual public source API and pinned registry/client for two source versions,
+independent fixed native state/code probes, a supervisor-bound clean same-pier
+restart, another state write, original SQLite reopen and completed-phase replay.
+This is prepared code, not a passed native result. It still uses synthetic
+lifecycle and direct owner HTTP, so it cannot qualify product Docker/curl,
+recovery of a pending operation on a changed runtime, permits/routes/assets,
+peers, installed upgrades or the native CLI combination.
+
+Only this longer case receives a20-minute Go context,21-minute test bound,
+1,280-second inner workflow bound,1,600-second outer deadline and1,750-second
+independent supervisor cap. It retains one active experiment,4GiB/no-swap/one-CPU
+capsule,512MiB/no-swap/25%-CPU supervisor, namespace guards,1.25GiB scratch
+admission and live48GiB aggregate enforcement. Existing case deadlines remain
+unchanged. The closed Go identity guard and12 launcher tests pass; affected
+managed Go vet passes. Build a matching clean helper before admission.
+
+The clean completed managed03 pier is now sparsely archived with all1,450 file
+contents verified on streaming decompression: archive SHA256
+23fdd4b5b8ea3aebef97c2135e91f5be3f0c0bd736b5a7a14a6b347ee157afc2,
+258,569,202 bytes. Retiring its verified expanded files frees520,200,192 allocated
+bytes. Original SQL/proofs/logs/helper remain unchanged. The obsolete first Gall
+capsule's full pier is separately retired with all file hashes and a tombstone;
+its original uncertain activation result/SQL/proofs/source/helper remain failed
+and unchanged. The selected successful Gall07 full archive is reverified and
+retained. This frees589,733,888 bytes and makes no historical-cause claim.
+
+Three further ended-capsule framework-source duplicates are retired only after
+all1,443 files match the exact canonical pin, which remains retained and is
+reverified afterward. Their original input/result/proof bytes remain unchanged;
+36,950,016 allocated bytes are freed. Completed retirement manifests identify
+absent expanded piers; a preliminary tombstone-name assumption refused before
+any unlink. No production, installed service, user pier or manual-review state
+was selected for these retirements. Final runtime admission is still required.
+
+## M627 — Public native source update/state/restart gate passes (2026-11-18)
+
+The [frozen d2d8cf9 gate](diagnostics/2026-11-18-grubbery-public-native-workflow.json)
+passes in1,003.86 seconds. It uses the actual runner API and pinned registry/client
+for two exact source plans:12 then9 phases, each dispatched once, acknowledged
+and independently observed. Their original final revisions are36 and27. Code
+and followed source are checked separately; saved app state survives the source
+update and the new code label is observed. The supervisor verifies the exact
+owned process/pier before clean stop and same-pier restart. State remains, another
+write succeeds, and both original records survive SQLite reopen and old-phase
+replay unchanged. The fresh ship stops cleanly at completion; both scope and
+independent supervisor are inactive with successful results.
+
+This supersedes M626's prepared-only status for that exact artifact. It still
+uses synthetic lifecycle/direct owner HTTP and fixed test state probes, so it
+cannot qualify product Docker/curl, pending operation/process rebinding, owner
+cleanup on process death, native CLI/stdio integration, permits/routes/assets,
+peers, installed upgrade or DEV artifacts. Full Grubbery preflight remains
+unavailable. Recorder-only source edits made during this frozen run are outside
+its artifact and qualification; they were not compiled during the experiment.
+
+Only the ended capsule's exact duplicate pill/Vere/host helper are now retired
+with hashes/inodes and reverified canonical copies, freeing270,422,016 allocated
+bytes. Its full pier, source, original SQL/proofs/logs/helper and restart history
+remain unchanged. Before subsequent focused recorder builds, charged storage is
+50,932,744,192 bytes and128MiB scratch fits under the temporary48GiB cap. No
+production, installed service, user pier or manual-review state was changed.
+
+## M628 — Draft capture identity becomes a source-tested format fence (2026-11-18)
+
+Recording metadata2 binds the full target generation/creator, native ship, pier
+continuity, daemon identity/endpoint digest, host boot and external recorder's
+namespaces; projects additionally bind the verified anchor namespace. These are
+attachment identity fields, not evidence that Start occurred or a container
+process namespace exists. Future runtime admission must obtain them itself.
+Metadata2 shape validation is not runtime observation or caller authorization.
+
+Version1 remains canonical/byte-preserving and never acquires invented identity.
+New Store.Create with legacy metadata refuses before creating files. Unknown
+versions refuse as invalid. CaptureIdentity also refuses to infer a current
+generation from legacy instance/project names. A new writer copies nested identity
+values before admission so callers cannot mutate its captured binding. The
+binary frame codec remains1 with exact metadata digest binding. There is no
+runner database version change, runtime integration or installed mutation.
+
+Full focused recording race checks and Go vet pass, including identity/header
+binding, complete project/ordinary distinctions, caller-pointer isolation,
+legacy/unknown refusal without filesystem changes and the existing raw codec,
+paging, privacy, torn-tail and pressure checks. A separate source rehearsal is
+prepared with an actual3218e6f writer/reader and a declared helper: original
+arbitrary bytes/gap/exit through new cursor/read/reopen, read-only legacy refusal,
+and genuine old-reader refusal of successor bytes unchanged. Its actual gate
+is pending at this freeze; unit reconstruction is not original-writer evidence.
+Runtime, indexed seeking/rotation/retention, durable coverage/pressure, derived
+redaction, API/UI and native/installed capture qualification remain outstanding.
+
+## M629 — Preserve first recording rehearsal and correct helper expectation (2026-11-18)
+
+The first actual original3218e6f rehearsal passes original-byte, cursor and
+repeated reopen preservation through the candidate58d0586 reader, including
+read-only legacy capture refusal. Its last helper assertion fails: unchanged
+Store.ReadPage classifies invalid/unsupported metadata as ErrCorrupt, while the
+helper expected the metadata decoder's narrower ErrInvalid. The original store
+therefore did refuse metadata2; this is not evidence it accepted it. Inspection
+of the exact frozen original source confirms that mapping. The failed command,
+original binaries/source/input manifest and candidate report remain retained;
+both original and successor file hashes are reverified unchanged after failure.
+
+Correct only the declared helper: independently require ReadMetadata ErrInvalid
+and Store.ReadPage ErrCorrupt. Original runtime source remains unchanged. Rerun
+in a fresh qualified directory after this freeze; do not relabel the first
+failed result or claim the overall gate passed yet. No engine/runtime/installed
+service or ship was involved.
+
+## M630 — Actual recording1 writer/reader compatibility passes (2026-11-18)
+
+The [fresh corrected rehearsal](diagnostics/2026-11-18-recording-metadata2-source-upgrade.json)
+passes against candidate5041406. The unchanged original3218e6f runtime sources,
+original metadata_test fixture and declared helper write real private recording1
+files with arbitrary stdout/stderr bytes, gap and independently typed exit.
+Repeated candidate reads, exact cursor paging and store reopen preserve every
+original file byte and leave absent identity unknown. Legacy capture refuses
+without writes. The actual original metadata decoder/store reject metadata2 and
+the complete successor file hashes remain unchanged. The failed first directory
+is retained as failed; no baseline or result was relabeled.
+
+Original writer SHA256 is0b27ba1be956f24e6ebcfb0de417ede59b84c4b48cd8534f96357f91454ef843;
+candidate helper SHA256 is9985e8dd71892518711f863c4fab8f32f6ee09bd24bd5ae59df19031aee70031.
+A compact original writer fixture with exact source/helper provenance now runs
+in ordinary source tests, including immutable raw octets, legacy identity refusal,
+new-capture refusal, cursor resume/reopen and unchanged originals. Full focused
+recording race checks pass after retaining it. This qualifies only the frozen
+source/filesystem format boundary. No live capture, rotation/index/retention,
+durable pressure/coverage, redaction, API/UI, native/installed or stable behavior
+is implied, and no runner database or installed service changed.
+
+## M631 — Maintained source samples match the public native fixture (2026-11-18)
+
+`app.sample.v1` now returns named Grubbery state source versions1 and2, exactly
+matching the two bill/nexus manifests from M627. Their version2 definitions carry
+relative sample contract metadata and separately pinned framework/runtime inputs.
+Gall definitions and their exact hashes remain unchanged. Evidence binds exact
+qualified source while explicitly declaring that named packaging was added after
+the frozen d2d8cf9 artifact. It does not fabricate a prior named-sample test.
+
+Source digests are840fb9fa309325af2ec44087342999dd95595ceacebd04335ba250103e5859b7
+and5be1882ece1a6c07f58dce29bace4df9bbf3bd2ab9feae164a3ddc3c874a3a3b.
+Source/staging/adapter validation, exact equality with the maintained native Hoon
+fixture, Gall regression and actual CLI/stdio sample parity pass under the race
+detector. The developer skill distinguishes offline source availability, typed
+phase APIs, narrow native evidence and full preflight, which remains unavailable.
+Only bill/nexus files belong in staging; definitions/evidence/notices remain out.
+No public state read/poke/watch API, product Docker qualification, permits/routes/
+assets/peers or installed upgrade is implied. These samples support preparing the
+next fresh product-transport VM without copying test-only source generators.
+
+## M632 — Retain exact old VM evidence and retire superseded full copies (2026-11-18)
+
+A [bounded read-only retention utility](diagnostics/2026-11-18-issues-evidence-retention.json)
+boots only a fresh kernel/init, mounts the old task VM03 root read-only,noload,
+noexec, and copies fixed original SQLite/result/command-log paths. It never runs
+source-disk services/code or opens pier paths. Source/base hashes remain unchanged.
+The closed original schema60 store has47 tables/10 rows and only the two recorded
+disposable fake identities. All original SQLite/SQL/guest commands/result bytes
+are retained privately, along with source/helper hashes, code and compressed
+utility artifact. The first utility command-line guard refused before mounting
+because it assumed a trailing space rather than the kernel's newline; its failed
+result/helper and unchanged source hashes remain retained. Field-based matching
+corrects only that utility guard for the fresh successful run.
+
+After verified extraction and inactive source/utility scopes, the superseded VM03
+whole disk is retired, freeing875,831,296 allocated bytes. Its passed installed
+upgrade section and later overall duplicate-enrollment failure remain unchanged.
+Both retained VM01/VM04 roots directly depend on the reverified canonical base,
+not this retired disk. Tombstones prohibit resuming historical launch commands.
+This supersedes older full-VM03 retention claims only; it adds no product gate.
+
+The current completed public01 native pier is losslessly sparsely archived and
+all1,450 file contents match on streaming decompression:259,190,089 bytes,
+SHA25648b0773c6c251cfe40094618428eb435da0b7678ad7dce5d62b30972a3ea28ff.
+Its verified expansion retirement frees495,067,136 bytes, with original source,
+SQL, proofs, exact helper and both process/restart logs unchanged. This stronger
+full public source/state/update/restart reference supersedes the old app03 kernel
+and managed03 private-only full archives; retiring those exact verified archives
+frees524,328,960 bytes. Their original SQL/receipts/proofs/logs/exact helpers remain
+unchanged. New retirement manifests retain original tombstone bodies and link
+replacement status; historical archive hashes are not claims of present files.
+
+Only classified task-created artifacts were selected. The canonical base/runtime/
+pill/framework sources, selected Gall07 and current public01 full references,
+original writer fixtures, VM04 recovery reference, production, installed services,
+existing/manual-review ships and all excluded paths remain unchanged. No runtime
+experiment remains active. Recheck2GiB VM scratch after preparing/building matching
+product transport artifacts;48GiB remains the hard goal ceiling.
+
+## M633 — Prepare an actual product Docker/CLI/stdio capsule (2026-11-18)
+
+A separate fresh VM harness now targets the actual installed runner and product
+rootless Docker/curl source transport, with no backend injection. The helper uses
+SDK staging/framework setup plus actual CLI/official-SDK stdio source operations,
+exact saved receipt parity, two maintained source versions, fixed independent
+state/code probes, supported Stop/Start with changed container ID, manager restart
+and completed-phase replay. It saves complete reviewed plans before submission.
+Only read-only state observations may repeat while the nexus loads; state writes
+and uncertain source effects are never retried. Fixed state probes use the existing
+operator code endpoint and exact enabled private local route, keeping secrets
+out of proof and process arguments. No new public state API is introduced.
+
+Four no-effect host/guest guard tests pass; the Go helper compiles/skips outside
+its explicit scenario/user/QEMU guard, and managed Go vet passes. This is prepared,
+not native product qualification. It requires clean matching collector/runner/CLI
+and source-pinned helper before launch. The fresh standalone base, complete frozen
+framework and runtime/pill must be reverified. Historical bootstrap Kind remains
+"recommended" for an explicit uploaded pill; this case selects the standard
+f8b08c pill rather than the Apps pill, matching the prior native source gate.
+
+One separate bounded VM uses8GiB guest/10GiB scope memory, no swap/one CPU, no NIC,
+no host HOME/run/runner/engine/keyring mounts, and a2GiB storage reservation under
+the temporary48GiB goal cap. Admission requires12GiB available memory; allocation,
+log and deadline monitors remain active. The independent host supervisor has
+512MiB/no-swap/25%-CPU/2700seconds; the guest helper has a30-minute context and
+35-minute test bound, with2400-second guest/2500-second host bounds. Only its own
+fresh scope is signalled on interruption. No production/DEV service is targeted.
+Product transport, workflow failures, pending-phase rebinding, durable auth cleanup,
+permits/alias/routes/assets/peers and matching installed upgrade remain pending.
+
+## M634 — Freeze matching product artifacts and separate harness provenance (2026-11-18)
+
+The three product executables and source-pinned helper are built cleanly from
+e61d971 with all Go/embedded input hashes checked before/after. This is an
+unqualified development snapshot for the fresh product VM, not installed DEV or
+stable distribution. The helper source pin and executable VCS identities bind
+that exact commit. No prior qualified or installed binary was overwritten.
+
+The launcher now accepts a separate exact ancestor artifact source only when
+all Go/go.mod/go.sum/embedded inputs remain unchanged. This permits narrow harness
+or documentation fixes without relabeling artifact provenance. Both identities
+remain explicit in receipts/scenarios. Host supervisor/init builds explicitly
+use cached offline Go dependencies and disable Go telemetry. Four no-effect
+guard tests pass after that harness-only change. No native product result is
+claimed at this freeze; admission/launch remain the next steps.
+
+## M635 — Bound product input staging after observed supervisor OOM (2026-11-18)
+
+The first product attempt never boots QEMU or creates a ship. Its512MiB host
+supervisor reaches exactly that cgroup memory peak while mkfs populates the
+immutable input filesystem; the unit journal records oom-kill/status9. Automatic
+unit collection makes later default unit properties unsuitable as outcome proof;
+the original journal, partial scenario, artifact pins and failed result are
+retained. No native/product gate is relabeled. No installed service was targeted.
+
+Correct only the harness: allow a bounded2GiB/no-swap supervisor for filesystem
+staging page cache, retain25%-CPU/2700seconds, and require14GiB available memory
+before the separate8GiB guest/10GiB scope. Current admission observes45,426,835,456
+available bytes. Preparation receipts now distinguish inert staging/payload-built
+from guest creation. The48GiB aggregate and2GiB additional storage ceilings are
+unchanged; no Go or embedded input changed from frozen e61d971 artifacts.
+
+After the stopped unit is verified, every partial staging file matches its exact
+canonical artifact/framework/runtime source or preserved generated scenario.
+Only those copies and the incomplete input filesystem are retired, with hashes,
+inodes and original failure evidence preserved. This frees519,442,432 allocated
+bytes. There was no VM image, pier or guest service to clean up. Retry must use a
+fresh output directory with explicit artifact/harness identities; the first
+attempt remains failed. No production, DEV manual-review state, protected ship,
+tmux session or excluded path was inspected or changed.
+
+## M636 — Preserve product policy-setup failure and correct fixture scope (2026-11-18)
+
+Product VM02 boots the actual installed source-e61d971 runner/schema62 and starts
+one fresh fake. The Go helper refuses before desk creation: it incorrectly asked
+the desk-level policy update to grant CreateDesk. The existing contract requires
+that gate at ship scope and inheritance at desk scope, as the earlier native
+fixture already did. This is a fixture mistake, not a product permission change.
+Correct the helper's exact selected ship update, then inherit CreateDesk while
+allowing Commit/blocking Publish at the selected Grubbery desk. A pure race test
+validates both scoped updates and their gates; managed Go vet/guard tests pass.
+
+The failed original image/result/artifact pins are preserved through read-only
+retention extraction before retirement. Original SQLite/WAL/SHM, full guest
+commands/result and host serial remain unchanged. Queries/dumps use separate
+analysis copies because WAL is present; the snapshot has51 tables/schema62 and
+only the recorded single disposable fake. No immutable=1 shortcut ignores WAL.
+The original full root/input filesystem are now superseded and retired with
+hashes/inodes/manifest, freeing2,024,460,288 allocated bytes. The failed result is
+not relabeled, and exact e61d971 product artifacts remain retained.
+
+The untrimmed new overlay retained1,699,876,864 allocated bytes even at this early
+stage. Enable discard only on future new VM drives, and let the explicitly guarded
+guest trim only its own writable root before/after bootstrap and periodically
+during its helper. This reclaims deleted bootstrap/checkpoint blocks, without
+raising the2GiB scratch or48GiB aggregate ceilings or touching host/reference
+filesystems. The earlier staging2GiB-memory supervisor/no-swap limits remain.
+After this Go helper change build a fresh matching artifact set; no production
+code, saved permission, installed service, user pier or manual-review state changed.
+
+M636 retention also losslessly archives six older ended native helpers and one
+completed superseded source test binary, verifying each full inflation/hash and
+file identity before retiring its raw duplicate. Exact artifact hashes and sidecars
+remain;147,460,096 allocated bytes are freed. Current Gall07/public01 full-reference
+helpers, canonical runtime/pill/framework, frozen Stop/product artifacts and all
+original SQL/receipts/proofs/logs remain unchanged. Archive sidecars supersede old
+raw-path retention claims without rewriting historical input manifests.
+
+## M637 — Wait for an observed container before product desk selection (2026-11-18)
+
+The source60335dd product VM03 completes fresh installed bootstrap/Start, then
+refuses before desk creation with current runtime selection unavailable. Its
+original command snapshots show running/no active operation but unavailable
+resource telemetry; Start completion itself does not supply the container ID
+used by desk selection. The preserved later original database has the actual
+fresh resource/container observation. This is a fixture readiness race, not
+evidence that a native app request failed or that policy should be relaxed.
+
+The helper now polls only bounded snapshot reads for one exact ready ordinary
+instance, valid revision and full observed container ID before the first desk
+plan and after its supported Stop/Start. It never resubmits a mutation or infers
+an ID from an old runtime. Focused race tests cover unavailable telemetry,
+recovery/active-operation fences, different project, missing revision and duplicate
+targets; managed vet passes. A fresh matching helper/artifact freeze is required.
+
+After all owned units end, a separate no-network read-only utility exports the
+original failed database and complete command/result logs without executing any
+source-disk code or services. SQL analysis uses copies; original hashes remain
+unchanged. Only the explained failed root and copied input filesystem are
+retired, freeing1,504,108,544 allocated bytes. The original failed outcome,
+60335dd artifact set and full evidence remain retained; no full old pier archive
+is claimed. Production, DEV manual review and existing ships remain untouched.
+
+## M638 — Preserve originals and account for derived redacted spans (2026-11-18)
+
+Issue20's unwired source library now has bounded explicit redacted windows over
+already verified frames. Narrow credential-field values and owner-selected
+literal secrets are omitted with reason/offset/length; broad0w atom removal and
+whole-line keyword dropping are not inherited. Matching crosses frame boundaries
+per stream without changing original timing/order or raw bytes. Unknown leading
+and all trailing partial lines are withheld, and gaps invalidate context. Text
+escapes terminal/format controls and invalid UTF-8 for plain-text rendering.
+Secret inputs never enter metadata/results. Repeated/overlapping literals use
+linear matching; bounded spans refuse without partial output.
+
+All recording race tests and focused vet pass, including every credential split,
+interleaved streams, long traces, context gaps, exact byte accounting and original
+fixture preservation. This is derived encoding, not authorization, digest-chain
+verification, complete export, automatic publication or a guarantee that every
+private application value is identified. Capture/integration/API/UI and native
+qualification remain pending; the persistent recording format is unchanged.
+
+Storage retention losslessly archives ended frozen60335dd product artifacts,
+original60 writer, selected Gall07/public01 and older app helpers, plus frozen
+d24c960 tools and failed product02/03 boot helpers. All full inflations match
+their original SHA256/size before raw duplicates are retired. Sidecars supersede
+historical raw-path claims; sources, original fixtures/SQL/receipts/logs and full
+selected runtime references remain unchanged. These two batches free186,970,112
+allocated bytes. Explicit inflation and fresh storage admission are required
+before reusing an archived executable. No production or manual-review data is
+selected or changed.
+
+## M639 — Nonblocking, single-observer desk reconciliation admission (2026-11-18)
+
+The source55331af product VM04 passes exact readiness, real Docker/curl framework
+creation, original-scaffold adoption and source commit. Activation retains
+planned→dispatched→uncertain with one native install submission. A later
+reconciliation poll exceeds the ordinary5-second client timeout while waiting
+behind a long observer holding lifecycle admission. The original failed result,
+full phase plans, SQLite/commands and serial remain unchanged. This is not a
+proved activation failure or permission to install again; app-source phases
+never start. See the [scoped failed-case evidence](diagnostics/2026-11-18-grubbery-product-initial-failures.json).
+
+Desk reconciliation now authenticates/validates and reads saved evidence outside
+the long admission mutex. `busy` returns that unchanged receipt without queuing
+more work; `queued` admits one bounded read-only observer. Pending workers also
+return busy, closing the pre-worker scheduling race. Current receipt state is
+reloaded under admission; completed replay remains read-only. Failed-store,
+closing/update fences and the workers' current actor/ownership/configuration/pier
+checks remain. No native effect is retried, timer enlarged or receipt rewritten.
+The optional response field is shared by typed clients/catalog/CLI/MCP and is
+distinct from original journal state. Unknown admission values refuse. No database
+format changes; matching final runner/collector artifacts remain required.
+
+All managed desk source race regressions pass, including creation, commit,
+activation/publication, receiver/frontend and their recovery/refusal paths.
+Actual SQLite/HTTP held-admission and pending-worker checks retain the original
+receipt;30 polling calls admit only one observer and preserve one original native
+effect. Actual CLI and official-SDK stdio return byte-identical busy/queued
+receipts and reject unknown admission values. Focused client/collection/catalog
+checks and vet pass. A new matching-artifact product VM is still required.
+
+After all owned units end, a no-network read-only utility retains VM04's original
+SQLite, phase proof and full commands/result logs without executing disk code.
+Only the explained root/copied input filesystem is retired, freeing1,667,629,056
+allocated bytes. Uncertainty remains unchanged; no full old pier archive is
+claimed. A separate lossless archive preserves exact55331af executables and the
+older superseded aa71757 failed-Start full image, freeing198,737,920 bytes after
+full inflation verification. Sources/base dependencies/original logs remain.
+
+## M640 — Retain exact evidence and reduce the fresh product reservation (2026-11-18)
+
+Freeze new matching development artifacts at5eeae9a after M639's source/race,
+actual CLI/stdio parity and vet gates. No installed namespace is updated. Only
+harness/documentation follows that freeze; artifact and harness commits remain
+separate explicit bindings. Full native app qualification is still pending.
+
+Four ended read-only utilities retain exact init gzip/source, canonical module
+bundle and original SQL/proofs/logs. Their generated boot archives and copied
+modules are verified member-by-member against those retained bytes before
+retirement, freeing54,722,560 allocated bytes. An initial guard uses the wrong
+historical manifest filename and refuses before any deletion; the corrected
+selection requires the exact existing closed-store manifest. No missing evidence
+check is waived. A separate full lossless archive of the ended qualified D24 Stop
+image verifies every inflated byte and retains its shared base; only4,337,664
+bytes are saved. Original hashes and qualification limits remain authoritative.
+Read-only classification finds no shared Go-cache file byte-identical to the
+selected archived executables, so no Go-cache files are removed.
+
+The product launcher reduces its declared additional reservation from2GiB to
+1920MiB. The explained ended framework case retains1,667,629,056 root/payload
+bytes plus a small boot archive; this leaves bounded space for the two small
+source versions/state and container replacement. Their final allocation remains
+unqualified. Existing five-second scratch/48GiB aggregate refusal and interruption
+checks remain, as do one-runtime, memory/no-swap/CPU, guest-only trim and no-network
+boundaries. An over-limit new case must remain failed and preserved, never become
+permission to exceed the cap. No production, user ships or manual review changes.
+
+## M641 — Preserve acknowledged app uncertainty and scope read authentication (2026-11-18)
+
+The frozen5eeae9a product case with harnessd22733e passes real Docker/curl
+framework create/adopt/commit and resolves activation by read-only reconciliation
+without another install. Initial app phases0–4 are observed; phase5 is dispatched
+and acknowledged, with later phases pending and its exact lease held. The helper
+fails after about241seconds in that call; timing fits the four-minute bound, but
+the old helper discards its CLI error envelope, so the precise client error is
+not proven. The original17-event journal, phase plans, commands/serial and full
+VM image are retained unchanged. No unknown phase is redispatched or abandoned.
+The scoped [partial product evidence](diagnostics/2026-11-18-grubbery-product-partial-source.json)
+does not claim source activation, state, second-version, restart or full CLI/MCP
+qualification. The earlier full Stop reference also remains retained.
+
+Each verification read previously created a new owner session. An optional trusted
+read scope now authenticates once per bounded read-only capture. Original
+sequential/conditional reads, request bounds, exact bindings/process checks,
+framework/pier capture brackets, current runner guards and native write dispatch
+remain. Provisional scope-active responses cannot produce a proof until logout
+is confirmed. Callback/cleanup failure, invalid callback or drift refuse; a
+retained reader or independent background context cannot extend the scope.
+Ordinary runtimes keep their existing individual-session path; native writes
+keep separately authenticated exact dispatch. No persistent format changes.
+
+Native-model race tests produce identical complete plans/read counts/source and
+single-write counts in both modes. Cleanup/invalid-callback and conditional-root
+refusals remain closed. Inert runtime/HTTP tests prove one code/login/logout,
+exact cookies, callback/cleanup failures, foreign actor, parent cancellation,
+process/framework drift and retained-reader refusal. The first transport fixture
+incorrectly returned plain JSON where Lens requires a hex atom; it fails before
+authentication and is corrected to the actual wire format. All focused native,
+managed app and HTTP regressions plus vet pass. Native speed/full workflow and
+pending-phase container/key rebinding remain unqualified. The next guarded
+fixture preserves private request/response JSON and bounded CLI stderr before
+reporting a typed failure; no original outcome is relabeled.
+
+## M642 — Prepare read-only private Docker attachment without lifecycle effects (2026-11-18)
+
+Issue20's unexported transport primitive pins one full container ID and an
+owner-private Unix socket, checks its unchanged filesystem object and actual
+peer UID, and requests only streaming output with no replay/stdin. The pinned
+API1.47 path requires explicit101/TCP/non-TTY multiplex acknowledgement; raw TTY,
+other upgrade, redirect, oversized headers and invalid layout refuse. Headers
+and dialing have bounded timeouts while the stream belongs to its independent
+recorder lifetime. Cancellation/close interrupts blocked I/O by closing only
+the owned connection. There is no writable console or runtime signal/action.
+
+Inert Unix-peer race tests preserve a350-line burst,12288-byte trace, diagnostic
+atoms/fake credentials, controls/NUL/invalid UTF-8 and buffered initial output;
+decoder stream identity remains exact. Close/cancel send one attach request only,
+with no stdin or lifecycle request. Invalid ID, public/symlink socket, raw TTY,
+header/protocol and redirect checks refuse; runtime/HTTP regressions and vet pass.
+Primary Moby API source confirms the framing distinction. No real Docker/Vere
+capture, launch handshake, process status, independent service, persistent-store
+integration, new metadata authority, API/UI or installed behavior is qualified.
+The future trusted factory must separately verify exact engine/container/launch
+and namespace ownership, complete metadata and durable pre-Start admission.
+The existing provisional backend choice remains provisional.
+
+## M643 — Share bounded operation deadlines and preserve accepted app work (2026-11-18)
+
+MCP's blanket90-second timeout could expire before existing four-minute app/desk
+RPCs and ten-minute source uploads. Trusted typed catalog descriptors now declare
+their bounded timeout; both generic CLI and MCP enforce that same deadline with
+15seconds for connection identity/capability handshakes. Earlier caller deadlines
+remain earlier, and tool inputs cannot override the bound. Mutation cancellation
+still means uncertain outcome, never safe redispatch. Native RPC bounds remain.
+
+Accepted app journal/phase requests use the runner lifetime and existing
+four-minute bound rather than the disconnected caller's context. Review remains
+caller-cancellable; runner shutdown still cancels phase work. Exact journal IDs,
+dispatch/acknowledgement, serialization and saved lookup remain unchanged. No
+schema, queue, new native effect or installed artifact is introduced.
+
+Focused catalog/deadline race checks and actual CLI/official-SDK stdio app-source
+and reconciliation parity pass. Actual SQLite/HTTP tests prove one observed
+write after caller disconnect and no native write for cancelled review or runner
+shutdown; existing source recovery checks and vet pass. Initial test-only waits
+were too short for race-enabled SQLite setup and are increased to15seconds;
+no production timer is enlarged. Native performance and complete app workflow,
+pending-operation rebinding and matching installed artifacts remain unqualified.
+
+## M644 — Explicitly retire the old full Stop reference, preserve current uncertainty (2026-11-18)
+
+Supersedes only M640/M641's statement that the older qualified Stop VM's full
+image remains retained. Automatic approval review refused irreversible deletion
+of that sole full image; no deletion ran at rejection. The user then explicitly
+authorized removing that exact archive while retaining its SQLite, receipts,
+logs, source and binaries. The verified removal frees1,000,701,952 allocated
+bytes. A private retirement manifest/tombstone retains original image/archive
+hashes, preserved evidence hashes and dependency checks. No full old Stop pier
+or image is now claimed; its original scoped qualification results remain valid.
+
+The newer app VM with an acknowledged pending phase remains intact and unchanged.
+Original Stop SQLite and exact losslessly archived binaries remain available.
+Shared build-cache growth had taken the measured aggregate above the temporary
+48GiB cap by69,615,616bytes; further runtime admission stopped. After the approved
+removal, aggregate allocation is50,647,777,280bytes, leaving891,830,272bytes.
+Source checks may continue within that margin; a new runtime must separately fit
+its declared scratch. No production, existing ships, manual-review state or
+unclassified user cache was altered.
+
+## M645 — Preserve recording segments and continue with explicit missing coverage (2026-11-18)
+
+Metadata3 fences the linked-segment layout from older readers, retaining exact
+metadata1/2 single-segment reads and original binary encoding. Size/explicit
+rotation syncs a new unique header/directory with original metadata, sequence and
+previous digest. Same-capture rotation keeps its receive-clock epoch; returned
+frame metadata identifies segment and epoch. Header and retained partial bytes
+count against the session ceiling, with a1024-segment bound. Host retention and
+filesystem-overhead accounting remain separate requirements.
+
+Exact-metadata continuation takes the original exclusive writer lock, validates
+its entire bounded prefix and rechecks file identity/size after reserve admission.
+It preserves every old byte and opens a new epoch with a durable unknown-loss
+restart gap. Crossing an original torn frame requires corrupt-tail evidence,
+even through empty successor headers. Corrupt complete frames, missing/foreign
+segments, incomplete headers, changed bindings/live writers and observed terminal
+processes refuse. Reattachment/runtime authority remains the future factory's
+responsibility; a host/identity change requires a distinct session.
+
+Full recording race checks and vet pass, including actual owned writer-process
+death, concurrent paging/rotation, exact cursor replay, raw bytes/timing/streams,
+new-epoch wall reversal, pressure/quota, links and post-scan replacement. A quota
+fixture's first segment bound did not require rotation; its corrected bound
+checks the additional header admission. The actual original2 writer/reader
+compatibility rehearsal is prepared but not yet run. No capture worker, index,
+retention/pins, Docker/Vere, public API/UI or installed qualification is claimed.
+No installed schema, namespace, ship or runtime is changed.
+
+## M646 — Qualify the actual original2 reader/writer boundary (2026-11-18)
+
+Supersedes M645's actual-format compatibility deferral for frozen2b5af45.
+The declared source-only rehearsal builds unchanged2eb1b67 production sources
+with its original metadata/identity fixtures and a separately hashed helper.
+Its writer emits populated metadata2 with exact binary/control bytes, stderr,
+gap and exit evidence. The candidate repeatedly reads, pages and reopens it
+without any file change; segmented continuation refuses the original layout.
+The actual old reader refuses the candidate's rotated/continued metadata3 store
+unchanged. Source/helper/binary/file pins and [scoped evidence](diagnostics/2026-11-18-recording-segments3-source-upgrade.json)
+are retained; an actual original2 fixture now runs in ordinary focused tests.
+No Docker/Vere capture, independent worker, retention, API/UI, installed upgrade,
+DEV or stable qualification is implied.
+
+## M647 — Bound a fresh peer with a read-only task-only backing (2026-11-18)
+
+VM05's copied input filesystem is classified read-only against all1459 retained
+canonical files, including exact frozen binaries/scripts/framework/runtime/pill
+and rootless bundle. An initial classifier refuses zero-inode unused lost+found
+slots before any deletion; the corrected classifier accepts only that exact empty
+slot shape. Exact hashes/source paths and small original scripts/scenario remain
+in a private manifest. Retirement frees324,628,480allocated bytes. The full
+current-failure root/pier/journal remains unchanged; its original capsule is now
+marked nonlaunchable without reconstructed inputs, never relabeled successful.
+
+Prepare a separate fresh COW capsule with that exact ended task-only root and its
+pristine base exposed read-only. Before systemd, its private PID1 suppresses
+automatic management startup and omits startup resume for the explicitly bound
+source service. A new~nec uses separate instance/port/output/request IDs and the
+public cached-pill registration API. Original~zod must stay stopped with unchanged
+StartedAt; its original pending receipt/rows/lease must stay exact. No old pending
+phase is redispatched/reconciled/rebound/abandoned. Only the new peer is operated.
+
+The fixed-case helper's first compile catches a fixture-local boolean colliding
+with the existing selected-target name; renaming fixes it. Focused pure helper
+race checks, Python refusal guards and isolated PID1 compilation pass. Declare
+896MiB additional scratch under48GiB, retaining one active runtime and existing
+memory/no-swap/CPU/deadline/no-network boundaries. The allocation and full native
+workflow are not yet qualified. This exercises a source service on a derived
+fixture, not the installer or a non-destructive installed upgrade. Production,
+manual DEV and all user's ships remain excluded. See the [capsule contract](../scripts/qualification/grubbery-app-cow/README.md).
+
+## M648 — Preserve the bounded COW bootstrap failure and restore storage (2026-11-18)
+
+Freeze matching4source artifacts at081b00d after M647's guards. Final admission
+is short by6,467,584bytes; lossless archival of the superseded5eeae9a binaries
+verifies every inflated original byte and frees46,993,408allocated bytes. Exact
+artifacts/source/provenance remain, with archival sidecars for former raw paths.
+No unclassified Go cache, installed artifact, namespace or service is changed.
+
+The fresh COW gate boots the intended source service without startup resume and
+reads the original pending receipt, then hits its declared896MiB scratch bound
+during new~nec Start. The owned scope terminates; no clean runtime exit is
+qualified. Allocation after stopping is1,001,316,352bytes. Between five-second
+samples aggregate allocation also rises21,491,712bytes above48GiB. This is a
+failed resource gate, not permission to exceed either bound or silently raise it.
+No framework/app phase or new app journal operation runs. The [scoped failure](diagnostics/2026-11-18-grubbery-cow-bootstrap-budget.json)
+does not qualify native source/state/restart or installed behavior.
+
+Restore the cap by retiring only the new byte-verified copied input filesystem,
+freeing85,594,112bytes. A separate bounded48MiB no-network kernel utility mounts
+the ended COW source read-only/noload/noexec with both backings read-only. It
+executes none of that disk's code and preserves exact SQLite/WAL/SHM and commands.
+Analysis uses copies; its first query assumes a nonexistent kind column and
+refuses, then uses the actual JSON body schema. All original app header/event/
+lease rows remain exact: one operation,17events,one lease; no new app operation.
+Both source and original backing hashes remain unchanged after inspection.
+
+Retire only this explained obsolete bootstrap overlay after those evidence
+checks, freeing897,126,400bytes. Its full new partial fake/pier is not retained;
+its exact original store, failure/logs/source/artifacts and retirement hashes are.
+The complete original VM05 with acknowledged app uncertainty remains unchanged.
+Storage is under48GiB again. Replan native scratch using measurements; do not
+repeat the undersized case or turn source checks into a native pass.
+
+## M649 — Keep conditional compiler verification inside its read scope (2026-11-18)
+
+Review for runtime recovery finds a real M641 source integration gap. Ordinary
+capture returned before observe-code's additional compiler read; the real scope
+had already closed, while the inert model incorrectly left its reader usable.
+Tightening that lifetime first deterministically reproduces an uncertain
+observe-code phase. This narrows M641's complete scoped model evidence; it does
+not explain the earlier5eeae9a timeout, which predates the optimization. The
+081b00d COW gate ended before app phases and made no compiler-read pass claim.
+
+All conditional verification reads now occur inside the capture callback before
+confirmed cleanup. Callback error is checked independently of a runtime's return
+value; a closed capture has no usable reader. Original read ordering, byte checks,
+evidence digests and native single-dispatch behavior remain. Invalid compiler
+reports, ignored callback errors and unconfirmed logout cannot produce a proof;
+exact later reconciliation succeeds only with valid in-scope reads and cleanup,
+without another effect. No native timer, journal, schema or API changes.
+
+The full Grubbery race suite, actual SQLite reopen/missing-cache recovery, actual
+private HTTP scope lifetime/cleanup and focused vet pass. [Scoped source evidence](diagnostics/2026-11-18-grubbery-scoped-compiler-lifetime.json)
+retains reproduction/fix boundaries. Matching artifacts and native qualification
+remain pending. Continue with an explicit audited runtime recovery contract;
+never edit original plan/events to work around their old container binding.
+
+## M650 — Bind app recovery to an immutable prefix and fresh process facts (2026-11-18)
+
+The first recovery model preserves original plan2/actor/IDs/events and changes
+only a separately reviewed effective container selection. It binds exact prefix,
+phase/state, previous recovery head, process PID/start/boot/engine/image/runtime
+and a trusted launch/namespace context digest. Pending phases need verified
+prefix evidence; unknown dispatched phases need their exact native read-after
+proof. Metadata validation/digests grant no authority: the future authenticated
+server must independently produce and compare a fresh review. A five-minute
+window and exact prefix/head CAS cannot silently refresh an old review.
+Historical linked receipts remain valid after later legitimate progress.
+
+Focused race checks and vet pass for unchanged plan/events/namespace, stale
+prefix/head, expiration, self-resealed immutable-identity changes, changed fresh
+process/native facts, missing/wrong proof and historical audit ancestry. This is
+only a typed source model. Runtime observation/adapter fencing, schema migration,
+transactional storage, HTTP/CLI/MCP, genuine62-writer/refusal and native gates are
+still required; no existing process check is relaxed or capability advertised.
+See the [implementation contract](app-source-runtime-recovery.md).
+
+Prioritize this path before another fresh bootstrap: the complete retained task
+fixture already has meaningful app uncertainty. A new read-only-backed capsule
+can use supported Stop/Start and audited recovery without another fresh pier.
+Keep original before-evidence unchanged. Native artifacts must include M649's
+compiler lifetime fix. Disk-bounded source inputs can be compressed and inflated
+into guest tmpfs with exact byte pins; budget memory as well as allocated disk.
+No new runtime has been launched for this model; production and manual DEV stay
+untouched. Other issue tracks remain active.
+
+## M651 — Persist linked app recovery audits without rewriting uncertainty (2026-11-18)
+
+Schema63 adds separately canonicalized immutable receipts, contiguous per-app
+heads and a64-recovery bound. Validate every audit against the original plan/
+header/event prefix and exact predecessor; reject missing tails/heads, changed
+bodies/digests, triggers and unowned successor tables. Migration creates only
+empty heads. The internal metadata-only apply checks current prefix/head/lease
+transactionally. Exact saved replay precedes expiration/current phase checks;
+commit errors remain uncertain and require lookup. Original app/header/event/
+lease/source/access/runtime tables are unchanged. No HTTP exposure or native
+binding is granted by this storage adapter.
+
+Build an actual original62 writer/reader at3e780879 with a declared source helper.
+Its synthetic plan2 has dispatched/acknowledged uncertainty and its held lease,
+with genuine59/60 history. Repeated candidate opening preserves every original
+row/DDL. The actual old reader refuses a populated63 store unchanged in the
+preliminary rehearsal. Retain a public synthetic SQL fixture with original
+source/helper/binary/database pins; never publish the private VM database.
+The clean-source reproducible rehearsal script is ready for a frozen candidate.
+
+Focused race checks pass for original62 migration/rollback, actual process exit
+after a committed audit without close/reply, exact lookup/expired replay,
+stale-prefix/head and concurrent admission, corruption refusal and64-history
+overflow. Existing original60/61 migration checks pass after comparisons exclude
+only the new successor tables. Synthetic old-version encoder fixtures explicitly
+omit only empty new tables; this is not a user downgrade procedure. Focused vet
+passes. Runtime process observation/approved adapter, fresh authenticated review,
+CLI/MCP and native/installed upgrade gates remain pending.
+
+Remove only46 obsolete regenerable test-package compiler cache objects tied to
+this task's exact worktree/unique tests, retaining the newest two objects and all
+named frozen binaries/source/evidence. Prevalidated file identity/hashes precede
+unlink; the private manifest confirms1,617,776,640allocated bytes freed. A sandbox
+read cannot see the DEV PID namespace; the same fixed read-only measurement with
+host authority succeeds. Charged storage is49,626,271,744bytes under48GiB, leaving
+1,913,335,808bytes. No runtime experiment or user service is operated.
+
+## M652 — Qualify the frozen audit store against the actual62 reader (2026-11-18)
+
+The clean217275f source gate builds unchanged3e780879 Go/embedded inputs/tests
+with the declared metadata-only helper and a separately pinned candidate binary.
+The actual62 writer creates acknowledged plan2 uncertainty with its exact lease
+and original59/60 ancestry. Repeated63 migration/reopen preserves all original
+rows/DDL/access/history and that uncertainty. A new metadata-only audit changes
+none of those original rows. The actual62 reader refuses the populated63 store;
+all closed original/successor files remain byte-identical before/after refusal.
+Source/helper/binary/file pins are in the [scoped report](diagnostics/2026-11-18-app-runtime-audit63-source-upgrade.json).
+
+This supersedes M651's frozen-source rehearsal deferral only. Runtime observation,
+approved process adapter, authenticated fresh review/apply, CLI/MCP and native/
+installed/DEV gates remain pending. No service, engine, runtime or user ship is
+opened. Both source fixtures and exact binaries remain retained privately.
+
+## M653 — Fence original app requests on a separately approved process (2026-11-18)
+
+The private managed/project desk constructors now supply a lazy trusted process
+reader. Full validated container/launch/network snapshots, fixed namespace stat
+and host boot are bracketed with exact engine/process checks. Context hashing
+exports no path, argv, environment or credential. Runtime version names the
+verified pinned image contract, not a new live executable probe; the project
+qualifier explicitly supplies that contract rather than an absent ordinary
+ManagedState field. Project evidence includes the unchanged complete fleet.
+
+A read-only recovery view accepts only the original binding and refuses every
+GrubberyStep. An audit-backed view validates immutable ancestry, checks a fresh
+full process observation and accepts the unchanged original binding/requests on
+that approved process. Each later transport boundary rechecks it. No original
+plan/payload/ID rewrite or generic URL/command override is introduced. These
+trusted adapters require server actor/role/policy/lifecycle and saved-head
+admission; they are not registered or advertised and do not grant authority.
+
+Initial observer fixtures refuse because old inert containers omit PID/start;
+explicit fixture facts fix that gap while production validation stays strict.
+A project namespace test initially changes unused bookkeeping; making the actual
+fixed stat response change reproduces/refuses namespace drift. Focused race
+checks then pass for ordinary/project PID/start/engine/namespace/launch/port/peer
+drift, scoped auth/cleanup/lifetime, sealed original binding and read-only writes.
+An exact saved audit permits one unchanged original request on the selected
+replacement; namespace drift blocks a later effect. This is inert adapter-level
+evidence, not native or authenticated server recovery. Focused vet passes.
+Fresh native prefix/unknown-effect review, API/CLI/MCP, matching native artifacts,
+installed upgrades and preserved DEV remain pending. No runtime is launched.
+
+## M654 — Observe a retained native prefix without resolving its phase (2026-11-18)
+
+The internal native recovery observer requires the exact unfinished plan2 record
+in complete validated ownership history. Pending review captures only retained
+observed effects; unknown dispatch/acknowledgement/uncertainty requires the exact
+already applied candidate effect. All previous observed compiler phases are
+verified again inside authenticated capture before confirmed cleanup. Version
+file allowance derives only from its original observed/candidate phase, so a
+post-compile prefix is checked with its actual expected inventory. No pending
+compile is submitted. Fresh complete history and admission checks bracket the
+capture; concurrent prefix progress refuses. No source-cache load, native write,
+phase dispatch/resolution or journal edit is permitted by this observer.
+
+The initial stale-prefix fixture tries to advance after disabling its source
+cache and correctly refuses; move that earlier fixture action before cache loss
+to exercise the intended stale CAS. Focused race checks then pass for absent/
+compiled/versioned pending prefixes, compiler/cleanup/unowned/guard refusals,
+exact unknown original effect with a missing cache, changed native version,
+reverified prior compiler output and prefix progress during capture. Reads do not
+change original receipts or write counts; unknown effects are never redispatched.
+Focused vet passes. These are inert native-contract source checks. Authenticated
+fresh review/apply, selected runtime/head integration, CLI/MCP, matching native
+artifacts and installed/DEV qualification remain pending. No runtime is launched.
+
+## M655 — Compose fresh review, audit CAS and later phases privately (2026-11-18)
+
+Private server composition now selects the registered replacement through the
+existing target/config/lifecycle/framework/pier/role guards. A trusted runtime
+interface supplies fresh process facts and its sealed read-only view. Native
+prefix evidence and complete saved record/head checks produce the review. Apply
+reobserves independently and compares fresh facts before the audit transaction;
+self-resealed caller claims are not authority. Exact saved replay precedes live/
+cache/management admission. The private later-phase factory loads the current
+saved audit head, fences its approved process on each admission and preserves
+original binding/IDs/payloads. Writes still require current policy and source.
+Ordinary phase factories remain strict. No public route uses these paths yet.
+
+The extracted stage loader initially references an out-of-scope actor; compilation
+catches it and using the already authenticated original binding actor fixes it.
+Actual SQLite with inert native/process fixtures passes changed PID claims,
+namespace/native/config/actor/reader/fence drift, stale heads and expired reviews.
+The first prefix assertion compares decoded pointer identity; comparing complete
+event values fixes that fixture error. Fresh audit/app preservation, store reopen,
+exact cache-free reconciliation after revoked Commit, denied later writes and
+saved replay with unavailable runtime/management fence pass. Existing strict
+normal guards and original cache-free lost-reply recovery pass under race.
+The scoped transport regression and focused vet pass after the runtime factory
+returns only its required native interface. No original private VM or service
+is opened. Public HTTP/CLI/MCP, matching native/installed and DEV gates remain.
+
+## M656 — Expose typed runtime recovery with preserved replay boundaries (2026-11-18)
+
+Register typed review/confirmed-apply and saved audit/head HTTP routes, shared
+CLI/stdio operations, pinned client/registry methods and exact delegated SSH
+feature/body/deadline guards. The separate compiled-API feature supports exact
+apply replay even with no live adapter; saved-receipt support is independent.
+Neither claims native workflow readiness. Apply requires the original operator
+and explicit confirmation, reobserves review facts and writes only its audit.
+Original phase routing selects only the validated saved head/approved process.
+Saved status validates original history and audit in one SQLite snapshot outside
+the lifecycle mutex. A missing original is an explicit absence, not corruption.
+
+Actual HTTP/SQLite source checks pass for empty/missing heads, fresh review,
+unconfirmed refusal before native access, confirmed audit without original event
+changes, native-free saved lookup, cache-free original reconciliation and saved
+apply replay after progress with no native adapter/management admission. Existing
+source phase recovery still passes. Actual CLI and official-SDK stdio processes
+return byte-identical typed results through the catalog, retaining exact IDs and
+no retries. Apply remains a mutation-gated journal write. Declared timeout checks
+and delegated SSH source/review/apply role/capability/96KiB bounds pass; focused
+vet passes. These remain source/inert transport gates.
+
+A separately gated exact-built-client rehearsal is prepared to drop the apply
+reply after commit, replace the test manager without a native adapter, and read
+the original audit through CLI. It requires an explicit binary SHA and has not
+yet run. Matching native artifacts, retained disposable VM recovery, installed
+upgrades, full app workflow and preserved DEV remain pending. Production and all
+existing user ships/services remain excluded; no runtime is launched here.
+
+## M657 — Qualify built-client lost apply reply across manager replacement (2026-11-18)
+
+Freeze clean bc047062 Go/embedded/test inputs and build the CLI in a newly admitted
+256MiB source capsule. Exact binary970dda1b and source-manifest pins are retained.
+Actual official-SDK stdio reviews and applies through the real managed API/SQLite
+with an absent source cache and inert process/native observation. Drop the first
+apply reply only after successful commit. MCP reports outcome-uncertain and sends
+one apply, with no retry. Replace manager/stdio, reopen SQLite without a native
+adapter and hold a management fence. CLI saved lookup returns the original exact
+audit and still-uncertain original plan/events, with no native/cache access.
+The original fixture has one inert marker write; recovery adds none.
+
+The exact gated race test passes in13.033s. [Source evidence](diagnostics/2026-11-18-app-runtime-audit-cli-mcp-source.json)
+and private commands/source/binary/storage are retained. This supersedes M656's
+built-client rehearsal deferral only. It is not real runtime/installed/DEV
+qualification. Continue with a separate read-only-backed disposable VM using its
+retained app pier, supported lifecycle actions and explicit audited recovery.
+No fresh bootstrap or source DB/receipt rewrite is needed. Production, existing
+user ships and manual DEV remain untouched. Other issue tracks remain active.
+
+## M658 — Prepare a bounded copied-pier native recovery case (2026-11-18)
+
+Refresh protected-ship and experiment constraints before preparing a separate
+fixed-case [native recovery capsule](../scripts/qualification/grubbery-runtime-cow/README.md).
+The exact ended VM05 and pristine base remain read-only dependencies. PID1
+validates both predecessor and new scenario before systemd and suppresses startup
+resume. Hash/size-verified compressed binaries inflate into guest/run tmpfs.
+The guest requires one exact initialized disposable~zod, verifies original62→63
+app-row preservation before operations and checks the original process is stopped.
+No fresh bootstrap, database repair or original plan/event rewrite is permitted.
+
+The guarded helper uses supported Stop/Start on that copied existing pier, then
+actual CLI/stdio review/apply and exact read-after reconciliation. It completes
+the original source, checks second-version state/new code, another same-pier
+replacement and manager restart historical audit/completed replay. Every original
+header/body/stamp and17-event prefix must remain exact; legitimate later source
+progress appends and may change its revision/lease. Exact lost phase/apply replies
+permit saved lookup only, retaining each original invocation envelope separately.
+No mutation is resubmitted merely because its reply is lost.
+
+Declare1280MiB capsule scratch plus64MiB host build reserve under48GiB. Compressed
+inputs use a64MiB filesystem. QEMU alone inherits a1152MiB kernel hard file-size
+limit; staged inputs/root/log/report allowance must fit before launch. Monitor
+allocation/logs each second. Existing guest/supervisor memory/no-swap/CPU/no-NIC/
+deadline limits remain. Size/I/O/forced termination is a failed clean-shutdown
+gate, preserving evidence; this is not permission to overshoot. Original fixture
+and host production/manual DEV/user ships stay excluded from mutation.
+
+Five refusal/input tests pass, including an actual kernel file-size refusal
+retaining exact first bytes. The new PID1 compiles and exits80 as an ordinary
+host process before mounts. Fixed helper compilation/separation race checks and
+focused vet pass. No VM has launched for this case. Freeze matching artifacts,
+reclaim only classified task compiler-cache objects as needed and admit storage
+before native qualification. Capacity and full native recovery remain unqualified.
+
+## M659 — Freeze matching recovery artifacts and admit the bounded case (2026-11-18)
+
+Freeze clean6676c9ec source for Omabit, collector, runner and the explicitly
+source-pinned native helper. The first build uses an incorrect collector cmd
+path and refuses before any collector/runtime output; the actual backend/cmd
+paths fix it, preserving the verified matching CLI and original failed command.
+All4 final hashes/build identities and exact Go/embedded/test/harness input pins
+are retained. No installed file or service changes. See the [artifact boundary](diagnostics/2026-11-18-app-runtime-cow-artifact-freeze.json).
+
+Classify76 older regenerable managed/runtimequalify/CLI test-package AR objects
+by exact task worktree source file plus task-only test symbols, inode/owner/link/
+mtime/content/build identity and exact archive members. Validate every selected
+and retained object before unlink; a per-file removal manifest records progress.
+Retain the newest2 per package and verify all named frozen binaries unchanged
+before/after. This frees867,160,064allocated bytes, touching no source, SQLite,
+runtime image or installed artifact. No Go build/test remains active during it.
+
+Read-only admission charges50,089,832,448bytes and declares1,409,286,144bytes
+(1280MiB capsule+64MiB host reserve), totaling51,499,118,592 under the approved
+48GiB cap. This is admission, not a native pass. Run one guarded offline COW case
+with the fixed original read-only, hard QEMU root-file bound and per-second
+monitoring. Preserve any failure and report limits; no production/manual DEV or
+existing user ship operation is authorized by this checkpoint.
+
+## M660 — Preserve acknowledged native timeout and tighten exact observation (2026-11-18)
+
+The first frozen6676 native runtime-recovery capsule fails its whole workflow at
+phase9's four-minute bound. Schema62→63 preserves original app rows; supported
+Stop/Start resumes the same initialized copied pier. Actual CLI review and stdio
+MCP apply save one linked audit without rewriting the original17 events. Read-only
+reconciliation observes original phase6; compile and version-file phases pass.
+The next desk-directory phase dispatches once and is acknowledged, but its final
+observation is not saved. The runner returns app_journal_uncertain; the shared
+facade incorrectly labels this runner_rejected and the helper stops. Neither the
+new source nor later state/replacement/restart gates pass. See the [failure evidence](diagnostics/2026-11-18-app-runtime-cow01-failure.json).
+
+After both test units end, a fresh512MiB offline utility mounts the failed disk
+readonly,noload,nodev,nosuid,noexec and exports16 bounded SQLite/proof/invocation
+files. The closed store has26 events, one audit, exact original header and17-event
+prefix. Source/base hashes remain unchanged; retain the complete new failure
+root and original VM05. This is independent saved evidence, not a DB repair or
+permission to redispatch the acknowledged phase. Host/guest exit cleanly; root
+allocation is162,009,088bytes and aggregate50,299,912,192bytes, below48GiB.
+
+Complete process snapshots now each include containment and fresh exact HTTP
+ports, alongside all prior container/launch/network/engine/namespace facts.
+Remove the redundant surrounding process guards while retaining two complete
+snapshots, two namespace/boot observations and both engine brackets. No identity,
+ownership, launch, port or peer check is relaxed and no deadline is extended.
+Add drift between snapshots for PID, launch, ports and engine plus project ports.
+Focused runtime race/vet pass, as do full Grubbery and service race suites and
+focused app SQLite/HTTP recovery checks. This is source evidence only; native
+latency and complete workflow need fresh matching artifacts and qualification.
+
+On mutation, the shared facade now classifies the runner's explicit
+app_journal_uncertain as outcome_uncertain with its original error code and exact
+saved-lookup guidance. It does not resubmit effects. Read-only and before-effect
+failures retain their existing classifications. Source refusal/privacy tests pass.
+This supersedes M659's pending first-case result only; other issue tracks and
+installed/DEV/production boundaries remain unchanged.
+
+## M661 — Freeze the optimized candidate within a tighter measured capsule (2026-11-18)
+
+Freeze clean569f39e6 matching CLI, collector, runner and source-pinned native
+helper with exact Go/embedded input hashes. Focused actual CLI/stdio app parity
+and managed/service vet also pass after M660. The [new artifact/admission pins](diagnostics/2026-11-18-app-runtime-cow02-artifact-freeze.json)
+qualify source identity only, not native behavior. Preserve the old6676 executables
+and both original/current-failure full roots. No installed files change.
+
+Classify88 obsolete compiler test-package AR objects from this goal's exact
+worktree and goal-only test symbols, retaining newest2 per package. Verify owner,
+link/inode/mtime/content/build identity, exact AR members and every named frozen
+artifact before removal; record each completed unlink. Reclaim350,732,288allocated
+bytes without source, SQLite, executable or runtime-state removal. Stop only the
+superseded task classifier after its exact process identity is verified; the
+replacement uses bounded efficient substring scans and its manifest is retained.
+
+The first copied existing-pier run used162,009,088allocated root bytes, without
+fresh bootstrap. Tighten this case's kernel hard root-file cap to896MiB, still
+over5x that measured allocation; reserve1024MiB capsule plus64MiB host staging.
+All input/log/report bounds must fit before QEMU, and reaching the bound still
+fails the gate with evidence retained. Five refusal/input/kernel-bound tests pass.
+Admission charges50,297,249,792bytes and reserves1,140,850,688bytes, totaling
+51,438,100,480 below48GiB. These are capacity/source gates only. Use a fresh COW
+from unchanged read-only VM05, never resume or rewrite the acknowledged failures.
+No production, protected/tmux ship or manual DEV operation is involved.
+
+## M662 — Complete original native source; preserve whole-case timeout (2026-11-18)
+
+Frozen569f39e6 completes all12 original source phases on the supported replacement
+runtime, each with exactly one durable dispatch. Migration/audit and original
+header/17-event preservation pass again. Compiler/version phases take about195s,
+desk creation210s and desk owner224s. Poke-source returns explicit journal
+uncertainty; follow observation loses its response near the four-minute bound.
+The actual CLI now classifies both as outcome-uncertain, reads the saved
+acknowledged phase and selects read-only reconciliation. Neither effect is sent
+again. The original completes at1713s with36 immutable events. The fixed helper
+reads initial app state and receives an acknowledgement for its state update.
+Version two reviews and begins through actual stdio MCP, but the whole30minute
+fixture context expires during its first advance. Whole qualification fails.
+
+After clean VM shutdown, a fresh offline utility exports35 bounded SQLite/proof/
+request/response/stderr/saved-lookup files through readonly,noload,noexec mounts.
+It limits aggregate raw exports to16MiB and kernel-bounds serial output to32MiB.
+The exact store retains one immutable runtime audit, the completed original,
+and version two with zero events/nine pending steps and its lease. No second
+source phase dispatch occurred. Source/base/original hashes remain unchanged;
+retain the full218,238,976allocated-byte new root and all earlier failure data.
+See [scoped native evidence](diagnostics/2026-11-18-app-runtime-cow02-deadline.json).
+
+The measured first workflow leaves insufficient time for the separate9-phase
+second version and state/restart checks. Increase only the whole fixture context
+to90minutes, its test process to95minutes, guest supervisor to5750s, VM to6100s
+and outer supervisor to6300s, leaving cleanup between bounds. Each product RPC
+still has its existing four-minute limit and lookup-only uncertainty handling.
+Memory/CPU/no-swap/no-NIC, hard896MiB root bound, per-second monitoring and48GiB
+aggregate admission are unchanged. Six input/deadline/kernel-bound guards pass;
+the helper compiles and its host tests skip the real case outside the guarded VM.
+New matching artifacts and a fresh complete native run remain required. No
+production, manual DEV, protected/tmux ship or original failure is operated on.
+
+## M663 — Share pinned fleet/private previews and document client setup (2026-11-18)
+
+Add runner.snapshot.v1 over the existing typed snapshot client, checking response
+runner/mode in addition to enrollment/connection identity. Its catalog includes
+live project/storage probes. Add runtime.log-tail.v1 as an operator-private
+bounded sanitized preview, requiring explicit private-data selection, instance,
+exact configuration revision and full container ID. Withhold a changed reply.
+This is not comprehensive recording access, export or following; legacy log
+watch stays separately excluded in discovery rather than claiming stream parity.
+
+A legacy read using POST can return OutcomeUncertainError from its transport.
+The facade now follows the declared operation effects: read-only failure remains
+read-failed, while mutations retain lookup-first uncertainty. No request is
+retried by this change and arbitrary diagnostics remain private. Actual CLI
+argument-dispatch and official-SDK stdio subprocesses return byte-identical
+snapshots/previews/refusals across observer/capability/response identity, mode,
+container/revision, private opt-in and lost-transport cases. Each valid/withheld
+pair sends exactly two reads; preflight refusals send none. Revisions above2^53
+remain exact. Existing source/runtime recovery parity also passes (24.314s total).
+Full service/MCP race suites and focused vet pass. Fixtures are inert private Unix
+peers, not production, native UI or named-client connection qualification.
+
+Use the OpenAI Docs skill and primary vendor pages to verify stdio configuration,
+protocol and timeout fields for [client recipes](mcp-clients.md). Parse both JSON
+examples and TOML. Pin T3's official provider-injection document at c2a7c5cb;
+its orchestration service is separate and exact external-server forwarding in a
+selected installed provider remains a connection gate. No client profile, T3
+thread, plugin or user setting changes. This supersedes the recipe deferral only;
+actual named-client connections, remaining operations and HTTP delivery still
+need their own checks. The full six-issue goal remains open.
+
+## M664 — Compose durable recording capture without changing lifecycle (2026-11-18)
+
+The source-only CaptureDocker coordinator persists a fresh metadata3 session
+before trusted output attachment, then acknowledges durable readiness separately
+from Start. One receive-clock origin retains monotonic ordering through wall-clock
+reversal. Existing segmented storage fsyncs exact original multiline/long/binary/
+credential bytes, without formatting or redaction. The metadata/frame format is
+unchanged and actual original1/2 fixtures remain byte-exact in the full source
+suite. No installed capture is enabled.
+
+An independent supplied terminal-process proof must match the exact metadata
+container; EOF alone produces a gap. Interrupted payloads retain their received
+prefix, gap and separately verified exit where available. Cancellation closes only
+this output connection, never signals the process, and serializes Close across
+cleanup races. Detach immediately after read completion/error before bounded exit
+observation or storage diagnostics, avoiding unread-stream backpressure. A failed
+Start/attachment never fabricates an exit. Private callback diagnostics do not
+escape status. Pressure/write failure remains explicit even when the gap itself
+cannot be saved; no reconnect, repair or runtime mutation is retried.
+
+Full recording race tests pass in1.263s and focused vet passes. Fixtures cover
+durable readiness, segment rotation/raw/timing preservation, nested metadata
+isolation, exact completed-session refusal, partial transport, EOF/running,
+wrong exit, storage pressure/write refusal, blocked-read cancellation and legacy/
+incomplete/canceled admission before any file or attachment effect. These are
+inert streams/private files, not a native process observation. See the
+[coordinator boundary](runtime-recordings.md#source-capture-coordinator).
+Trusted runtime identity/launch factories, independently supervised workers,
+start-failure coordination, retention/pins, indexed seeking, API/UI/export and
+real Docker/Vere/installed gates remain. This supersedes only the absence of a
+source capture coordinator; comprehensive runtime recording is still unqualified.
+
+## M665 — Close the native artifact boundary over embedded inputs (2026-11-18)
+
+The native launcher previously compared Go/modules and appdev assets after an
+artifact freeze. That could miss a different embedded input, notably service's
+legacy-inventory.json. No such drift is observed in the previous frozen cases:
+their actual source stayed clean and later changes were documented harness/docs.
+Still, that extension rule was incomplete and must not become qualification
+permission for an unrecorded catalog change.
+
+Allow artifact-source differences only for non-Go docs and the four explicitly
+named host/guest/Python-test/README harness files. Reject every other tracked
+change, including JSON inventory, source samples, QML, Go/modules, paths escaping
+docs and absolute paths, before reading artifacts or storage admission. Eight
+host guards pass, including a main-entry reproduction of the formerly missed
+embedded-inventory change with zero artifact reads/admission/process dispatch.
+The next frozen build records hashes for every tracked ordinary source file,
+covering all embedded inputs;3781 tracked files currently have no symlinks.
+No installed runtime or native helper behavior changes in this guard checkpoint.
+
+## M666 — Admit complete native qualification with every failure retained (2026-11-18)
+
+Freeze clean6e810bc9 matching CLI, collector, runner and native helper, including
+M662's longer whole-case context, tested shared reads and unwired capture library.
+Hash all3781 tracked ordinary source files, covering embedded JSON/assets as well
+as Go/modules; verify clean source and identical hashes after building. Preserve
+exact binary/build/input pins in the [artifact/admission record](diagnostics/2026-11-18-app-runtime-cow03-artifact-freeze.json).
+This is source identity/capacity evidence, not a complete native workflow pass.
+
+With no Go build/test or runtime active, classify30 obsolete task test-package AR
+objects by exact worktree path and task-only symbols, owner/link/inode/mtime/
+content/build identity and exact AR members. Keep newest2 per package and verify
+all named binaries before/after. Reclaim109,260,800allocated bytes. Separately
+losslessly gzip16 older task executables, verify complete inflated bytes/size/SHA,
+then record each raw-path retirement and explicit inflation instructions. Reclaim
+208,166,912allocated bytes; all original executable bytes remain available.
+Source, SQL, receipts, logs, all three full VM roots and current03 raw binaries
+are verified unchanged. No installed file or original migration fixture changes.
+
+The completed first-source case used218,238,976allocated root bytes. Tighten only
+this no-bootstrap experiment's hard root-file cap to768MiB, over3x that measured
+space; reserve896MiB capsule plus64MiB host staging. Input/log/report worst-case
+bounds still fit before QEMU, with per-second aggregate checks. Eight input/
+embedded/deadline/kernel-file-limit guards pass. Reaching the file/storage bound
+still fails qualification and retains its evidence; no hidden reservation growth.
+Admission charges50,487,672,832bytes and reserves1,006,632,960bytes, totaling
+51,494,305,792 under48GiB. Run a fresh original-VM05-backed copy, preserving the
+completed-version-one/new-pending-version-two failure as separate evidence. No
+production, existing ship, manual DEV or tmux operation is involved.
+
+## M667 — Represent bootstrap unknowns without inventing identity (2026-11-18)
+
+Status: implementation/rehearsal prepared; source/native compatibility gates
+pending. New comet creation stores ManagedComet{} without a ship name, and
+pierstore.Identify requires both the pier and its.urb directory. These source
+facts prevent a correct first-Start recorder from requiring a known native name
+or initialized pier object. Do not create/alter a pier merely to fill recording
+metadata, or substitute a fake identity for mining output.
+
+Prepare metadata4 with explicit native_ship_status registered or
+pending-comet-mining, and pier_binding existing-pier or prepared-storage. A
+registered label remains expected intent, not an answered native identity. A
+prepared-storage digest binds verified exclusive storage intent, not a future
+inode. Pending identity has no ship name and is not a project member. Existing
+metadata1–3 keeps byte-exact canonical serialization, with omitted basis fields
+left unknown. Segments/continuation accept4 without rewriting old files; frame
+codec1 is unchanged. New source capture uses current4. Later confirmed identity/
+pier/process facts need separately linked evidence and are not implemented by
+changing the attachment label.
+
+Prepare source gates for unknown bootstrap bytes, strict mixed/guessed-basis
+refusal before storage, exact metadata across rotation/continuation/exit/reopen,
+and legacy canonical preservation. Prepare an actual frozen6e810bc9 original3
+segmented writer/reader plus declared helper and new4 preservation/refusal
+rehearsal. Three Python launch/input guards pass without a source build or
+runtime effect. Go race/vet and the actual writer rehearsal remain pending;
+do not infer them from preparation. The independent native app case continues
+using its frozen6e code, unaffected by these working source changes. No installed
+capture, production/manual DEV or user ship is changed. See the [upgrade boundary](upgrade-policy.md#development-explicit-recording-bootstrap-identity-metadata4--gates-pending).
+
+## M668 — Prepare ordinary recording admission from actual native contracts (2026-11-18)
+
+Status: source prepared; Go/native gates pending. The prior source coordinator
+accepted trusted callbacks but had no ordinary native factory. Prepare a factory
+for a separately supervised worker's newly created ordinary Vere container. The
+authenticated manager must supply the durable original job and hold its lifecycle
+guard; public target/revision/request names alone cannot prove that authority.
+Project contracts and installed launch remain unwired.
+
+Verify the private account/engine and exact unambiguous created full container,
+launch/containment/network, exclusive mount and existing-pier identity or empty
+prepared storage, with boot and own recorder namespaces. Require a saved create
+dispatch without unresolved resources. Recheck the exact created snapshot before
+and after attach and immediately before durable readiness. Detach on change;
+never Start/Stop/signal/wait/exec or modify storage. Hash private launch/path
+context; do not return it. Copy runtime state into a fresh zero value so JSON
+decode cannot reuse the caller's nested pointers.
+
+Independent exit reads bracket the same exact terminal container and launch,
+daemon/boot/storage context. Missing/out-of-range process times, a live process,
+changed evidence or error refuses without inventing an exit. Preserve nonzero,
+OOM, daemon-error presence and reversed wall time as distinct evidence; omit raw
+daemon diagnostics. Prepare inert native-seam/storage/capture tests for bootstrap
+bytes, pointer isolation, pre/during-attach drift, ambiguous admission and terminal
+evidence. Only gofmt and diff checks have run. Go race/vet await the single native
+app case's completion, avoiding build-cache growth inside its reserved budget.
+This supersedes no qualification deferral; installed capture is still disabled.
+
+## M669 — Verify bootstrap metadata and ordinary capture admission in source (2026-11-18)
+
+Full recording race tests pass in1.263s, preserving actual original1/2 fixtures,
+metadata3 canonical bytes and segmented continuation, plus explicit4 bootstrap
+unknowns through raw capture, gaps, exit and reopen. Targeted ordinary native
+factory/attachment/process race tests pass in2.957s with inert engine fixtures
+and private temporary files. Native-seam tests preserve bootstrap raw bytes and
+independent abnormal exit evidence, refuse changed engine/boot/container/TTY/
+launch/network/pill/storage and caller metadata, detach on between-attach drift,
+and reject ambiguous/unbound create intent before contacting output transport.
+Caller edits cannot rebind copied state or metadata. Focused vet passes.
+
+These gates supersede only M667/M668's pending Go-source checks. Their actual
+original3 writer/reader compatibility rehearsal is still pending. The source
+factory still requires the authenticated manager's durable job/lifecycle guard;
+it is not wired into installed launch and creates no independent worker. No real
+container, recording coverage, retention, API/UI or installed upgrade is qualified.
+Three Python original-writer launch/input guards also pass. Production, manual
+DEV, existing ships and tmux remain untouched.
+
+## M670 — Retain completed app phases and failed manager-readiness gate (2026-11-18)
+
+Frozen6e810bc9/native harness15f766a completes both real Grubbery source workflows
+through CLI/official-SDK stdio. Original12 phases have36 events; second9 phases
+have27 events. Independently retained SQLite shows every phase observed with
+exactly one dispatch, no app leases and one runtime recovery audit. The original
+header and17-event prefix remain exact. Initial saved state and new public-v2
+code survive the second supported same-pier Stop/Start. Saved storage identity,
+instance configuration and revision remain exact. These are scoped native results,
+not a whole-case pass; see the [failure record](diagnostics/2026-11-18-app-runtime-cow03-readiness-failure.json).
+
+Immediately after acknowledged systemctl manager restart, the fixture's snapshot
+GET returns ENOENT for its Unix socket and the helper fails at2825.69s. It does
+not wait for Type=exec's process to listen. A startup window is plausible, but the
+eventual manager health is unobserved. Historical audit/completed-source API
+replay and final state read-back are skipped. No guest cleanup result arrives for
+over five minutes; terminate only the exact task supervisor/VM scope and retain
+the full root as unclean/failed. Both cgroups end; original VM05/pristine base and
+input payload remain unchanged. A fresh read-only,noload,noexec utility exports53
+bounded DB/WAL/SHM/proof/call files; SQLite quick_check passes. Analyze copies,
+preserving exact exports. The first utility safely refuses an absent transient
+payload mount path; the next reads its separately pinned read-only input disk.
+
+Replace immediate fatal readiness with a one-minute read-only context bound.
+Retry only missing/refused sockets and transport EOF; require exact runner/mode,
+single instance, ship and configuration plus actual current container evidence.
+Protocol, permission, identity and configuration errors fail immediately. No
+mutation is retried or deadline extended. Source/race readiness checks pass
+in1.018s and vet passes. An initial test fixture used a revision above the desk
+contract limit and hung; retain that failed source gate, terminate only its exact
+private managed.test, correct the fixture and reject invalid expectations before
+probing. The product limit is unchanged. This fixes the harness only; fresh native
+manager/replay and whole-case qualification remain pending, with no installed or
+production operation.
+
+## M671 — Preserve actual original3 recording bytes across metadata4 (2026-11-18)
+
+The [source compatibility rehearsal](diagnostics/2026-11-18-recording-metadata4-source-upgrade.json)
+passes from clean0b28bac. Build unchanged frozen6e810bc9 ordinary Go/modules/
+embedded sources plus its declared qualification writer helper, recording every
+Git blob/hash and helper SHA. The actual original writer creates six files across
+four segments, raw stdout/stderr/control/invalid-UTF8 bytes, recorder-restart gap
+and a typed exit fixture. Candidate4 reads/cursors/reopens preserve every
+original byte and leave omitted basis fields unknown. The actual original3 reader
+refuses the populated4 successor without modifying it. Private commands, exact
+source/binary pins and both original/successor byte manifests are retained.
+
+Retain the compact actual original3 files, source-input manifest and declared
+helper with writer/source/helper SHA pins. Ordinary regression checks verify
+original octets, cross-segment cursors, different receive-clock epoch/gap, terminal
+evidence, repeated reopen and unchanged files after refused continuation. Full
+recording race tests pass in1.258s with all original1/2/3 fixtures; vet passes.
+This supersedes M667/M669's actual original3-writer deferral only. The factory is
+still unwired; independent workers, native bootstrap/recording coverage, retention,
+API/UI/export and installed qualification remain pending. No user recording,
+native runtime, production, manual DEV or existing ship was opened by this gate.
+
+## M672 — Bind an independent recorder's private handoff without private bodies (2026-11-18)
+
+Add an unwired version1 canonical private job codec, bounded64KiB, for an ordinary
+manager-owned launch. Bind original runner/mode/target/revision/request/operation,
+actor, runtime identity, exact executable SHA and native admission. Whitelist the
+state fields required by the factory, excluding signing keys, retained logs,
+user endpoints, runtime diagnostics and unrelated histories. Reject original
+quarantine instead of sanitizing it into launch authority. Canonical decoding
+refuses unknown/duplicate fields, future versions, malformed/sensitive state,
+invalid paths/limits and credential-bearing pill URLs. New jobs copy nested
+state; exact uint64 bindings remain intact.
+
+Worker admission must be independently observed. Match every native binding,
+including daemon/endpoint, host boot, storage/name basis, launch and artifacts;
+exclude only fresh session/receive-clock origin and the worker's own namespaces.
+No parent namespace is assigned to a future worker. A digest is association only,
+never authentication, a fresh observation or Start authority. Targeted job/native
+factory/attachment race checks pass in2.395s; vet passes with inert fixtures.
+No job file, service, persistent database migration or installed feature is
+created by this codec. Claim/readiness durability, actual executable verification,
+supervision, lifecycle integration and downgrade/upgrade guards remain required.
+The six-issue goal stays open.
+
+## M673 — Persist private recording claims/readiness without replay (2026-11-18)
+
+Add an unwired private job-file source layer, pinning an explicitly authorized
+0700 root with0600 owner-only single-link files. Serialize count admission across
+processes; enforce explicit max jobs and free-space reserve before creation.
+Fsync job/lock and directory entries before acknowledging. Claim once under a
+per-job flock, comparing supplied actual-worker executable identity, then fsync
+the immutable claim. Active claims refuse duplication; closed/crashed claims
+refuse reuse. Existing partial files/directories remain without overwrite,
+adoption, repair or deletion.
+
+Readiness requires the same original job/claim, independently admitted metadata
+and worker boot/namespaces; it binds session and metadata SHA. Refuse replaced,
+linked, exposed, malformed or rebound files/directories and storage pressure.
+Saved lookups remain read-only after writer closure: historical readiness is not
+live-worker evidence or Start authority. Real supervision/current process checks
+and the manager's authenticated lifecycle fence remain mandatory. Source/race
+checks pass in2.849s and vet passes with private files/inert native seams,
+including distinct parent/worker handles, exact executable mismatch, claim
+exclusion/reclaim, no readiness after claim-only, mutation refusal, immutable
+partial originals, reserve/quota and concurrent creator limits. This supersedes
+M672's absence of source claim/readiness files only. Actual self-executable
+observation, independent process/service lifetime, crash/power-loss, integration
+and downgrade/upgrade gates remain pending. No installed job root or service is
+created, and no ship is operated on.
+
+## M674 — Fit raw capture chunks to configured segments without losing counts (2026-11-18)
+
+The fixed64KiB decoder chunk could exceed a valid smaller segment. Select a
+bounded capture chunk after subtracting segment/frame/digest overhead, before
+reading the transport. Keep the public decoder's64KiB default. A callback still
+acknowledges its entire received chunk or fails: splitting within the callback
+would overcount known unrecorded bytes after a partially successful append.
+No frame or metadata format changes and no original is rewritten.
+
+Full recording race tests pass in1.275s, including a long binary/multiline trace
+across more than16 configured4KiB segments, exact original octets/chunk counts,
+and injected pressure after the first acknowledged chunk. Only the next received
+unrecorded chunk is counted; the acknowledged prefix stays exact and a gap that
+cannot be saved remains explicit. Actual original1/2/3 fixture checks and vet
+pass. This qualifies source capture sizing only, with no live engine, installed
+worker or comprehensive native-recording claim.
+
+## M675 — Compose exact self-bound worker capture after durable acknowledgement (2026-11-18)
+
+The source worker hashes its kernel-selected self image, reads only own boot/
+namespace/process-start facts, verifies the account boundary, claims its original
+job and repeats exact native pre-Start admission. Capture syncs metadata/header,
+attaches output and syncs readiness before a separate trusted acknowledgement
+callback. A complete visible marker can precede successful fsync return; marker
+lookup is therefore not that acknowledgement. Failed acknowledgement leaves an
+incomplete capture and explicit gap, never successful readiness or exit.
+
+Claim2 binds worker PID/start ticks, boot/namespaces/image and service invocation
+when present. Parse Linux comm with embedded spaces/parentheses without weakening
+start identity. Legacy claim1 synthetic-shape lookup keeps omitted facts unknown
+and cannot claim anew; actual original-writer compatibility remains pending.
+Immutable finite result1 records omit raw output/private exception text and
+refuse repeated overwrite, invalid success, corruption or unknown fields.
+Cancellation interrupts only this attachment, preserving gaps without a ship
+signal. Wrong executable/refused admission/storage produces no attachment.
+
+Targeted worker/job/factory/transport race checks pass in3.484s; vet passes.
+Fixtures include actual self-executable/proc observation and inert native/data
+composition, post-sync callback order, raw long/binary/comet-unknown output,
+independent synthetic abnormal exit, stale identity, failed acknowledgement with
+a visible marker, EOF/running, blocked cancellation and saved outcomes. No real
+worker service or Docker/Vere is operated. Verify primary systemd262 notify/main
+process semantics before service work; see the [worker contract](runtime-recordings.md#source-worker-composition-and-acknowledgement).
+Independent supervision, fixed-root CLI/configuration, actual crash/lifetime,
+authenticated launch and downgrade/upgrade integration remain unwired. No
+production/manual DEV/installed state or existing ship changes.
+
+## M676 — Prepare fixed notify and exact supervisor binding (2026-11-18)
+
+Add a bounded fixed READY=1 Unix-datagram notifier, requiring a valid service
+invocation and explicit local socket. No arbitrary message, private output,
+credentials or runtime effect. Namespace recording units by runner/mode/root/job.
+Parse only the exact bounded property response for notify/main/active/running,
+full unit, canonical PID, invocation and matching cgroup. Compare independently
+obtained live process/image/start/boot/namespaces/invocation against the original
+claim; PID reuse, old unknown identity and changed supervisor refuse. These pure
+checks are not a fresh probe or Start permission.
+
+Focused supervisor/worker/job/factory/attachment race checks pass in3.537s; vet
+passes. The newly compiled gated helper is skipped in ordinary tests. It prepares
+a fresh inert service primitive with only self proc/image observations and private
+files; actual service acknowledgement/lifetime remains unqualified until run.
+No unit, engine, manager, existing process or pier is operated by this checkpoint.
+Source CLI/controller, actual old claim writer, active-job upgrade guard and
+native recording remain pending. Primary systemd262 sources are linked in the
+[worker contract](runtime-recordings.md#source-worker-composition-and-acknowledgement).
+
+## M677 — Qualify the inert notify service primitive (2026-11-18)
+
+The fresh bounded transient Type=notify/NotifyAccess=main helper gate passes
+against frozen fb355f8. The exact main process acknowledges readiness, remains
+active after its launcher returns, writes a continuation proof, and exits with
+success and an empty cgroup. Independent PID/start/image/invocation checks match;
+source and executable remain unchanged. Preserve the sanitized
+[report and pins](diagnostics/2026-11-18-recording-notify-inert-service.json).
+
+This supersedes M676's pending inert-helper gate only. The helper reads its own
+process identity and fresh private evidence; it never opens a job/session store,
+manager, engine or pier. Actual recording-worker lifetime, fixed-root CLI,
+authenticated launch, active-job upgrade and native capture remain unqualified.
+No production, manual DEV, installed configuration or existing ship changes.
+
+## M678 — Observe the exact recorder unit and process (2026-11-18)
+
+Add a fixed, bounded systemctl read for the selected job unit and bracket an
+exact-PID proc observation with matching supervisor reads. Bind executable hash,
+process start ticks, owner, boot, namespaces, invocation and actual unified cgroup;
+changed/dead/stopped processes, ambiguous cgroups, oversized output and changed
+unit observations refuse. Only that PID is read, never process arguments or
+environment. Invocation comes from the two matching manager observations and is
+compared with the original claim. No runtime lifecycle command is sent.
+
+Starting notify/main admission is distinct from active/running readiness and
+cannot grant launch authority. Focused source/race checks pass in2.682s with
+inert property/process seams and actual self-only proc checks. This is not a new
+actual service or native recording gate. Fixed-root worker entry, authenticated
+launch and downgrade/upgrade integration remain pending; installed state and
+existing ships remain untouched.
+
+## M679 — Add a fixed-root service-only recording entry (2026-11-18)
+
+Add the exact `recording-worker --job ID --sha256 DIGEST` internal CLI, including
+the separately selected development-root command boundary. It accepts no paths,
+commands or native inputs and reports finite failures without private diagnostics.
+Derive jobs/recordings roots solely from the verified owner's selected state home;
+both must already be private trusted directories. HOME/XDG/DOCKER_HOST cannot
+select them. Ordinary unsupervised invocation refuses before account/storage reads.
+
+Before the once-only claim, the service verifies that systemd tracks its actual
+self process/image/start/namespaces/invocation as the exact starting notify/main
+job unit. A refused supervisor consumes no claim and reaches no engine. Successful
+capture sends fixed notification only through the existing post-sync callback.
+Focused race checks pass for runtimequalify in2.712s and runner CLI in1.019s.
+No job is submitted by normal managed launch, no root/service is installed, and no
+native recording is qualified. Active-job schema/journal guards, independently
+submitted worker lifetime and installed/native upgrades remain required.
+
+## M680 — Prepare actual claim1 writer compatibility rehearsal (2026-11-18)
+
+Add a fresh-path, clean-source, storage-admitted source rehearsal using unchanged
+85ac7c6892dd4934b64e5dacc98846001ab3b01d runtime/embedded/test inputs and a
+declared synthetic filesystem helper. The original API writes job1/claim1/ready1;
+candidate lookup must keep omitted start/invocation unknown, preserve exact bytes
+across reopen, and refuse replay. The actual old reader must refuse claim2 while
+retaining the original compatible job1 bytes. Neither helper runs an engine or
+actual worker service; synthetic PID/namespaces and fixture paths are explicit.
+
+Three launcher input guards pass. The gated Go helper compiles and is skipped
+without the explicit rehearsal path. Actual writer/read/refusal results and a
+compact pinned fixture remain pending until this clean source gate is run.
+Only regenerable task-test cache archives were classified and retired with an
+exact hash/inode manifest to admit this work, keeping the newest two per package;
+frozen executables, SQLite evidence and all VM disks remain unchanged.
+
+## M681 — Preserve actual claim1 bytes and refuse old-reader claim2 (2026-11-18)
+
+The M680 rehearsal passes for frozen candidate252aa548 and unchanged original
+85ac7c6892dd4934b64e5dacc98846001ab3b01d plus the declared helper. The actual
+original API writes five job/claim/readiness/lock files. Candidate repeated lookup
+preserves all bytes, keeps missing start/invocation unknown and refuses a second
+claim. The genuine old reader accepts successor job1 but refuses claim2 unchanged.
+Preserve the [source/binary/helper pins and hashes](diagnostics/2026-11-18-recording-claim2-source-upgrade.json).
+
+Retain the compact five-file fixture with exact original source manifest, helper
+and writer pins under runtimequalify/testdata/original-recording-claim1. Its
+ordinary race check verifies every byte before/after reopen and refused reclaim,
+including the revision above2^53. Focused worker/service/job/fixture race tests
+pass in2.449s. This supersedes M680's pending actual-writer gate and M675's
+synthetic-only compatibility boundary. It does not qualify live worker continuity,
+power loss, database/installed upgrade or native capture. Production/manual DEV
+and existing ships remain untouched.
+
+## M682 — Fence recording jobs with immutable launch receipts, schema64 (2026-11-18)
+
+Prepare private metadata-only recording intents bound to the original running
+Start/startup-resume actor, request, public target/configuration revision, exact
+runtime revision/state digest and one created container. Retain job, executable
+and native admission digests without copying raw output, paths or credential
+bodies. A transaction inserts one intent per operation and CAS-advances an
+independent bounded count/digest chain. Missing tails/heads, changed ancestry,
+mixed schemas, malformed/oversized bytes and unexpected DDL/triggers refuse;
+opening never repairs, claims, submits or dispatches anything.
+
+Exact saved replay is historical even after interruption and cannot authorize
+another submission. Live admission checks the current original operation and
+runtime state. Source/race SQLite tests pass in65.082s, covering competing jobs,
+head-commit rollback, process exit after committed/no-response intent, corruption
+and original59/60/61/62 plus synthetic11–63 preservation. Original-format helpers
+omit only the exact empty successor contracts; populated history is never hidden.
+Vet passes for managed, runtimequalify and the runner command.
+Schema64 fences older readers before normal launch can use recording authority.
+Actual frozen63 writer/reader rehearsal, installed/native upgrade, normal launch
+integration and native worker capture remain pending. No installed state changed.
+
+## M683 — Prepare actual63→64 recording-journal rehearsal (2026-11-18)
+
+Freeze a fresh-path source/SQLite launcher using unchanged1589158b schema63
+runtime, embedded files, tests and original fixtures plus a declared helper. It
+retains original59/60/62 app/Stop ancestry, writes a linked63 app runtime audit,
+and saves a synthetic pending ordinary Start at the created-container boundary.
+Candidate64 must migrate/reopen with every original row/DDL unchanged, add one
+exact recording intent/head, and preserve saved replay. The genuine63 reader
+must refuse that populated64 store without changing closed database bytes.
+
+Three input guards pass; the gated candidate helper compiles/skips without its
+explicit fresh root. Actual writer/reader results remain pending until this
+frozen source rehearsal runs. It submits no job/unit and operates no engine,
+native runtime, existing store, production or manual DEV state.
+
+## M684 — Qualify actual63→64 recording journal preservation/refusal (2026-11-18)
+
+The M683 source rehearsal passes for frozen6fd35d6d and unchanged original
+1589158b schema63 plus the declared helper. Every original row/DDL/access and
+uncertainty survives migration/reopen. One recording intent/head binds the exact
+original pending Start without changing its receipt or prior linked app audit;
+saved replay stays exact. The genuine63 reader refuses populated64 unchanged.
+Preserve [source/binary/helper/SQLite pins](diagnostics/2026-11-18-recording-schema64-source-upgrade.json).
+
+Retain a compressed exact actual63 SQL fixture with unchanged source manifest and
+declared helper, including original59/60/62 ancestry, linked63 recovery and pending
+Start. Ordinary fixture race checks pass in5.964s for repeated preservation and
+rollback when original audit ancestry is missing. This supersedes M683's pending
+actual writer/reader gate. No job file/service is submitted and no native process
+is observed or rebound by this metadata-only rehearsal. Active worker continuity,
+normal-launch integration, native/installed upgrade and final artifacts remain
+required. Production/manual DEV, existing ships and all VM disks stay unchanged.
+
+## M685 — Prepare exact worker executable retention (2026-11-18)
+
+Add a fixed-root preparation that copies only the kernel-selected current
+executable into the selected owner's existing private recording-images cache.
+Hash-addressed originals become mode0500 only after complete matching bytes and
+successful sync. Reuse re-verifies image/inode/owner/mode/hash and syncs without
+replacement; partial, linked, exposed or changed images refuse and remain retained.
+Bound copies to128MiB each/eight images, serialize admission, and reserve the
+image bytes plus64MiB. Unknown storage failures do not become measured pressure.
+No image, cache root or unit is installed by normal managed launch yet.
+
+Focused image/job/original-claim race checks pass in1.605s. A further typed-storage
+refusal check passes with the image gates in1.021s; vet passes. Tests use inert
+bytes which are never executed. The extracted private-root opener preserves job
+and actual legacy claim behavior. Actual worker image/service submission, native
+capture and installed/active-worker upgrade qualification remain pending; no
+production/manual DEV, existing runtime or ship is touched.
+
+## M686 — Prepare fixed detached recorder service submission (2026-11-18)
+
+Prepare one fixed systemd-run notify/main service command using the exact retained
+image and job digest. Forward only the already verified process-local DEV root;
+HOME/XDG never selects it. Disable systemd argument expansion so literal dollar
+paths cannot become substitutions. No shell, terminal, caller-owned scope or
+automatic restart is requested. Bound worker memory/swap/CPU/tasks, startup and
+submission; stdin/stdout/stderr are null. No raw data or actor enters arguments.
+After attempted submission, lost/canceled acknowledgement is explicitly uncertain
+and never retried or treated as proof of non-submission. The user manager owns
+the service lifetime, separately from the Omabit manager/client.
+
+Primary [systemd262 launcher semantics](https://www.freedesktop.org/software/systemd/man/latest/systemd-run.html)
+were checked; disabling expansion requires systemd254 or later and unsupported
+launchers must refuse. Focused source race checks pass for ownerhost in1.009s and
+runtimequalify in1.980s; vet passes. These tests build/inspect arguments and inert
+boundaries only: they execute no launcher command. The submission primitive is
+not called by normal launch. Durable job/intent checks, synced readiness, exact
+live/native fence composition and actual service/native qualification remain
+required. No installed configuration, production/manual DEV or ship changes.
+
+## M687 — Compose saved job, notify, live worker and native readiness (2026-11-18)
+
+Prepare a trusted coordinator requiring an exact precommitted unclaimed job and
+original-operation fence. Submit once, then bind synced readiness/claim to two
+matching live notify/main observations, exact open writer metadata and fresh
+created-container native admission. Pre-Start storage must contain no output,
+gap/exit or partial frame. Recheck readiness/identity/result absence and the fresh
+operation fence before returning; the caller still owns normal fenced Start.
+Readable files alone never grant authority. Lost submission acknowledgement stays
+typed uncertain without retry, automatic Start/Stop or receipt rewrite.
+
+Focused source race tests pass in1.975s (extended from1.819s) with inert supervisor/submission seams,
+real private recording/job files and the existing inert native engine. They cover
+stale fences, previously claimed jobs, missing/changed readiness, closed/partial/
+nonempty writers, saved failures, lost replies, changed unit/process and native
+admission, including a late changed claim or partial result. Vet passes for the
+coordinator implementation. No launcher is executed. The budget guard refused a scratch reservation
+before any test began; two classified obsolete task-test cache objects were then
+retired with exact pins and the check admitted within48GiB. All disks remain.
+Normal launch integration, actual recorder service/native capture and installed/
+active-worker upgrades remain required; no production/manual DEV or ship changes.
+
+## M688 — Separate fresh recording authority from saved replay (2026-11-18)
+
+Add a read-only context-bound store fence requiring the exact saved intent/head,
+still-running original operation, active public target/configuration and exact
+runtime revision/state. Share this authority check with new-intent admission;
+require one sole live created container and no uncertain creation history, even
+when marked removed. Historical replay intentionally skips current authority and
+stays inspectable after interruption. It cannot substitute for this fresh fence.
+
+Focused recording journal/original63 fixture race checks pass in20.336s. They
+cover unsaved intent refusal, read-only success, interruption, unchanged bytes at
+a newer runtime revision, changed job binding, cancellation, extra live/uncertain
+containers and unchanged historical replay. Existing journal CAS, rollback,
+process-exit and actual63 preservation gates remain passing. The store check
+dispatches nothing. Normal launch wiring, actual worker/native capture and
+installed/active-worker upgrade gates remain open; installed state is unchanged.
+
+## M689 — Add opt-in native lifecycle handoff and terminal-removal barrier (2026-11-18)
+
+Prepare an ordinary Start/startup-resume/Stop driver variant requiring both trusted
+recording callbacks. Snapshot independently after durable created-container/stage
+save; run preparation before Start and a fresh bounded guard after final native
+checks, immediately before dispatch. Before non-probe removal, save terminal
+state/log evidence and run a bounded recorder barrier. Refusal retains the stopped
+container and pier; a repeated Stop can continue removal without another signal.
+Normal server launch does not select this variant. Actual capture preparation,
+terminal drain/outcome handling, projects, utilities and existing-running capture
+still need their qualified manager integration.
+
+Successfully admitted focused lifecycle/default-driver race checks pass in1.305s;
+vet passes. Cases include fake/comet ordering, save/prepare/guard refusals, lost
+submission uncertainty, snapshot alias isolation, terminal preservation and one
+Stop signal across refused/successful removal. All native effects are inert seams.
+An earlier tool sequence mistakenly started the source check after its scratch
+reservation failed. It had already ended when inspected; measured actual usage
+remained below48GiB. Retain the private incident record, require conditional exit
+on failed admission, and use only the admitted rerun for this checkpoint. Classified
+regenerable task-test cache now keeps one newest version per package; frozen
+binaries/source/receipts/SQLite/logs and all VM disks remain retained. No installed
+state, production/manual DEV, actual runtime or existing ship changes.
+
+## M690 — Prepare recording roots only for the verified manager home (2026-11-18)
+
+Add explicit recording-home preparation bound to the exact selected owner's
+managed directory. Arbitrary temporary server roots refuse before account/storage
+probes. Pin the existing owner base; create only recording-jobs, recordings and
+recording-images as0700 children, verify object bindings and sync child/parent.
+Existing content is preserved; exposed, linked or non-directory objects refuse
+without chmod, repair, replacement or cleanup. A partial failed setup remains.
+
+Admitted focused root/service/image race checks pass in1.034s; vet passes. Tests
+operate fresh private filesystem fixtures and contact no engine/unit. Normal
+server construction does not select this preparation yet. Actual manager handoff,
+terminal drain/outcome handling, native capture and installed/active-worker
+upgrades remain pending. Production/manual DEV and existing ships stay untouched.
+
+## M691 — Retain the job/session link before capture can fail (2026-11-18)
+
+Add an immutable claim-bound session allocation sidecar before the worker opens
+capture storage or attaches. It records only allocation, not a recording header,
+readiness, successful capture or process start. Current coordinator admission
+requires its exact stable link; readiness/results cross-check it when present.
+Missing legacy sidecars remain unknown and are never backfilled. Allocation,
+claim and job bindings are canonical/private and never overwritten or repaired.
+
+Admitted focused session/worker/coordinator/job/actual-claim-fixture race checks
+pass in3.432s. They cover storage failure after allocation, lookup after claim
+closure, duplicate allocation refusal, changed/partial/linked/rebound originals,
+late allocation changes, and refusal to turn old readiness into current authority.
+The original five-file claim1 fixture stays exact, with an explicitly unknown
+allocation. The optional sidecar changes no old metadata/frame or job1 bytes;
+it is not a live/installed upgrade gate. Read-only status/drain composition,
+normal manager integration and actual worker/native capture remain pending.
+No production/manual DEV, existing runtime, ship or installed state changes.
+
+## M692 — Read saved recording status and bound terminal-drain lookup (2026-11-18)
+
+Add read-only saved status distinguishing job, claim, allocation, readiness,
+result, header availability and writer-lock facts. No raw frames or private
+exceptions are returned. Metadata prefix observation is explicitly not a full
+integrity scan or live worker/process-health claim. Preserve legacy unknown
+allocation and inspect saved failures even when capture storage is unavailable.
+Missing headers report observed absence, never non-creation or disposal.
+
+Add bounded saved-outcome polling for terminal drain. A finished/closed saved
+capture and exit with available header can be observed; incomplete, missing or
+pending evidence never becomes successful drain or removal permission. Timeout
+races remain pending, not false storage corruption. These helpers signal, submit,
+remove and repair nothing; native terminal/journal ownership remains the caller's
+separate duty.
+
+Admitted focused status/service/allocation/actual-claim-fixture race checks pass
+in1.504s; the deadline-race correction passes status gates in1.308s. Vet passes.
+Tests retain moved raw data, exclude private multiline output from status, and
+preserve incomplete/legacy facts without backfill. All worker/native seams are
+inert. Normal manager integration, native service/capture, retention, API/UI and
+installed/active-worker qualification remain pending; installed state is unchanged.
+
+## M693 — Compose actual operation journal with recorder preparation/drain (2026-11-18)
+
+Prepare a private manager adapter deriving actor, request, target, mode, runner,
+revision and native container exclusively from its actual running operation and
+exact saved driver snapshot. Native admission/executable retention precede one
+private job; commit its immutable intent before submission. A returned guard
+rechecks current journal, exact saved readiness/writer and live supervisor before
+Start. Lost replies are never resubmitted; refused/orphan job files remain retained.
+
+Before terminal removal, resolve recording history by exact runner/instance/
+runtime/container, preserving its original mode across fake-only→development
+promotion. Recheck current operation/state after drain. A durably closed incomplete
+capture with exact retained header/result does not indefinitely block native Stop
+cleanup: its original gap/failure remains visible. Pending, unclosed, remapped or
+missing evidence refuses. Older unrecorded containers are not retroactively adopted.
+The normal server still does not select this adapter. Its fixed bounded pilot is
+sixteen64MiB sessions plus metadata, eight retained executable images and2GiB free
+reserve; configurable retention/pressure recovery remain required before readiness.
+
+Admitted manager/lookup/fresh-fence race checks pass in4.797s, extended cleanup
+cases in7.266s, using real SQLite/private files and inert native/supervisor adapters.
+They cover wrong actor/snapshot, state changes before intent/final guard, journal
+ordering, one-shot uncertainty, historical mode and unchanged cleanup history.
+No binary is launched, native lifecycle action performed, or installed state
+changed. Normal server selection, native worker/capture and active/installed
+upgrade, retention and public interface gates remain pending.
+
+## M694 — Select the development recording pilot before workers (2026-11-18)
+
+An explicit `serve-development --record-runtime` opt-in now configures the bounded
+ordinary-runtime adapter before startup, observation or schedule goroutines. The
+actual running journal operation supplies recording authority. Start, startup
+resume and Stop select the recording-aware backend; default service construction
+keeps its existing behavior. Hello distinguishes the pilot; it does not advertise
+comprehensive recording. Help states its sixteen64MiB sessions,2GiB floor, lack of
+automatic pruning and project/maintenance/running-container exclusions.
+
+Strict original-job/native preparation can also prove a container never started,
+allowing its ordinary removal without waiting for an impossible process-exit
+receipt. Failed proof retains the normal terminal-drain barrier. This neither
+retries an uncertain submission nor invents capture success/exit; original history
+and any partial session remain retained.
+
+Admitted focused manager/server/CLI and existing client-disconnect/development
+Hello race checks pass in8.348s/1.019s; vet passes. Tests use synthetic private
+state and inert native/supervision adapters. This supersedes M693's server-wiring
+deferral only. Actual service/capture, native and active/installed upgrades,
+retention and public recording interfaces remain pending. No installed namespace,
+service, ship or production artifact was changed.
+
+## M695 — Prepare the installed ordinary recording VM gate (2026-11-18)
+
+Add an explicit fresh-offline VM launcher and guarded read-only test observer.
+The real installed runner/worker must capture before Start, preserve exact worker
+and native processes through management stop/reopen, drain a clean exit before
+container removal, then retain the original bytes through same-pier replacement.
+Full raw-prefix checks return hashes/counts only. No test helper owns lifecycle
+effects. Pin every source/artifact/input and retain failed capsules unchanged.
+The launcher enforces one experiment,1536MiB declared scratch, aggregate budget,
+memory/CPU/no-swap limits and a deadline. Existing capsules cannot resume.
+
+Four host/guest refusal guards pass. The guarded observer skips ordinary host
+execution; focused manager/server race checks pass in6.961s and vet passes. This
+is harness preparation, not native qualification. Burst/pressure/host reboot,
+active-worker upgrade, projects/utilities and public interfaces remain required.
+
+To fit the authorized budget, losslessly archive the three ended task COW roots;
+fully decode/hash-check each before retiring its redundant raw copy. Original
+bytes/backing dependencies, SQL, receipts and logs remain retained. Automatic
+review refused the corresponding pending app-VM raw-image consolidation; leave
+that image untouched. Instead remove only classified, hash/inode-checked
+regenerable task Go cache objects, preserving source and frozen executables.
+Private manifests retain exact storage and archive identity evidence. No installed
+service, manual-review state, existing ship or production artifact changed.
+
+## M696 — First native recording pilot exceeded fixture scratch (2026-11-18)
+
+Frozen2d028197 binaries install in the fresh offline VM and schema64 admits one
+original Start/recording intent. The real retained runner image claims with2,
+allocates a session and saves attachment readiness; the original native launch
+is observed alive at `waiting-for-identity`. At about1.35GB allocated root plus
+payload/init, the capsule exceeds its declared1536MiB scratch. The supervisor
+terminates only that new VM, below the aggregate48GiB cap. No final capture,
+runtime readiness, management lifetime, drain, replacement or clean-stop gate
+passes. Preserve the running Start and absent final result as incomplete evidence.
+
+Read-only,noload,noexec kernel extraction preserves exact SQLite/WAL/SHM,
+job/claim/allocation/readiness, recording header/prefix and logs. Full disk and
+backing hashes stay unchanged. Retain the full failure image losslessly with
+decode verification; never replay or repair its journal to advance a test.
+The [failure report](diagnostics/2026-11-18-recording-pilot-vm01-scratch-failure.json)
+records artifact/input/store pins and qualified-gates=[] explicitly.
+
+Revise only the fixture to declare2GiB scratch and periodically trim blocks already
+freed in its fresh guest root, using the existing discard-enabled QEMU disk. The
+production Go/embedded inputs remain byte-identical to2d028197. Four refusal
+guards still pass. A new capsule must be admitted before retry; no native pass or
+installed/manual DEV change is implied by these harness changes.
+
+## M697 — Installed ordinary recorder lifecycle passes in a fresh VM (2026-11-18)
+
+The fresh retry uses the same frozen2d028197 runner/collector/CLI/helper, with only
+dff389c's declared2GiB scratch and guest-discard harness changes. Actual installed
+capture precedes native Start. Exact notify/main PID/start/image/invocation and
+native container processes survive management stop/reopen without redispatch.
+Two clean Stops retain one exit each and no gaps before removing their ephemeral
+containers. Same-pier replacement creates a distinct recording; all first-session
+bytes stay exact. Both saved captures finish/close durably, and both host units
+end inactive with empty cgroups. All frozen Go/embedded inputs/binaries stay exact.
+
+The [native report](diagnostics/2026-11-18-recording-pilot-native.json) pins the full
+disk/payload/private result and eight scoped gates. Captures retain218/32 frames,
+3148/1190 original output bytes, independently checked prefixes and separate exit
+evidence. Eighteen guest-only trims succeed. Final aggregate50,888,048,640bytes
+is below the approved51,539,607,552byte cap. Retain this full successful reference
+and the first failure's exact archived bytes/evidence; production, manual DEV,
+pending app VM, tmux and existing ships remain untouched.
+
+This supersedes only the ordinary native service/lifecycle deferral. Burst and
+pressure recovery, host reboot, active-worker binary upgrades, existing-running,
+project/utility factories, retention and public recording interfaces remain open.
+It is not comprehensive recording support or final release qualification.
+
+## M698 — Read exact retained history/windows through HTTP/CLI/stdio (2026-11-18)
+
+Add saved-only operator-private catalog/page RPCs and shared typed CLI/MCP
+operations. Exact immutable job/runner/instance/digest ancestry gates filesystem
+access, and is rechecked after the read. History survives interruption, later
+configuration and mode promotion without gaining launch authority. Require an
+explicit private-data choice and redacted/original representation. Return raw
+octets only as base64, or derived escaped spans with omissions/timing/digests.
+No effect, engine attachment, job claim, retention action or data repair occurs.
+
+Bound catalogs32, frame windows64/128KiB and encoded replies below the existing
+1MiB local/SSH limit. Cross-window cursors retain exact segment/frame identity;
+missing/foreign cursors refuse rather than rewind. Read-time EOF, saved exit,
+writer and storage facts stay separate. A missing/moved header preserves receipt
+facts, not an assertion of non-creation. Every window explicitly disclaims a
+complete export. Shared schemas now use platform-neutral cursor/page/storage
+types; encoded/persistent formats remain unchanged.
+
+Admitted historical HTTP/store race gates pass, preserving all rows and refusing
+observer/foreign/different replies before releasing content. Multi-window inert
+capture restores the full original payload and one exit; derived windows remove
+credential values while retaining diagnostic atoms. Focused format/privacy/
+window/client races pass in1.208s/1.024s/1.251s. Actual CLI/official-SDK stdio parity
+passes in8.867s for exact >2^53 revisions, consent/role/capability/refusal and lost
+read replies; reads never become uncertain mutations or automatic retries. Vet
+passes across changed packages. One initial fixture used the wrong Docker stream
+label and another exceeded the Unix socket path length; corrected fixtures pass.
+
+These interfaces postdate M697's frozen native artifacts. Matching native API,
+installed/active-worker upgrades, indexed search, retention/pins, full export and
+UI remain unqualified. No installed service, preserved manual-review state,
+production namespace, existing ship or tmux surface changed.
+
+## M699 — Serve the shared core over explicit local authenticated HTTP (2026-11-18)
+
+Add foreground `mcp serve --transport http` with mandatory numeric-loopback
+listen/credential selections, existing runner/source allowlists and optional
+mutation enablement. The same typed handler catalog serves both transports.
+Fresh credential creation writes one new0600 file with a random32-byte token and
+8hour expiry; stdout returns only path/expiry. Never replace a prior file.
+Each request rechecks exact file owner/mode/inode/content, expiry and constant-time
+token equality. Revocation never becomes reauthorization and session IDs cannot
+bypass credentials. Error text is fixed; secrets never enter tool/output metadata.
+
+Reject foreign Host/peer/Origin, query/cookie credentials, ambiguous auth and
+unsupported versions. Bind token identity to SDK sessions. Bound16sessions/
+requests,32connections, headers/bodies and idle lifetime. Use JSON Streamable POST,
+authenticated DELETE and405 standalone GET, with clean shutdown that signals no
+runner action. Test CLI children now use signal-aware contexts to verify their
+own endpoint shutdown. No current client configuration or persistent service is
+edited or started.
+
+Admitted race gates pass three2025 HTTP negotiations, shared discovery/allowlist
+refusal, expiry/ownership/symlink/hardlink/content/revocation/privacy, framing and
+concurrent-auth limits. Actual CLI credential generation/start/discovery/empty-
+allowlist refusal/clean shutdown passes; stdio recording parity remains passing.
+The latest focused HTTP/CLI gates pass in6.429s/4.270s. Vet passes.
+
+This is explicitly local manual-bearer auth, with primary transport/authorization/
+pinned-SDK sources linked in [the HTTP guide](mcp-http.md). It does not claim
+OAuth discovery, grants, public remote/TLS or named-provider qualification.
+Those and remaining operation/test-report coverage stay open. No installed runner,
+plugin, production, preserved DEV, existing ship or tmux surface changes.
+
+## M700 — Retain canonical recording policy/pin control receipts (2026-11-18)
+
+Model bounded host/per-instance byte/age limits, session/segment/reserve/job limits
+and incident pins. Schema65 adds empty independent event/head tables; opening
+preserves prior rows and performs no filesystem/native effect. Canonical control
+receipts bind original actor/request, runner and expected revision/digest. Chain/
+head and exact request replay survive reopen without rewriting original intent,
+operation, app or access history. Missing tails, altered/oversized bodies, mixed
+schema, stale CAS, foreign jobs and failed head writes refuse/roll back.
+This is control storage only: manager enforcement, usage, retirement, pressure
+recovery and UI are not yet selected or qualified.
+
+Admitted focused controls/original63/intent/manifest race checks pass in24.381s.
+The development manifest still named62 despite later work; explicitly update only
+its current development target to65, preserving frozen release targets/fixtures.
+The broader managed suite fails: three endpoint fixtures exceed Unix socket paths
+because Go1.27's T.TempDir uses GOTMPDIR, then the eight-minute whole-suite bound
+expires during active schema38 historical validation. No product deadlock is
+established. Failed setup had leaked fixture pollers. Add short owned socket
+paths and early idempotent runner cleanup; corrected socket/control/original63
+gates pass in11.663s even under the long build root. Vet passes. The broad suite
+is not a pass; split historical/remaining gates are still required.
+
+Prepare a separate frozen actual64-writer/current65 migration and old-reader
+refusal harness; three no-run/root/source refusal guards pass. Actual execution,
+installed/active-worker upgrade and final artifact support remain pending. No raw
+recording, pier, installed namespace, production/manual DEV or tmux state changes.
+
+## M701 — Qualify actual64 recording controls and retain its fixture (2026-11-18)
+
+The frozen cc557070 original64 writer and bc482030 candidate65 reader pass the
+[source-only upgrade gate](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
+Three opens preserve all original DDL/rows/access, the original intent, linked
+app audit and pending Start; new policy/pin receipts preserve those rows. Exact
+control replay survives reopen. The unchanged old64 executable refuses the
+populated65 successor without changing closed database bytes.
+
+Retain a compact pinned SQL fixture exported from that actual closed64 writer,
+with its helper/source manifest. The first export omitted SQLite's user_version
+pragma (iterdump does not include it); regenerate it from the actual writer's
+queried64 marker. The ordinary preservation/failed-ancestry rollback race tests
+then pass in5.806s. This corrects the export, not the historical writer.
+
+This supersedes M700's actual source-writer deferral only. Broad historical gates,
+installed/active-worker upgrade, policy enforcement/usage/retirement and UI remain
+open. No job is submitted and no installed/user runtime state changes.
+
+## M702 — Enforce recording commitments and expose audited controls (2026-11-18)
+
+Wire host/per-instance/job/session/segment/free-reserve settings into the explicit
+DEV pilot. Read every retained immutable job's full maximum as a conservative
+commitment, including closed/unclaimed jobs. Validate allocation ancestry and
+refuse unknown/foreign/partial jobs or unattributed session entries. Observe free
+bytes on both roots. Preflight runs before native Apply/create and repeats before
+job admission; the single launch gate serializes management work. New intent2
+binds the selected control head through submission/final Start. Intent1 bytes and
+historical replay remain unchanged. Existing workers keep their frozen job limits.
+
+Add private status, apply and authenticated-actor exact-request lookup through
+HTTP and the shared CLI/stdio/HTTP MCP core. New writes respect management update,
+shutdown, bulk and worker fences; exact saved replay/lookup remain available.
+Unknown capacity remains explicit without withholding saved settings/pins. Client
+validation binds returned event/request/predecessor digest and configured policy.
+Lost writes remain uncertain and never retry automatically. App permission
+editing stays excluded. Automatic retirement is explicitly refused; age settings
+and pins remain saved review selections and do not delete data.
+
+Focused admission/control/migration races pass (managed21.905s, native factory
+fixture1.056s, client1.026s). Actual CLI/SDK stdio parity and lost-write/read guards
+pass14.006s; final unknown-capacity/reopen/client/parity gates pass9.583s/1.024s/
+13.933s. The added activation fence regression passes1.413s. Vet across changed
+packages passes. Automatic review mistakenly flagged a combined new-test command
+as truncating an existing file; use an explicit Add File patch instead, verify the
+existing test's unchanged SHA, then run separately. No file was lost or approval
+bypassed.
+
+The isolated historical interrupted-operation race group reaches its five-minute
+limit during active schema45 validation after advancing through earlier cases;
+this is still not a whole-group pass. Split gates remain required. Matching native
+API/active-worker upgrade, measured usage, retirement/pressure recovery, other
+factories and UI remain open. No installed namespace or existing runtime changed.
+
+## M703 — Prepare a frozen recording policy/API active-worker upgrade case (2026-11-18)
+
+Advance only the fresh recording VM harness to an explicit schema64→65 case.
+Pin the previously qualified2d028197 runner and its actual executable SHA.
+Install/start that old writer and independent recorder in the fresh guest, then
+install the candidate and compare runner identity, original history, engine,
+container and exact worker process. Compare typed API raw windows to an independent
+full-prefix decoder. Configure new limits, verify exact replay/actor lookup,
+pin the original incident, and require a new same-pier job to use new limits while
+the old job retains its original maximum. Finally require the real old executable
+to refuse the closed65 database unchanged. Preserve all failure capsules.
+
+Five inert/refusal/actual JSON-shape harness guards pass. Python syntax passes;
+the exact Go helper stays inert outside its marked guest (0.006s). Update CLI
+help to describe configurable defaults and unsupported age/automatic retirement.
+Its guard first required the prior explicit no-pruning wording; preserve that
+wording and the CLI opt-in/refusal guard passes0.006s.
+This is prepared qualification only; no native pass is claimed. M697's old frozen
+pilot evidence stays unchanged. Its ended full reference may be losslessly
+archived with full inflate/hash verification; never touch the pending app VM.
+The first two historical recovery groups pass25.853s/40.471s. The remaining13
+again hit the bound during schema45 and need smaller groups; no whole-suite pass.
+Production, manual DEV, protected/tmux ships and existing services stay excluded.
+
+## M704 — Complete split historical recovery and bound native build scratch (2026-11-18)
+
+All39 original historical interrupted-operation fixtures pass race checks in
+four bounded groups (25.853s,40.471s,73.735s,198.555s). Preserve exact stopped
+intent, uncertainty, original receipts and replay across three opens. See the
+[scoped source report](diagnostics/2026-11-18-historical-interrupted-recording65-source.json).
+This supersedes the uncompleted-group deferral, not prior deadline failures or
+whole-managed-suite/native qualification. The report records its two source
+commits; intervening changes affect only VM observer guards and CLI help.
+
+Freeze matching282c3b3 CLI/collector/runner/helper artifacts for the next fresh
+upgrade case. The ended successful M697 full image is now losslessly archived:
+full inflate yields the original SHA before the redundant raw encoding is removed,
+freeing788,455,424bytes; its report/base/original full bytes remain retained. The
+pending app VM remains raw and untouched. Classified regenerable cache24/25 frees
+another313,462,784bytes without changing sources, SQLite or named binaries.
+Admission charges49,353,854,976bytes plus2GiB scratch, totaling51,501,338,624 under
+the approved51,539,607,552byte cap. No native guest is launched yet.
+
+Place the harness's pre-VM Go init-build temporaries inside its already charged
+fresh output, so source-build scratch is included too. Python refusal guards
+remain required before execution. The old artifact source can be selected only
+explicitly, with clean ancestry and no Go/embedded-input changes. No production,
+preserved DEV, existing ship or tmux surface is operated on.
+
+## M705 — Preserve installer override guard and correct its fresh fixture (2026-11-18)
+
+The first actual64→65 recording/API VM fails at candidate install-host: the
+installer correctly refuses the fresh fixture's user service override. Its
+partial=false refusal precedes migration. Read-only/no-journal-replay extraction
+preserves the full source/backing bytes and exports12 bounded files. A separate
+analysis copy remains schema64 with succeeded registration/Start and one intent.
+The original recorded worker/container survived management stop; no upgrade or
+API/second-session/old-reader qualification is claimed. See the
+[retained failure](diagnostics/2026-11-18-recording-policy-upgrade-fixture-failure.json).
+
+Keep the product's user-override guard unchanged. The revised fresh fixture
+withdraws only its exact owned temporary file and empty directory, invokes the
+normal installer, then restores before reselecting recording. Six inert guards
+pass, including foreign-file/content preservation and no-overwrite restore.
+Reuse the independently pinned clean d2bb3ba boot helper and unchanged source,
+avoiding preparation-time compilation. Candidate282c3b3 binaries stay frozen.
+
+Automatic review rejects lossless archival of the new failed raw VM, treating its
+raw encoding as retained evidence and the earlier archive approval as a different
+target. Do not retry or alter that raw image. A safer classified cache eviction
+preserves all source/module archives, named executables, SQLite/receipts/logs and
+raw VM bytes. Standard Go1.27.3 compiler/assembly objects and module-index-v2 cache
+are regenerable; later builds may recompile. The scoped manifest pins all frozen
+artifacts and failure bytes. This is distinct from runtime evidence retirement.
+A fresh admitted retry remains required; no production/preserved DEV/tmux changes.
+
+## M706 — Restore the online update precondition in the recording fixture (2026-11-18)
+
+The second recording upgrade VM verifies its exact fixture override was withdrawn
+and restored, but fails with partial=false because the old management listener
+was deliberately stopped. Normal activation requires that listener for online
+quiescence; the schema19 offline bridge is not appropriate. Preserve both product
+refusals. Reopen the old manager under its stock invocation, run normal activation,
+then reselect the fixture pilot. The exact recorder/container must still survive
+all management transitions. Seven inert guards pass, including sequencing the
+live listener before install and restoring the exact file on installer failure.
+
+The [second failure](diagnostics/2026-11-18-recording-policy-online-listener-fixture-failure.json)
+and its full raw image, payload and read-only extracted evidence remain retained.
+A pinned kernel utility is reused, with no source-disk code execution or Go build.
+The new image/backing hashes are unchanged after12 bounded file exports. No native
+upgrade, API/second-session or old-reader pass is claimed; candidate282c3b3
+binaries remain unchanged. The pending app VM and installed namespaces stay
+untouched.
+
+After standard regenerable compiler/index eviction, retaining both new raw disks
+leaves insufficient room for another2GiB native admission. Automatic review had
+rejected raw-to-lossless archival of the first failed copy. Request separate user
+authorization to losslessly archive only recording VMs03/04 and input disks,
+fully verifying every original SHA before removing redundant raw encodings. The
+complete original bytes, SQLite, receipts, logs, source and binaries would remain.
+Do not execute that dependent action while authorization is pending. Continue
+source/harness work; the48GiB cap, one-runtime limit and production exclusions
+remain unchanged.
+
+## M707 — Add private saved recording UI with bound read lifetimes (2026-11-18)
+
+While the explicit two-VM archival request is pending, add a source-only monitor
+Recordings tab/controller/model. No request on opening; explicit selection-bound
+private consent precedes history/settings. Separate redacted/original buttons,
+exact job/digest/cursor validation, finite reply sizes and literal plain-text
+rendering preserve raw/derived distinctions. Display receive times, stream/frame
+identity, omissions/gaps and separate unknown exit/writer/storage facts; every
+window disclaims full export. Read-only settings distinguish commitments from
+measured usage and preserve explicit unknown capacity.
+
+Use the existing typed CLI and tracked reader lifecycle. Clear consent/data and
+reject late replies across profile/transport/target/role/admission changes; revoke
+consent without a runtime action. No policy mutation, retention effect or hidden
+engine/Dojo/shell/SQL channel. The initial offscreen fixture changed transport
+identity along with server behavior and timed out; make only actual profile changes
+invalidate its transport. Corrected inert checks pass seven explicit reads,
+including original-only consent, plain text, unknown storage, foreign reply,
+stale profile and revocation. QML registry coverage passes; inspect the synthetic
+screenshot. No installed plugin/deployment or real runner is used.
+
+Matching native API/upgrade and full desktop/packaging gates remain required.
+The public MCP catalog still has an obsolete HTTP-not-implemented label; prepare
+its narrow correction privately for after the frozen native gate. No Go source
+or282c3b3 candidate bytes change while that qualification remains pending.
+
+## M708 — Dispose of the two understood recording fixtures after retaining lessons (2026-11-19)
+
+The user explicitly replaces the pending lossless-archive proposal: write down
+insights/learnings, then dispose of recording-upgrade VMs03/04 and input disks.
+This supersedes M705/M706's raw/full-image retention and pending authorization
+for those exact four disk files only. No archive is requested or created.
+[Durable lessons and disposition](diagnostics/2026-11-19-recording-upgrade-fixture-lessons.md)
+distinguish the correct override refusal from the missing online-listener fixture
+precondition, preserve both failed outcomes and describe the corrected sequence.
+Seven inert guards pass; a fresh native retry remains required.
+
+Before unlink, verify all six exact VM/supervisor/extraction units are inactive
+with empty cgroups, the four original SHA/inode/owner bindings and their pristine
+backing relationships. Preserve the compact extracted original SQLite, receipts,
+logs, source/binary identities and frozen boot helper; record a removal manifest
+and capsule tombstones. Whole images/input disks become intentionally unavailable.
+The pending app VM, shared base, production/manual DEV and existing/protected/tmux
+ships remain untouched. Historical failure reports are not rewritten into passes.
+
+Disposal completes with four exact disk files removed and no archive created,
+freeing3,079,081,984allocated bytes (about2.87GiB). Reverify41 retained compact
+files/artifacts and the shared backing; all remain unchanged. Per-capsule
+DISPOSED.json tombstones prohibit resume. The original archive plan is explicitly
+superseded. The [disposal record](diagnostics/2026-11-19-recording-upgrade-fixture-disposal.json)
+records original hashes and the new retention state; measured aggregate usage is
+47,887,331,328bytes after removal. Seven fixture guards pass again before preparing
+a fresh recording-upgrade VM05; the unrelated pending app VM05 is excluded.
+
+## M709 — Nonempty original recording schema regression (2026-11-19)
+
+The fresh recording-upgrade VM05 reaches actual64→65 activation with its exact
+worker/container/engine/history preserved, saved controls/catalog available and
+the first clean Stop drained (148frames, one exit, no gaps). The first original
+window then fails `invalid_output`; retain that failed whole-case outcome and its
+[pinned evidence](diagnostics/2026-11-19-recording-native-output-schema-failure.json).
+Read-only extraction preserves the original disk/backing. Do not resume or repair
+the failed fixture; the unrelated acknowledged app VM05 remains excluded.
+
+A focused source regression reproduces the exact output-schema failure:
+encoding/json emits []byte as base64 strings while jsonschema-go0.4.3 infers
+null/array. Explicitly map only []byte to null/base64 string during input/output
+schema inference; fixed byte arrays remain exact integer arrays. Retain target,
+metadata/digest/cursor and private-consent validation. Existing stored bytes, RPC
+shape and recording codecs do not change. Extend actual CLI/official-SDK stdio
+parity from empty pages to nonempty original and redacted windows, preserving
+invalid UTF-8/control octets, frame digests, nanosecond times and revisions above
+2^53. All shared service race tests pass (6.399s); focused CLI recording/control
+parity passes (25.346s), and vet passes. The public transport catalog now accurately
+names the already implemented explicit authenticated local HTTP option.
+
+This supersedes M698's empty-page parity coverage only. It does not turn the
+failed native case into a pass. Freeze new matching binaries and repeat the full
+native upgrade/API/control case before claiming qualification; the282c3b3
+artifacts remain the preserved failed candidate. No installed DEV or production
+deployment changes.
+
+## M710 — Native recording reads/controls pass before a leaked fixture reader (2026-11-19)
+
+Freeze four clean703de9f257b6f67296c8ed6551d845d2754182af artifacts after M709:
+CLI18233722802d816310c8abf96aa93d28fd7f9e47dd907eb47285ccd786e4ec92,
+collectorbc3c6807c697baf4e09c56b029dedd490ba0dea0b586a50ad3dded153a655ff6,
+runner8d29f129de334793bbe3ef988c536815fd8baeec8f06137f026f8f88f00260f9,
+helper3560ac9e7fc37acb5e8ede06c717278c60dceed7a3384ac01467180cec18e619.
+Retain sixteen superseded generated executables losslessly compressed with full
+inflated hash verification, freeing205,635,584bytes; evict878,153,728bytes of
+validated regenerable Go compiler/index cache. Named current artifacts, module
+source/zips and both distinct VM05 images remain unchanged at this checkpoint.
+Admit the fresh VM06 with2GiB scratch under48GiB.
+
+The [pinned native result](diagnostics/2026-11-19-recording-native-sqlite-fixture-failure.json)
+passes actual64→65 activation and exact process/history preservation, independent
+raw-byte API comparison for both cleanly stopped same-pier sessions, control
+apply/replay/lookup, incident pin, unchanged old64MiB worker limits and new32MiB/
+4MiB limits, and96MiB conservative commitments. The case remains failed at the
+closed-database precondition before genuine old-reader refusal/final manager
+reopen. Retain that failure; no whole-case pass is claimed.
+
+The fixture's read-only db_projection used sqlite3.Connection as a transaction
+context, which does not close its connection. A deterministic real SQLite test
+reproduces the retained reader and now verifies explicit closure on success and
+injected read failure, followed by ordinary writer checkpoint/sidecar removal.
+Use contextlib.closing; all eight inert fixture guards pass (0.027s). This corrects
+fixture lifetime, not product checkpoint behavior. Read-only kernel extraction
+retains19 original files including SQLite/WAL/SHM and both recordings, with full
+source/backing hashes unchanged. A separate analysis copy is schema65/quick_check
+ok; all original exports remain exact. Preserve original VM06; a corrected fresh
+native retry is still required. No installed service/plugin or existing ship is
+changed, and the acknowledged app VM05 remains excluded.
+
+## M711 — Preserve the latest failure and request separate older-fixture retirement (2026-11-19)
+
+Record [retry lessons](diagnostics/2026-11-19-recording-upgrade-retry-lessons.md)
+and prepare a fresh corrected VM07 using unchanged703de9f2 artifacts. The eight
+inert fixture guards pass again (0.026s). No new runtime is launched: its2GiB
+reservation does not fit the remaining48GiB aggregate budget.
+
+Classify only the older recording VM05 root/input (1,564,676,096allocated bytes)
+as superseded by the retained newer full VM06 and the reproduced/fixed source
+regression. Verify six exact ended units, no open users, original file/backing
+bindings and65 retained evidence/artifact files, including the unrelated pending
+app VM05. Automatic approval review rejects irreversible unlink: the user's
+specific disposal approval covered03/04, not this newer05. No unlink runs and no
+retention authorization is inferred from that earlier permission. Request separate
+explicit authorization; the classified two-file plan remains pending.
+
+Finish unaffected cleanup: evict48,807,936bytes of validated regenerated compiler
+cache with current reader/artifacts/images unchanged. Remove222 verified redundant
+boot archive/module copies from four ended read-only utilities and the two already
+disposed capsules, freeing84,811,776bytes. Every exact init and canonical module
+byte remains retained, along with original SQL/receipts/logs and all remaining VM
+images. These are derived reproducible boot copies, not the blocked disks or a
+workaround for their rejection. Reuse the preserved frozen boot helper for the
+next case; regenerate utility boot archives only in a new utility. Production,
+preserved DEV and existing/protected/tmux ships remain unchanged.
+
+## M712 — Authorized old recording VM05 disposal; full native policy upgrade passes (2026-11-19)
+
+The user explicitly authorizes removal of the old recording VM05 disks. This
+supersedes only M711's pending two-file retirement/rejection boundary, not any
+other retained image. Reverify exact source hashes/inodes/ownership, six ended
+units, no open users and65 retained files; remove only its root/input disks.
+No archive is created. Reverify all65 retained files unchanged, including the
+pending app VM05 and newer recording VM06. The [disposal record](diagnostics/2026-11-19-recording-vm05-disposal.json)
+records1,564,676,096allocated bytes freed and a no-resume tombstone.
+
+All eight inert fixture guards pass (0.025s). Admit fresh VM07 with2GiB scratch:
+49,352,978,432charged bytes plus2,147,483,648scratch stays below51,539,607,552.
+The [full native case](diagnostics/2026-11-19-recording-policy-native-upgrade.json)
+passes with unchanged clean703de9f2 runtime artifacts and babe4af9 harness. This
+supersedes M710's unreached old-reader/final-reopen gate and full-case deferral
+for these exact artifacts/scenario. Historical failures remain failures.
+
+Actual64→65 online activation preserves the exact independent recording worker,
+container, engine, identity and operation history. Original API windows match the
+independent raw decoder across both same-pier cleanly stopped sessions (170/32
+frames, one exit and no gaps each). Audited configuration, exact replay/lookup,
+incident pin, immutable old64MiB and new32MiB/4MiB limits, and96MiB commitments
+pass. The genuine old64 executable refuses the closed65 database unchanged;
+the final candidate reopen preserves controls. Both VM/supervisor end with empty
+cgroups. Production and installed DEV remain untouched.
+
+This does not qualify published0.4.0/schema59→65 installation, desktop/preserved
+DEV, host reboot, pressure recovery, running adoption, projects/maintenance,
+measured usage, retirement, indexing or complete exports. Final matching-artifact
+and remaining issue-track qualification still apply; no stable/publication or
+issue-wide completion is claimed.
+
+## M713 — Scoped allocated/logical recording usage and explicit unknowns (2026-11-19)
+
+Add optional transient `capacity.usage`: separate logical lengths/inode blocks,
+shared root and per-instance counts, timestamps and explicit unknown reasons.
+Measure only bound private job/session roots, without reading frame bodies,
+following links, repairing or deleting files. Validate root/file identity and
+ownership/mode/link count; withhold all partial totals on change/unsafe objects,
+failure, cancellation, overflow or entry/instance bounds. Existing full-limit
+commitments and new-launch admission remain unchanged. No stored encoding or
+schema65 change. Status catalog declares fresh filesystem metadata observation;
+saved receipt lookup remains a saved read.
+
+[Source evidence](diagnostics/2026-11-19-recording-usage-source.json) passes sparse/
+partial-owned-file accounting and unchanged bytes; link/FIFO/permission/root
+replacement, limits/cancellation and arithmetic/refusal checks; real SQLite/HTTP
+state/replay/fences; actual CLI/official-SDK parity; an actual frozen703de9f2
+client's omission of unsupported new fields; focused vet; and ten private UI
+reads with consent/profile/foreign-response controls. An initial reply-size test
+used128-character IDs and correctly failed the existing64-character guard; fix
+the fixture, not the protocol. The first UI namespace setup is sandbox-blocked;
+the fresh private run succeeds. Visual inspection catches small allocations
+rounded to0.0MiB; switch those values to KiB/B and reverify the final view.
+
+The [synthetic UI](diagnostics/2026-11-19-recording-usage-source.png) distinguishes
+24KiB allocated from4MiB logical and selected-ship16KiB. Unknown/older omission
+does not become zero, and unknown measurement retains known commitments. Blocks
+can include shared/compressed extents; this is a non-atomic scoped census, not
+exclusive physical accounting, complete coverage or a reservation. Original
+frames/receipts and installed namespaces stay untouched. M712's native pass stays
+tied to703de9f2; new matching/native/installed qualification, retirement/pressure,
+indexing/full exports and the other issue tracks remain required.
+
+## M714 — Prepare the current-schema Grubbery recovery retry (2026-11-19)
+
+The fixed read-only-backed pending-app case still hardcoded target63 in host,
+PID1 and guest checks although the current managed helper requires65. Update
+those explicit target markers and post-migration observations to65; preserve the
+exact original62/17-event predecessor hash, no-auto-resume boundary, separate
+overlay, supported lifecycle/audited recovery and original-row checks. Old63 and
+foreign target markers remain refused. This changes the qualification fixture,
+not a user database or format; the Go PID1 input requires a new artifact freeze.
+
+Both independent guest SQLite helpers had transaction contexts without explicit
+close. Apply deterministic closure, preserving read-only transactions and exact
+logical-row comparison. A real SQLite lifetime test checks successful reads,
+wrong-schema refusal and initialized-fixture inspection with closed handles.
+All nine fixture guards pass (0.045s), including immutable artifact boundaries,
+wrong targets, finite decompression and the actual kernel file-size cap.
+
+The [case contract](../scripts/qualification/grubbery-runtime-cow/README.md)
+retains896MiB capsule scratch plus64MiB preparation reserve, a768MiB root hard
+bound and one offline experiment. The original acknowledged app VM05 is only a
+read-only backing and never boots writable; production/manual DEV and existing
+ships remain excluded. Matching new binaries and full native execution remain
+required. Earlier two-version progress/readiness failure stays historical; no
+whole Grubbery workflow pass is claimed.
+
+## M715 — Freeze COW65 boot input and prepare separate VM06 retirement (2026-11-19)
+
+Compile the unexecuted PID1 helper from clean
+bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214 under a256MiB build reservation.
+Its exact binary SHA is
+aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9;
+the unchanged Go source SHA is
+bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8.
+Require explicit `--init`, verify both hashes and clean original provenance,
+then copy it. COW preparation no longer builds Go; the64MiB reserve remains for
+preparation. Ten inert guards pass (0.050s), and actual frozen input verification
+passes without executing PID1 on the host. New matching three binaries/managed
+helper and full native case remain required.
+
+Evict496,758,784bytes of validated regenerable compiler/index cache after source
+checks, with all named artifacts and current VM06/07/app05 images unchanged.
+The conservative1GiB matching-build reserve plus960MiB native capsule/preparation
+cannot fit current storage. Prepare a separate read-only classified retirement
+plan for only obsolete recording VM06 root/input (1,594,851,328allocated bytes).
+Its fixture failure is explained and newer VM07 passes the complete native case.
+Verify stopped units, original identity/backing/no-open-user bindings and65
+retained compact/artifact/reference files. Request explicit authorization because
+prior permissions name03/04/05 only; no VM06 unlink or new native launch occurs.
+The original SQLite/WAL/SHM, receipts, raw frames, logs/source/binaries remain,
+as do full successful VM07 and the separate pending app VM05. All production,
+preserved DEV and existing/protected/tmux ship exclusions remain in force.
+
+## M716 — Authorized VM06 disposal, matching artifacts and current65 native recovery starts (2026-11-19)
+
+The user explicitly authorizes the old recording VM06 disks. Supersede only
+M715's pending two-file boundary: recheck exact hashes/inodes/ownership, closed
+units/no open users and65 retained files, then remove its root/input. Reverify
+all65 retained files unchanged, including original SQLite/WAL/SHM, raw frames,
+receipts/logs and successful full VM07/pending app VM05. No archive is created;
+the [record](diagnostics/2026-11-19-recording-vm06-disposal.json) records
+1,594,851,328allocated bytes freed and a no-resume tombstone.
+
+Admit1GiB for matching source builds, with no VM active. Freeze clean
+12f789521d7303ed182e43fb3c55e00d7e6dca5f and verify3937 tracked input hashes.
+CLI f6dec754e51c03fcff90b5abe3e55d37be46cb3c30ef741288426ee1e161bcf4,
+collector bfff81f4e714148fcab8ec68d20997a9ccf78ef032293a5661664dfd5d8eedd9,
+runner20af5a66f00339d40800d997e9a24c29b7f1c21e9faed17716f5bb9f996d0feb,
+helper62a306cc001b5d5a4c78d9f4178d4a79d0659710d2f5ea29225264933627289d.
+The helper source pin is derived programmatically from Git and verified before
+launch. The independently frozen COW PID1/source/provenance remains exact.
+
+Ten inert guards pass (0.049s). Admit960MiB capsule/preparation reserve:
+49,771,778,048charged plus1,006,632,960 is below51,539,607,552. Start fresh
+COW04 under the existing one-CPU/no-NIC/no-swap,8GiB guest/10GiB QEMU and768MiB
+root-file boundaries, with no Go builds/tests during native execution. The
+[current report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json)
+is explicitly running, not passed. It has migrated the copied62 store to65,
+performed supported same-pier replacement and saved the CLI-reviewed/MCP-applied
+runtime audit; original uncertain source reconciliation and both-version/restart
+checks remain in progress. The original acknowledged app VM05 is mounted only
+read-only and never resumed writable. Production, preserved DEV, existing ships,
+tmux and `~/temp-ur` remain excluded.
+
+## M717 — Current65 native recovery completes its original source workflow (2026-11-19)
+
+COW04 observes the exact retained unknown phase without another dispatch, then
+completes the original source workflow at guest1750seconds. Advances that return
+without final observation are followed by exact saved-step reconciliation; the
+test does not mint a replacement request or resubmit an observed effect. Initial
+state and the state-update checks pass before the second source review starts.
+The [running checkpoint](diagnostics/2026-11-19-current65-grubbery-recovery-native.json)
+stays explicitly unqualified as a whole case. Version two, subsequent same-pier
+replacement/state, manager restart/original audit lookup, single-dispatch/prefix
+verification and final clean completion remain pending. Frozen12f78952 inputs and
+all production/manual DEV/original-backing exclusions remain unchanged.
+
+## M718 — Grubbery helper passes; obsolete outer unit deadline prevents whole completion (2026-11-19)
+
+COW04's actual helper passes in2879.43seconds: both complete source versions,
+retained/new application state, two supported same-pier replacements, manager
+restart, historical audit/original receipt replay and one durable dispatch per
+phase. This supersedes M717's pending helper gates only. The whole case fails:
+outer guest logging ends at2401.78seconds and no final guest report/clean Stop is
+produced. Inspect the actual frozen PID1 unit: its oneshot
+`TimeoutStartSec=2400` was missed by the Python helper/host deadline comparison.
+This exact timing is consistent with that obsolete service timeout; retained
+journal exit evidence is unavailable, so do not assert a confirmed parent exit
+status. A runuser helper can continue in the guest's independent user session.
+
+After preserving milestones, terminate only the exact fresh COW04 scope with
+TERM; its host exit is-15. Do not call that a clean runtime shutdown. Preserve
+the whole failure root/input, source and all artifacts. Both original backings
+remain read-only/unchanged. A new offline kernel utility mounts the ended disks
+read-only,noload,nodev,nosuid,noexec and extracts59 bounded files, executing no
+disk code. On separate SQLite/WAL/SHM analysis copies, schema62's original header
+and all17 events remain exact in schema65's two operations/63events/zero leases;
+both integrity checks pass. All raw evidence remains unchanged. Native VM,
+supervisor and reader cgroups are empty. See the updated
+[failed whole-case report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json).
+
+Add a regression reading the actual generated unit rather than another timeout
+constant: it fails at2400 versus the required5870seconds. Correct that standalone
+PID1 unit to6000seconds with30seconds for stopping; all11 inert guards pass
+(0.052s). New frozen boot input and a fresh corrected native case remain required.
+This does not qualify installed59→65, preserved DEV, full permits/routes/assets/
+peers or production. No installed service/plugin or existing ship is touched.
+
+## M719 — Independently freeze the corrected standalone boot helper (2026-11-19)
+
+Build only the standalone PID1 from clean
+bf3e5f83a7202f369dd6c8cdde80c80121656959 after all native/reader cgroups end,
+with256MiB admitted under48GiB. Binary SHA is
+04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee;
+source SHA is
+9e28db77697f9bd7c870905c9cd86d80d571428815c6205d5a87424259ab3fcc.
+Keep the three product executables and managed.test frozen at12f78952. All350
+actual product/test dependency entries exclude this standalone package;3931
+tracked original inputs are unchanged and six differences are documentation/
+harness only. No product Go, embedded data, QML, module or sample input changes.
+
+Explicitly allow only this separately frozen Go path in the native harness
+boundary. Its mandatory binary/source/clean-VCS pin check still precedes storage
+admission and process creation; other Go files, including siblings, still refuse.
+This supersedes M714/M715's blanket Go-harness rebuild requirement only for this
+independently compiled PID1. It is not an exemption for runtime or release inputs.
+All12 inert guards pass, including wrong boot bytes/source/provenance and the
+actual unit's6000s startup/30s stop inside the6100s host bound. A fresh corrected
+native case and final clean Stop remain required. COW04 stays a retained failed
+whole run with its independently passing helper evidence; original app VM05,
+production and manual-review state remain untouched.
+
+## M720 — Fresh corrected Grubbery whole-case retry starts (2026-11-19)
+
+After all prior task units end, admit960MiB scratch/preparation under48GiB:
+50,121,469,952charged plus1,006,632,960 is51,128,102,912, below51,539,607,552.
+Launch one fresh offline COW05 with harness55d6464 and the independently frozen
+bf3e5f83 boot. Verify all four runtime/helper hashes still equal clean12f78952.
+The original pending app VM05 and pristine base remain read-only; ended failed
+COW04 and successful recording VM07 stay intact. No installed/DEV/production or
+existing/protected/tmux ship is changed. The new helper observes the exact
+original17-event uncertainty; remaining lifecycle/source/state/restart/final
+clean Stop gates are running. The [retry report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json)
+is explicitly unqualified until full completion. No host Go builds/tests run
+while this native experiment is active.
+
+## M721 — Draft named checkpoint metadata and explicit historical-report reads (2026-11-19)
+
+While COW05 runs its frozen12f78952 app code, draft later issue19 interface work
+without host Go builds/tests. Extract the existing runtime-plan/http-plan
+constructors into checkplan; a source-text comparison to12f78952 proves both
+bodies unchanged except exported function/call names. Legacy wrappers remain.
+Add typed, digest-bound `tests.plans.v1`/`tests.plan.v1` metadata. They execute
+nothing and cannot grant local-owner qualifier authority or production readiness.
+
+Add separate startup `--allow-test-report NAME:SHA256:/absolute/report.json`
+snapshots, bounded to32 owner-private ordinary single-link files/1MiB each.
+Require exact complete bytes, physical path, no links/FIFO/devices and unchanged
+bindings; close before serving. `tests.reports.v1`/`tests.report.v1` require
+explicit private-data consent and exact name/plan/digest. Source roots, runner
+enrollment and tool-supplied paths cannot grant file access. Summaries omit raw
+output/errors/names/paths/container IDs and distinguish reported outcomes/pin
+matches from actual execution/source attestation. Support only the two existing
+legacy runtime/HTTP report profiles; no arbitrary check executor is introduced.
+No stored report, runner schema65 or runtime/recording format changes.
+
+Prepare meaningful private-file/format/privacy/immutable snapshot tests, exact
+actual frozen12f CLI metadata comparison, shared catalog/refusal checks, actual
+CLI/SDK stdio parity and all four previously supported MCP protocol revisions.
+These tests are **not run yet**: the native experiment retains exclusive runtime/
+Go-test admission. The [draft contract](named-checkpoints.md) and
+[prepared source record](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json)
+claim no source/packaging/native qualification. Later source edits are absent
+from COW05's immutable inputs, and its eventual result cannot qualify them.
+Focused tests/vet, generated help/reference, matching final artifacts and the
+remaining named executor/client and issue tracks remain required. No installed
+client, namespace, service, provider session or production state is changed.
+
+## M722 — Corrected Grubbery recovery/two-version/restart case passes (2026-11-19)
+
+COW05 completes the whole fixed native case at frozen12f78952 with separately
+pinned bf3e5f83 PID1. The helper passes in2819.46seconds. Supported lifecycle,
+CLI-reviewed/MCP-applied linked runtime audit, read-only original unknown-phase
+observation, both completed source versions, retained/new application state,
+second same-pier replacement, manager restart, historical audit/original replay
+and exactly one durable dispatch per phase all pass. The outer parent remains
+alive past the old2400s cutoff and completes the final supported clean Stop.
+The guest reports passed/helper0; QEMU exits0 with no interruption. This supersedes
+M720's running deferral, not M718's preserved failed whole run.
+
+Retain the full successful root/input and58 read-only extracted files. Root SHA
+0c28d526285e5b4e055e209e9021e5c683505ddabb5f0ce661678052949d141c;
+input333b83305068a98371537373471c884b52dc0742dbfd9bc9af2a42b212f87135;
+proof f1341b7c3dba6623bbc95fc825b5d55261462ef811d3371423b84b8444aa6260.
+Independent SQLite/WAL/SHM analysis copies verify schema62→65 preserves the exact
+original header/all17 events and original pier storage binding. The current store
+has two app operations/63events/zero leases and stopped intent; both integrity
+checks pass. Original raw evidence, predecessor and pristine base remain exact.
+Native/supervisor/reader cgroups end empty. See the
+[scoped passed report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json).
+
+This qualifies the fixed app recovery/state/restart/clean-Stop scenario only;
+full peers/permits/routes/assets, broader cleanup failures, stable59→65 and
+preserved DEV/production remain separate. Later M721 plan/report edits are not
+inside these binaries. Source tests can resume after the reader ends; no installed
+client, plugin, service, existing/protected/tmux ship or production state changed.
+
+## M723 — Named plan/report source and CLI/MCP compatibility pass (2026-11-19)
+
+After M722's native/reader units end, admit768MiB under48GiB and run the prepared
+focused checks sequentially in4GiB/no-swap/one-CPU source scopes. Checkplan races
+and real frozen12f78952 predecessor runtime-plan/http-plan equality pass(1.091s),
+shared offline/catalog/selection/authority guards pass(2.622s), official SDK
+four-protocol parity passes(7.201s), actual CLI/stdio parity passes(10.695s),
+legacy qualifier plan/help/acknowledgement regressions pass(1.017s), and focused
+vet passes on all five packages. No engine, existing runner or client profile is
+used. Post-test charge51,052,326,912 remains below51,539,607,552; measured growth
+577,810,432bytes stays within the805,306,368-byte reserve.
+
+Retain one initial CLI fixture failure(8.649s): every result already matches, but
+the final assertion incorrectly rejects the SDK's normal stderr lifecycle logs.
+The stdio contract reserves stdout for protocol and explicitly allows stderr
+diagnostics. Correct only that test to allow them while rejecting private report
+content/path leakage. The product is unchanged to pass the corrected assertion.
+Known reported phase categories remain useful without copying arbitrary names;
+snapshot time/basis and missing source/execution provenance remain explicit.
+
+This supersedes M721's pending source-check status only. The
+[source record](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json)
+separates these later interfaces from M722's native12f app qualification. No
+persistent format/schema65 changes or generic/named test executor are introduced.
+Generated help/reference, matching final artifacts, actual named-client/provider
+connections, the remaining issue tracks and stable-to-candidate/preserved DEV
+qualification remain open. No installed namespace, service, existing ship or
+production state changes.
+
+## M724 — Prepare bounded native recording allocation observation (2026-11-19)
+
+After source scopes end, classify and evict only299 validated regenerable
+Go1.27.3 compiler/index cache files, freeing269,217,792bytes. Full owner/path/
+single-link/archive/content-hash checks and before/after hashes preserve137
+named artifact, whole-VM and compact evidence files, including successful
+recording07/current app COW05, failed COW04 and original pending app05. No source,
+module download, recording, SQLite, log or image is retired. This is bounded cache
+consolidation for matching builds under48GiB; prior unique-disk permissions are
+not reused.
+
+Prepare a separate fixed read-only-backed recording07 allocation case. Its
+observer uses actual CLI/official-SDK stdio and independent filesystem stat to
+compare logical/allocated/count/shared/per-instance measurements. All recording
+bytes, control heads, logical database rows and stopped intent must stay exact.
+It creates no runtime/capture, policy write, retirement or full pier copy. Its
+pure host/foreign-case Go guard passes(0.004s); nine inert Python guards pass
+(0.044s), covering actual unit deadline nesting, bounded inputs/output, exact
+fixture/schema and explicitly closed SQLite readers.
+
+The [prepared contract](../scripts/qualification/recording-usage-cow/README.md)
+declares256MiB capsule/64MiB preparation,128MiB root hard file bound,2GiB guest/
+3GiB QEMU/no swap/one CPU and420s host/600s supervisor deadlines. Boot pins remain
+deliberately unfrozen: matching clean artifacts and independently pinned PID1,
+fresh storage admission and native execution are still required. No qualification
+is claimed yet. This tests stationary closed native captures only; active growth,
+pressure/retirement/full exports and installed/preserved DEV remain separate.
+All production, existing/protected/tmux ship and original-backing exclusions hold.
+
+## M725 — Matching current artifacts freeze; strengthen inherited override ordering (2026-11-19)
+
+Freeze clean f37b32d4f60d5b2e915ad86186caa12c5b853bc2 and verify3960 tracked
+inputs after building all four current tools with Go1.27.3/CGO0/trimpath/stripped.
+CLI SHA8b12850184e232241fb800e91520df6f5a5660f5878b2c8aa73f0f47fc5f98b2;
+collector705646950713a865d2d8de77faa9494450468c91edd976f01a417ee0583c7726;
+runner ea0508ee09d9d31586c25bb91157f9ff0e8d63c01efb7e5c8d030dfd437995cb;
+managed.test fb8db26a5921d19a6b2882a87f20d1235c41be1645961b855823ed5db9c4c70a.
+Actual buildinfo reports the clean source for three tools; the helper's exact
+link-time source binding is exercised and matches. Builds use sequential bounded
+source scopes with512MiB initial and256MiB helper-phase admission. No runtime or
+installed deployment is updated.
+
+Before native launch, inspect the inherited fixture contract: recording07 retains
+recording-pilot.conf. The prepared global99-zz override sorts before that name,
+so its ExecStart can lose the merge. Preserve the original file and change only
+the fresh-overlay standalone PID1 filename to zzzz-issues-recording-usage.conf.
+A new actual-template guard verifies ordering, exact candidate ExecStart reset,
+readiness condition, recording selection, no resume and no original removal.
+All10 inert Python guards pass(0.042s). No native failure is manufactured; boot
+pins remain deliberately unfrozen and admission refuses launch until correction
+is separately frozen. The four product/helper inputs stay at f37b32d4; the known
+standalone-PID1 exception permits only its separately verified source/binary/
+clean-VCS correction. New boot, fresh320MiB admission and full native measurement
+remain required. No unique VM, recording, SQL/history or existing ship changes.
+
+## M726 — Corrected allocation boot pins and storage admission pass (2026-11-19)
+
+Build only the corrected standalone PID1 from clean
+e0af21ae13dc781b4e299b1afd48476fb5d41a54; binary SHA
+ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819,
+source cbd497447962bf8ca949288bc602c87d5f4eadf6e4812517a2f90878eccccfb3.
+Pin and exercise the actual boot hash/source/clean-VCS verification. All10 inert
+guards pass(0.043s). Verify every other original f37b32d4 tracked input still
+matches or is an explicit documentation/Python harness change; all four runtime/
+helper binaries remain frozen unchanged. This uses only the existing separately
+pinned standalone-PID1 exception, not an exemption for product or embedded inputs.
+
+The full320MiB reservation fits:51,179,536,384charged plus335,544,320 is
+51,515,080,704, below51,539,607,552. Actual launch/worker admission must recheck;
+kernel128MiB root and bounded input/log limits retain the full capsule boundary.
+No guest has started yet and no native measurement pass is claimed. Current
+production, preserved DEV, existing/protected/tmux ships, successful/failed whole
+fixtures and original recording07 backing remain unchanged.
+
+## M727 — Native allocation helper passes; isolate overbroad observation-row assertion (2026-11-19)
+
+First usage COW01 runs exact f37b32d4 tools and corrected e0af21ae boot. Its
+actual CLI/official-SDK helper passes independent stat allocation/attribution and
+unchanged capture/control-head gates:19files/6directories,29,495logical and
+94,208allocated bytes, including8,192shared bytes. The whole case fails its final
+literal all-table comparison; helper0/QEMU0 are not a whole pass. Preserve root
+9d2b724355a1b7391bb44cb85bb157a01626408898071688ec31daeaaa3da8cd and
+input1179039efe15e81d22e0b2af74ee52bb146af57efda0517a6ae6942452e7ea5b.
+
+After VM/supervisor end, an offline kernel utility mounts current/original07/
+inputs read-only,noload,nodev,nosuid,noexec and exports8 bounded files, executing
+no disk code. Separate65 SQLite copies both check ok. The independently exported
+original table digest matches the guest's pre-service snapshot. Only instances.
+body changes: public.observed_at refreshes and runtime_revision75→76. Every other
+table cell and instance value, including stopped intent/storage, is identical.
+All raw files, roots/backings remain unchanged. See the
+[failed whole-case evidence](diagnostics/2026-11-19-recording-allocation-native-fixture-failure.json).
+
+Correct only the fixture comparator: allow that one later UTC observation and
+exactly one revision increment; preserve every other value/row/table. A regression
+reproduces the original equality failure, verifies the actual extracted rows,
+and refuses changed intent/storage, missing values, extra history/rows/tables,
+stale time and additional revisions. All11 inert guards pass(0.047s). Product/
+helper/boot binaries stay unchanged. The ended case remains failed; a fresh full
+retry/admission is required. No original image, policy, runtime/capture, installed
+namespace, existing ship or production state is changed.
+
+## M728 — Preserve failed allocation evidence and admit corrected retry (2026-11-19)
+
+After all task/native/reader/build scopes end, evict only270 newly classified
+Go1.27.3 compiler/index cache files(100,954,112bytes). Verify content hash, archive/
+index format, owner/physical single-link bindings, and157 preserved files before/
+after, including both failed allocation disks, exact original/current SQLite/
+proofs, all matching f37b32d4 tools/e0af21ae boot and prior full references. No
+unique image, source/module download, recording, SQL, log or retained evidence
+is retired. This does not reuse prior user disk-removal permissions.
+
+Admit the fresh corrected320MiB case:51,161,755,648charged plus335,544,320 is
+51,497,299,968, below51,539,607,552. The product/helper/boot artifacts remain exact;
+only the fixture's exact single-observation comparison and inert regression
+change after freeze. Original usage COW01 remains failed and intact. Commit the
+correction before launching a fresh COW02; actual worker admission rechecks and
+full native success are still required. No guest starts at this checkpoint and
+all production/manual DEV/existing/protected/tmux ship exclusions remain.
+
+## M729 — Closed native recording allocation passes with independent preservation (2026-11-19)
+
+The fresh corrected COW02 passes with unchanged frozen f37b32d4 runtime/helper
+and e0af21ae standalone boot artifacts. Actual CLI and official-SDK stdio usage
+match independent filesystem stat:19files,6directories,29,495logical bytes and
+94,208inode allocated bytes, split into86,016instance and8,192shared allocated
+bytes. Original capture/job bytes and policy head stay exact. Guest/helper/QEMU
+all finish successfully; the exact VM/supervisor scopes are inactive and empty.
+
+A separate64MiB-admitted read-only kernel utility exports8 fixed evidence files,
+including original/current SQLite. It executes no source-disk code and leaves
+all whole images, inputs and pristine/original backings unchanged. Independent
+analysis on separate SQL copies verifies both schema65 quick checks, the exact
+original logical-row digest and every original row/value except the one explicitly
+allowed later UTC observation timestamp and runtime revision75→76. The retained
+raw SQL/export bytes remain unchanged. Native proof SHA256 is
+1d070f4f406a4b2ee27d5d3d1efe74d24bb919d48e922b3d2c3ce288fa3e9bbd.
+
+This supersedes M728's pending retry only; M727's earlier whole failure remains
+failed and retained. The [scoped evidence](diagnostics/2026-11-19-recording-allocation-native.json)
+qualifies stationary closed captures after reboot. Active growth/pressure,
+retirement, complete exports, other factories, installed stable upgrade and DEV
+are still open. No installed namespace, existing ship or production state changes.
+
+## M730 — Generated help matches the current frozen tools (2026-11-19)
+
+After the reader scope ends, admit64MiB scratch under48GiB and regenerate then
+check all179 public help entries from the three frozen f37b32d4 tools. Both
+networkless Bubblewrap passes succeed with a private empty HOME and no installed
+registry, engine or desktop socket. Refresh the MCP HTTP and exact private report
+startup flags in generated omabit/runner references. Collector help is unchanged.
+The reference reflects available commands, not native workflow qualification;
+named execution/actual provider clients and the final upgrade/DEV gates remain.
+
+## M731 — Exact original recording exports pass source/CLI/MCP checks (2026-11-19)
+
+Add typed owner-private original export manifest/part reads and a shared streaming
+ZIP assembler. Closed saved jobs bind exact runner/instance/job/session/metadata;
+active writers, missing results, unsafe files and changed hashes refuse.256KiB
+parts fit existing RPC replies; complete file hashes are verified before ZIP
+completion. All retained encoded originals, including torn/corrupt tails, remain
+separate from verified-prefix timing/gap/exit coverage and runtime completeness.
+No schema65, job, control, history or original file changes. The CLI writes a fresh
+0600 archive in an existing physical0700 directory, syncs and publishes with a
+no-overwrite link, and retains failed output as.partial. Archive entries are0600.
+MCP receives the same exact reads without model-selected local output paths.
+
+Focused recording/worker/API/client/catalog races pass. Final storage/access/
+client/actual CLI+official-SDK stdio checks pass(1.138/1.315/1.011/21.853s).
+Retain two initial fixture failures: generated recording-worker help lacked an
+explicit internal-only catalog exclusion; the CLI fixture's temporary directory
+was not0700. Add that inventory entry and chmod only the new test directory,
+preserving product privacy checks. Source review also extends only the exact
+export RPC client/server/SSH deadlines; prefix variants retain ordinary bounds.
+The [source report](diagnostics/2026-11-19-recording-original-export-source.json)
+records results and limits. This is complete original encoded-file packaging,
+not a redacted bundle or separate searchable timestamp index. Matching native
+export, final stable upgrade/preserved DEV and remaining issue gates stay open.
+
+## M732 — Bound compiler storage; prepare native original-byte checks (2026-11-19)
+
+The first source admission reserves256MiB, but post-test charge is51,724,771,328,
+185,163,776bytes above the approved51,539,607,552-byte cap. Do not claim the
+source checks stayed within reserve. Pause new builds/native launches; classify
+and evict only1168 regenerable compiler/index files in cache37/38, freeing
+805,879,808bytes while170 named artifact/whole-VM/compact evidence pins remain
+exact. No unique VM or original capture/database/log/source is retired.
+
+A new fast cache/temp/build allocation monitor retains the fixed full aggregate
+charge and sets a stop threshold at least64MiB below the cap. Normal-mode source07 compilation
+rebuilds older cache entries and crosses its512MiB reservation; the monitor
+terminates only that scope at an estimated51,484,127,232bytes, below the cap.
+The whole Go invocation remains interrupted. Its completed SHA-pinned test binary
+passes the pure host/foreign-scenario guard directly; actual native and unfrozen
+build-identity tests skip. Retain that binary unchanged, and remove only its895
+classified regenerable compiler work files(269,180,928bytes), preserving older
+historical test directories. Focused seven-package vet then passes under a new
+256MiB monitored admission. Full post-vet charge51,245,133,824 is below48GiB.
+
+Prepare additive source-bound native export assertions on a fresh read-only-backed
+recording07 overlay. A required scenario flag prevents omission. The helper must
+compare both closed jobs' actual CLI/SDK manifests and every part with independent
+original hashes/files, and real CLI ZIPs with those exact encoded originals.
+Private bounded proof retains ZIP bytes/hashes for independent analysis. All
+capture/control/history/intent preservation and previous observation-only rules
+remain. Eleven inert Python guards and the pure Go VM guard pass; matching clean
+builds, admission and actual execution remain pending. The separately frozen
+PID1 source is unchanged. No installed namespace, production or existing ship changes.
+
+## M733 — Freeze matching original-export tools and180 help entries (2026-11-19)
+
+The larger cache classification finds insufficient eligible files and refuses
+without eviction. Classify the available744MiB subset instead:822 hash/inode/
+archive-verified regenerable files free781,938,688bytes; all174 named artifacts,
+whole images and compact/source-check evidence pins remain exact. Do not retire
+any original VM or use a unique-disk permission for this cache work.
+
+Freeze all four CGO-disabled, trimpath/stripped tools at clean3fc6eab3, checking
+3978 tracked input hashes before/after, actual clean product VCS and the helper's
+explicit source identity. Its host guard passes; actual native execution skips.
+The single consistent build mode uses an896MiB admission and monitored source
+scopes. Peak fast estimate50,960,588,800 and full final charge50,843,561,984 stay
+below51,539,607,552. No compiler reservation or cap interruption occurs.
+
+Under a separate64MiB admission, build the exact source/kind/required-export-bound
+read-only reader and regenerate/check all180 help entries from these tools in
+networkless private HOME scopes. Both pass. The actual updated command is now in
+the generated reference, with explicit internal-worker exclusion in discovery.
+The [artifact record](diagnostics/2026-11-19-recording-original-export-artifacts.json)
+keeps frozen hashes and native requirements. The unchanged separately frozen
+PID1 may be reused; a fresh native export case, admission and preservation evidence
+remain required. No installed namespace, existing ship or production changes.
+
+## M734 — Native original exports match exact retained bytes and original07 chains (2026-11-19)
+
+Admit320MiB and run fresh COW03 with matching3fc6eab3 tools and unchanged e0af21ae
+PID1. Actual CLI/official-SDK manifests and every part match both original closed
+sessions, and actual private CLI ZIPs match their encoded files. Allocation counts,
+original capture/control/history and stopped intent pass. Guest/helper/QEMU all
+finish successfully; exact VM/supervisor scopes are inactive/empty. Proof SHA256
+is5bb1ee3fdf432ef355b9e25877690c4e3e2ca34799610b91c7f5c40ca5c1ef03.
+
+After those scopes end, a16MiB-admitted reader refinement adds only the four exact
+original recording07 files named in the frozen result. The source/kind/required-
+export-bound reader mounts source/input/original read-only/noload/noexec; no source
+code or services run. Under64MiB admission it exports12 fixed evidence files,
+leaving every root/input/pristine/original backing hash unchanged. Independent
+Python ZIP/hash analysis compares both archives byte-for-byte with all four raw
+original metadata/segment files, verifies manifest/chunk/whole-file hashes and0600
+entries, and decodes every frame with independent struct/SHA256 logic. The170/32
+frame counts, stdout/stderr sizes/hashes and final timing/digest chains match the
+original703de9f2 native07 report exactly. No reconstructed terminal output is run
+or printed. Both archives and raw extraction remain private and retained.
+
+Independent schema65 quick checks on separate SQL copies pass, original logical
+digest matches the guest and all original rows/values are exact except the one
+later observed_at and runtime revision75→76. Raw exported SQL/proof/capture bytes
+remain unchanged. The [native report](diagnostics/2026-11-19-recording-original-export-native.json)
+supersedes M733's pending native original-export gate only. Complete redacted
+bundles, a separate timestamp/search index, active growth/pressure, retirement,
+other factories, previous-stable installed upgrades and preserved DEV remain
+separate. No production, installed service, existing ship or manual-review state changes.
+
+
+## M735 — Bound current project allocation and server-held net growth (2026-11-19)
+
+Implement an operator-private, exact revision/plan/ledger-bound read for current
+expanded members. Validate creation contracts and saved mount/pier objects without
+engine/process/HTTP probes. Metadata-only pinned-root walking separates sparse
+logical length from inode blocks, counts internal hardlinks once, inspects pipes/
+sockets without reading them, bounds entries/depth, and refuses unsafe/changed or
+incomplete trees without partial totals. Current mounts/runtime/project caches
+remain distinct from explicit historical/shared/journal/staging exclusions. No
+shared allowance or full budget is invented. No measured file contents are read.
+
+A single census releases the manager lock during the scan and brackets the exact
+raw saved ledger. Reads remain available with mutation admission fenced and leave
+every SQL row, original interrupted receipt and pending fence unchanged. At most32
+cloned volatile baselines use monotonic completion times and exact root bindings;
+fast polls preserve a comparable baseline, unknown/binding changes invalidate it,
+and one-second to five-minute windows emit exact unsigned directions/deltas.
+The API/client/restricted SSH and shared CLI/official SDK enforce private consent,
+role/capability/identity, exact deadlines, no retry and integers above2^53.
+
+Focused ordinary checks pass. The first combined race build reaches its compiler
+reservation; stop only that source scope at sampled51,454,492,672bytes, with full
+post-charge51,454,816,256 below the51,539,607,552-byte cap. Only its filesystem
+package passed; the combined invocation remains interrupted. Retain that report.
+Classify/remove only776 regenerable scratch files(308,461,568bytes), including an
+incomplete zero-header linker output; an initial completed-ELF classification
+correctly refuses without removal.331+551 verified older compiler/index files
+free489,988,096bytes, preserving205/209 named evidence/artifact pins. Larger
+classification and a temporary classifier typo refuse without deleting anything.
+No unique VM, original capture/database/log/source or frozen artifact is retired.
+
+Smaller final races pass: runtime adapter2.426s, manager9.533s, filesystem1.100s,
+client1.013s, SSH1.165s, catalog2.620s and actual CLI/SDK8.284s. Seven-package vet
+passes using the same race cache. Final full charge51,145,261,056 is below48GiB;
+all final exact source scopes are inactive/empty. See the
+[source report](diagnostics/2026-11-19-project-allocation-source.json).
+This supersedes M734's pending first resource-read implementation only. Native
+project census, original/recovered adapters, complete/shared budget and event
+payload evidence, durable incident/reviewed resume/journaled containment, matching
+artifacts and installed/preserved DEV gates remain open. Schema65 is unchanged;
+there is no new persistent authority, guard, threshold or pruning. Production,
+existing ships, installed services/plugins and manual-review state are unchanged.
+
+
+## M736 — Read complete original project journals without creating expansion (2026-11-19)
+
+Supersede M735's pending original/nonexpanded read adapter only. Add an explicit
+`ledger_kind` for exact raw expanded-ledger binding versus a derived original-ready
+member/storage projection. Complete each original boot/readiness chain through
+existing validated context selectors, preserving initialized pier/mount identity.
+Bind exact selected observed readiness bytes and every selected-project operation,
+runtime mirror and fingerprint, with1024rows and4MiB per source group admitted
+before decoding. Missing proof, any original retirement/replacement/anchor-recovery
+history or active original work remains unsupported; no historical creator is
+adopted. A reservation never becomes a zero-usage result. No expansion row, member
+phase or other persistent data is created/changed by the read.
+
+The actual authenticated API fixture preserves every original row. Independent
+raw-readiness whitespace and operation-fingerprint changes with an unchanged
+member projection both withhold the census. A deliberately oversized invalid
+private-fixture body refuses at byte admission before decode. Legitimate retired
+and recovering original journals refuse without backend scans. A real disposable
+Linux original-contract filesystem fixture reads without engine commands. Both
+binding kinds pass actual CLI/official-SDK transport and strict model validation;
+changing source kind invalidates a prior growth baseline.
+
+Focused seven-package races pass: filesystem1.081s, runtime2.446s, manager20.595s,
+client1.014s, SSH1.163s, actual CLI/SDK9.672s and catalog2.648s. Updated catalog
+wording passes its separate2.213s race check; seven-package vet passes. There is
+no monitor interruption: source10's fast sampled peak51,471,007,744 is below its
+51,472,498,688 stop threshold, and final full charge51,326,320,640 is below the
+approved51,539,607,552-byte cap. Exact final scopes are inactive/empty. No further
+cache/scratch/VM retirement occurs. See the
+[source report](diagnostics/2026-11-19-project-allocation-original-source.json).
+
+This remains a non-atomic current-root census with incomplete historical/shared
+budget and no event-payload or containment authority. Schema65 is unchanged.
+Original replacement/recovery histories, matching native measurement/independent
+stat/history checks, explicit budgets/shared allowances, durable incident/reviewed
+resume/journaled stops and final matching/preserved DEV upgrades stay open.
+Production, installed services/plugins, existing ships and manual-review state
+remain unchanged. M735's original scope/results and interrupted build remain
+retained rather than relabeled as later qualification.
+
+
+## M737 — Retire obsolete project compiler variants without evicting std/dependency cache (2026-11-19)
+
+A64MiB-admitted dependency inventory uses `go list -export -test`, which can
+compile test exports instead of merely reading cache metadata. Its monitored
+scope reaches the reservation and is stopped: no completed dependency inventory
+or product test result is claimed. The sampled peak51,425,955,840 and retained
+post-inventory full measurement51,426,308,096 are below48GiB. Keep the interrupted
+report; all implementation races/vet from M735–736 remain passed separately.
+
+The exact scope is inactive/empty. Remove only its21 hash/inode/owner-verified
+regenerable compiler archives/importcfg files(49,586,176bytes), preserving210
+named pins. Inventory older Omabit archive variants by module-path evidence in
+__.PKGDEF. A fresh192MiB classification selects63 complete Go1.27.3 archives
+whose content hashes match their cache names and whose mtimes predate source10;
+standard-library/dependency and fresh cache entries are excluded. Removal frees
+206,110,720bytes, preserving221 VM/SQL/recording/log/source-result/frozen-artifact
+pins exactly. No unique image or original evidence is retired. Full post-cleanup
+charge51,170,893,824 leaves368,713,728bytes under the51,539,607,552-byte cap.
+
+Prefer this narrow obsolete-variant classification to evicting currently reused
+standard/dependency archives. Treat export/dependency discovery as an admitted
+compiler action unless demonstrated otherwise. The
+[cleanup record](diagnostics/2026-11-19-obsolete-compiler-variants.json) is storage
+accounting, not product/native/installed qualification. Product code stays at
+M736; all final source scopes end. Production, existing ships and installed/
+manual-review state remain unchanged. Recording timestamp/index and complete
+derived export implementation remain next; no new capability is claimed here.
+
+
+## M738 — Verified payload-free timing index, query and optional ZIP entry (2026-11-19)
+
+Supersede M737's pending first timestamp-index/query implementation only. Add a
+portable bounded original-part reader verifying metadata, each chunk and complete
+file SHA, then decode exact segment/sequence/digest, receive epoch, stream and
+exit/gap rules. Index only the complete verified prefix; still drain/hash corrupt
+tails and later unparsed files and compare every manifest coverage field before
+emitting an end record. Never write or repair originals. JSONL exposes source
+bindings, filenames/offsets/lengths, wall/receive timing, stream/payload lengths
+and digests, with no payload contents. The stable content digest excludes volatile
+read time.1,048,576frames/256MiB total/256KiB line limits fail without completion.
+Retained/raw/verified-prefix completeness never establishes runtime completeness.
+
+Typed `runtime.recording-timing.v1` uses the same original export authority with
+operator/private consent and no new runner endpoint or filesystem selector. Filter
+inclusive wall ranges/stream, order by sequence, require exact source digest for
+continuation, and return a separately authorized cursor to surrounding original
+context. No matches escape before complete verification. Six-minute trusted
+catalog timeout preserves earlier caller deadlines. `recording-export
+--timing-index` explicitly adds a0600 payload-free index and re-reads pinned parts;
+default export keeps its one-pass entries/behavior. Failed second-pass reads do
+not close/publish an archive. No persistent schema/capture/control change occurs.
+
+The first source invocation fails only a test int64-versus-int comparison before
+execution; retain its report and correct the explicit cast. Focused races then
+pass exact raw-byte offsets/digests, reversed wall time, rotation/restart and
+corrupt-tail gaps, incomplete/corrupt/empty/exit/extra-after-exit, source changes,
+hash/coverage mismatch, cancellation/fetch/short writes and no payload leakage.
+Query continuation/time filters and original context cursor are checked against
+actual stored payload. Indexed ZIP retains every raw file/mode/hash and has no
+completion directory after an injected second-pass failure.
+
+Final codec/default-export/segment races pass1.609s. Actual CLI/official-SDK query
+and real-codec optional ZIP plus existing default/private-history interface races
+pass29.863s; catalog2.262s and three-package vet pass. Exact integers above2^53,
+operation/session bindings and all private role/capability/consent/target/source/
+part/transport refusals remain. See the
+[source report](diagnostics/2026-11-19-recording-timing-index-source.json).
+
+Before those checks, remove only28 hash/inode/format-verified pre-index Omabit
+compiler archive variants(143,446,016bytes), preserving current index and std/
+dependency cache and227 named pins. No unique VM, original capture/database/log/
+source or frozen artifact is retired. Final full charge51,136,983,040 stays below
+48GiB; all final source scopes end. Matching clean tools/reference/native index,
+complete redacted bundles, oldest coverage/retirement/pressure/other factories,
+resource containment and final installed/preserved DEV gates remain open.
+Production, existing ships and installed/manual-review state remain unchanged.
+
+
+## M739 — Complete derived redacted ZIP with shared manifest/parts and explicit choice (2026-11-19)
+
+Supersede M738's pending complete redacted export implementation only. Factor
+original metadata/chunk/whole-file/codec/coverage verification into one private
+bounded scanner shared by timing and redacted output. Never rewrite originals.
+Transform at most64frames/128KiB per window through the existing escaped-literal
+credential rules, carrying only independently verified newline context per stream
+and resetting it at gaps. Withhold leading/trailing partial lines. Optional Go
+formatter literals are ephemeral and single-line; the shared default exposes no
+secret-file selector. Finite rules still require owner review before sharing.
+
+A private ZIP contains only technical manifest, escaped frame windows with full
+timing/digest/omission reasons and final verified coverage. Exact identities,
+paths/attachment body, raw metadata and encoded originals are omitted. Exit137/
+OOM/status facts remain typed; container ID becomes an explicit alias/omission.
+Counters distinguish all verified frame-payload bytes, omitted stream bytes and
+aliased exit bindings. Content-size excludes the self-referential coverage record,
+which still counts toward its limit. Damaged tail bytes are hashed/reported but
+not copied. No final coverage/ZIP directory appears before full verification.
+Derived content/ZIP is bounded256MiB, records4MiB and verified frames1,048,576.
+
+Shared `runtime.recording-redacted-export-{manifest,part}.v1` retain exact operator/
+job/private consent and explicit representation=redacted. The deterministic
+manifest binds source/ZIP/size/256KiB hashes; each part rederives/verifies the whole
+source before returning one chunk. This avoids persistent derived cache/retention
+authority but can be expensive for large exports; each operation has a trusted
+six-minute bound. CLI `--redacted` uses these same handlers and existing private
+partial/no-overwrite publication. Ambiguous/no choices, original choice through
+the derived API, or the original-only index flag refuse without raw fallback.
+
+Library races first pass1.683s. Source02's interface run remains failed: its
+fixture reused c*64 as both container ID and technical image digest. The omission
+assertion therefore matched the intentionally retained image hash in manifest.
+Use a distinct9*64 container fixture without weakening omission/metadata rules;
+also make lifecycle alias/stream omission counters and manifest checks explicit.
+Final codec/redaction/index/timing/segment/default-export races pass1.775s, actual
+CLI/official-SDK manifest/part/real ZIP plus original/index regressions40.469s,
+catalog2.247s and three-package vet. Independent chunk-boundary hashes, whole ZIP
+assembly/read-time stability, source/request/choice/consent/hash/writer failures,
+split literal/line/gap omissions,0w diagnostics and original byte preservation
+pass. See the [source report](diagnostics/2026-11-19-recording-redacted-export-source.json).
+
+No further cache/scratch/image retirement occurs. Final full charge51,297,136,640
+stays below51,539,607,552; final exact scopes are inactive/empty. Schema65 and raw
+capture/job/control formats are unchanged. Matching clean artifacts/reference,
+independent native indexed/redacted exports and preservation, oldest coverage/
+retirement/pressure/other factories, resource containment and final installed/
+preserved DEV gates remain open. Production, existing ships and installed/
+manual-review state remain unchanged; the failed fixture run remains retained.
+
+
+## M740 — Require complete derived exports in the fixed native helper (2026-11-19)
+
+Prepare, without qualifying, the native assertions for M738–739. Both guest and
+Go identity/source guards require the separate derived-export scenario flag.
+For each exact closed job, retain default original checks and additionally compare
+indexed ZIP originals, every timing row, time/kind/continuation/context results,
+redacted CLI/SDK manifests and every part, and actual redacted CLI ZIP bytes.
+Private proof preserves archives/queries/manifests for independent decoding.
+Eleven inert Python guards pass; matching clean artifacts, Go guard, actual native
+case and independent verification remain required. The frozen standalone PID1,
+read-only predecessor, one-runtime lock, measured48GiB admission, no source-build
+concurrency and all production/manual-review exclusions remain unchanged. See
+[prepared assertions](diagnostics/2026-11-19-recording-derived-native-preparation.json).
+
+
+## M741 — Freeze matching derived-export tools, reader and generated help (2026-11-19)
+
+Build the three products and explicitly source-bound managed helper from clean
+4c0b16e9d81311269db57664aa6906187eb23cc1, preserving4018 tracked input hashes
+before/after. All products report exact clean VCS identity, CGO0 and trimpath;
+helper source/refusal guard passes with actual native case skipped. Build a
+separate source/required-flags-bound read-only evidence utility; its host refusal
+returns80. Networkless generation/check of180 help entries passes with no HOME
+state. Inspection then finds static export help still describes only original
+choice; next source checkpoint must add redacted/index choices and regenerate
+final help. Do not equate regeneration parity with complete discoverability. See
+[artifact pins](diagnostics/2026-11-19-recording-derived-export-artifacts.json).
+
+Remove only114+55 hash/inode/format-verified regenerable Omabit compiler archives,
+reclaiming342,069,248+123,293,696bytes with234 then244 named pins unchanged.
+Keep standard/dependency caches, every frozen executable, database/capture/log,
+source and whole reference/failure VM. The matching build uses a measured512MiB
+reserve and monitoring; preparation uses64MiB. All final scopes end. Fresh native
+admission/execution and independent verification still gate the new exports.
+No production, existing ship, installed DEV or manual-review state changes.
+
+
+## M742 — Preserve failed derived-export status framing and require compact retry (2026-11-19)
+
+The4c0b16e guest reports every new native assertion passed, but the whole COW04
+case fails: copying the entire private proof into serial status exceeds journald
+line framing, so the host parser raises unterminated JSON. Do not promote the
+fragment's passed flag into native qualification. Both exact scopes end; retain
+the whole failed root/input and private proof for independent reading. See
+[failure and pins](diagnostics/2026-11-19-recording-derived-serial-failure.json).
+
+The guest now allowlists only required booleans/count and complete-proof-retained
+status. Exact complete archives/queries stay in the separate private proof with
+SHA-256; no proof bytes are discarded. Twelve inert Python guards pass, including
+an oversized private-proof regression and refusal for every missing/false gate or
+wrong job count. Product/helper Go and the separately frozen PID1 are unchanged;
+a fresh measured native retry plus independent verification is still required.
+Production, existing ships and installed/manual-review DEV stay unchanged.
+
+
+## M743 — Native indexed originals, timing queries and complete redacted exports pass (2026-11-19)
+
+Supersede M738–742's native deferrals only for closed copied recordings at matching
+4c0b16e tools, e0af standalone PID1 and d794846 corrected Python harness. Fresh
+COW05 passes every helper assertion and host completion without interruption;
+all actual CLI/official-SDK timing/manifest/part/ZIP operations pass. Both original
+encoded sessions remain byte-exact. Read-only kernel evidence exports fixed paths
+without executing source-disk code; independent Python decoding checks170/32 raw
+frames against every index offset/length/time/sequence/chain, query filters/pages/
+context, all derived ZIP/chunk hashes, exact escaped span bytes/ranges, omitted
+counts, technical manifest whitelist, exit aliases and final coverage hashes.
+See [native evidence and limits](diagnostics/2026-11-19-recording-derived-export-native.json).
+
+Both separately copied SQL databases quick_check; every original row/control/head,
+stopped intent, recording and backing/input remains exact except the one allowed
+fresh observed_at and revision75→76. Independently read the failed COW04 proof too:
+all data/assertions pass and complete redacted manifests match across both copied
+boots. Its original whole-case status remains failed due to serial framing; keep
+the full failure root/input/evidence. The fresh retry supplies the whole-case pass.
+
+A further137 older compiler archives alone reclaim67,194,880bytes with252 retained
+pins exact. Final full charge51,266,838,528 stays below48GiB. All six exact native/
+reader scopes end empty, and all matching artifact/case hashes recheck. Active
+capture/pressure/oldest coverage/retirement/other factories, static help choice
+visibility and final previous-stable/native-plugin/preserved DEV gates remain.
+This is no production, existing-ship or installed/manual-review state change.
+
+
+## M744 — Classify obsolete failed recording VM01; disposal awaits approval (2026-11-19)
+
+Document this older failed fixture before requesting its unique whole-image
+removal. Source2d028197's VM01 ends under a generic storage/log/deadline guard;
+the exact limiting predicate is unproven. SQLite64 preserves registration success,
+Start still running and one recording intent, so it is not terminal/upgrade
+qualification. Exact DB/WAL/SHM, job claim/readiness/session metadata,6528 raw
+recording bytes, commands, source and binaries remain under68 verified pins.
+Its partial disposable pier exists only in the whole archive. The same-source
+successful VM02 whole archive and newer recording07/pending app05/corrected app
+COW05 remain intact. See [insights and proposed disposal](diagnostics/2026-11-19-recording-vm01-disposal-proposal.json).
+
+Only the494,424,064-byte allocated gzip and312,774,656-byte allocated input disk
+are proposed,807,198,720bytes total. Both ordinary/single-link owner file hashes
+match their original manifests. This would remove the only complete image of
+that older failed fixture and requires specific authorization; no removal has
+occurred. Do not extend earlier recording03–06 permissions to these files. The
+48GiB cap, one-runtime rule and production/manual-review exclusions remain.
+
+
+## M745 — Correct export help choices in source; final generation remains open (2026-11-19)
+
+Fix the static command help missed by M738–739: show exactly one original/redacted
+choice, the original-only optional timing index, shared timing-query context,
+derived omission/finite-rule privacy limits and private output/partial rules.
+This changes only help text; formatting/diff checks pass. The prior4c0b16e native
+export evidence remains scoped to its actual frozen tools. A new matching CLI
+build and generated reference are still required; do not hand-edit generated
+help or claim current parity from the earlier180-entry check. See
+[source status](diagnostics/2026-11-19-recording-export-help-source.json).
+The proposed old recording VM01 disposal is still pending; no unique image/input
+has been removed. Production/manual DEV and existing ships remain untouched.
+
+
+## M746 — Approved VM01 removal and broader test-archive retention authority (2026-11-19)
+
+The user specifically approved VM01 archive/input removal. Revalidate exact
+ordinary single-link file identity/hash and68 retained pins before/after, hold
+the one-runtime lock and verify exact scopes ended. Remove only the two approved
+files,807,198,720allocated bytes; preserve compact SQL/WAL/SHM/job/raw recording,
+commands/source/binaries and all protected full references. A DISPOSED marker
+prevents following old restoration instructions. Full charge50,460,041,216 stays
+below48GiB. This supersedes M744–745's pending decision only, not historical failure.
+
+The user then expressly permits removing other unneeded VM archives after noting
+lessons and retaining needed state/version transition fixtures. Routine classified
+obsolete test disks no longer need repeated permission. This does not authorize
+production, user ships, installed/manual-review DEV or removal of required test
+state. Preserve original pending app05, full successful app COW05, original
+recording07 and actual successful schema64 recording02 archive/input.
+
+## M747 — Classify nine superseded COWs with compact transition evidence (2026-11-19)
+
+Before removal, record lessons for failed app COW01–04: acknowledged creation
+without final observation; whole-context expiry during version two; missing
+read-only startup readiness retry after manager restart; and obsolete generated
+PID1 unit deadline despite helper success. Corrected app COW05 supplies the
+whole successful same-pier/two-version/state/restart/replay/final Stop evidence.
+All original failed statuses remain failed. Exact independently exported stores,
+headers/events, compiled source, receipts and logs remain pinned.
+
+For recording usage/export COW01–05, retain the observed_at/revision comparator
+failure, corrected allocation pass, original-export pass, oversized-serial-proof
+failure and corrected indexed/redacted whole pass. Exact SQL/WAL/SHM when present,
+raw original bytes, complete private ZIP/query/proof evidence, source and frozen
+binaries stay; recording07 remains the full backing for fresh read cases. The
+closed read COWs add no required state transition beyond retained compact stores
+and the immutable original; the app failed COWs are superseded by preserved
+original62 pending/current65 full app fixtures and compact intermediate63/65 stores.
+
+Classify only18 image/input files(795,537,408allocated bytes), verify1272 retained
+pins and all exact task scopes ended. This is classified, not yet removed. See
+[consolidation and lessons](diagnostics/2026-11-19-obsolete-test-vm-consolidation.json).
+The user's new authority supersedes prior whole-copy retention requirements for
+these exact obsolete cases only. Needed transition inputs/backings and production/
+manual DEV/user-ship exclusions remain. Do not silently promote any failed case.
+
+
+M747 execution update: all18 classified obsolete image/input files are removed
+under the user's broader authorization, reclaiming795,537,408allocated bytes.
+All1272 retained pins match before/after and required full transition fixtures
+remain. Each retired capsule has a DISPOSED marker; do not follow old whole-image
+retention/restoration instructions. Full charge49,665,126,400 remains below48GiB.
+This changes retention only; earlier whole failures remain failed and passing
+historical assertions remain bound to their original source/evidence.
+
+
+## M748 — Separate retained output sequence coverage from wall-clock extrema (2026-11-19)
+
+Add optional version1 `output_coverage` to the completed timing summary. Accumulate
+only stdout/stderr/combined output from the same exact verified source scan;
+exclude lifecycle/gap timestamps. First/last sequence/time and earliest/latest
+wall time stay distinct when the wall clock reverses. Filters and match limits do
+not truncate this complete-prefix summary. Empty/exit-only prefixes explicitly
+report no verified output; absent older fields are unavailable, never zero. Return
+no summary after failed source/hash/output checks. This says nothing about output
+before attachment, another session, host-wide oldest coverage or full runtime.
+
+[Focused source evidence](diagnostics/2026-11-19-recording-output-coverage-source.json)
+passes full recording races(1.933s), actual CLI/official-SDK timing/derived/indexed
+ZIP and existing no-state help tests(19.424s), service races(7.912s) and vet.
+Tests preserve original bytes, reverse time/sequence distinction, lifecycle-only
+and damaged-tail semantics, exact integers above2^53 and authority/failure
+withholding. Twelve inert guards require the new native flag and prevent private
+proofs entering serial status. No recording/index file or persisted schema65
+encoding, endpoint, capability, admission, policy, retention or lifecycle changes.
+Static help describes the new explicit output scope. Full post-charge49,830,883,328
+stays below48GiB. Matching clean tools/helper/reference and fresh native/independent
+verification remain required; production/manual DEV/user ships stay unchanged.
+
+
+## M749 — Matching output-coverage tools and corrected generated help pass (2026-11-19)
+
+Freeze all three tools plus explicit-source managed helper at clean
+5344c5cd2816623b69450f638ee44966a31b9ee4. All4025 tracked hashes match before/after;
+actual product VCS/CGO0/trimpath pins and helper host/source guards pass. Build a
+separate required-flags/source-bound read-only utility; it refuses host execution
+with80. Networkless generation and independent check of180 help entries pass,
+including explicit original/redacted/index options and retained output scope.
+This supersedes M745's help-generation deferral only. See
+[matching artifact pins](diagnostics/2026-11-19-recording-output-coverage-artifacts.json).
+
+Build/preparation stay below48GiB with measured512/64MiB reserves and monitoring;
+full post-preparation charge50,020,380,672. All source/build/preparation scopes
+end. Fresh native output-summary/independent-frame verification remains required;
+4c0b16e's earlier export evidence is not transferred to these later tools. No
+production, existing ship, installed DEV or manual-review state changes.
+
+
+## M750 — Bound the entire native wire status, preserve full private reports (2026-11-19)
+
+The first5344c5c native output-summary COW06 remains failed as a whole: its full
+status is interrupted/truncated at column4088 and the host parser refuses. M742
+bounded only the product-proof subsection; input/build metadata still went to
+serial. Preserve the ended root/input and independently read complete disk
+reports before evaluating assertions. Do not promote any console fragment.
+
+A shared pure Python protocol now emits only exact source/proof hashes, bounded
+helper exit and allowlisted boolean gates, with an enforced2048-byte maximum.
+One os.write emits the entire marker under4096bytes. Full inputs, private proof,
+full report and detailed errors remain on disk; no evidence is discarded. Host
+parsing requires the exact kind/source/proof/gates and refuses legacy, foreign,
+incomplete, extra-field, duplicate or fragmented success. Actual process/backing
+completion is saved before result parsing. Stage/hash the new status module with
+the explicit Python harness allowlist; Go products/helper/PID1 remain frozen.
+
+Fifteen inert guards pass, including multiple-MiB private input/error fixtures,
+whole-message bounds, false/missing gates, typed values and real log framing.
+See [failure and correction](diagnostics/2026-11-19-recording-output-status-failure.json).
+Independent COW06 proof reading and a fresh native retry are still required.
+All production/manual DEV/user-ship exclusions remain; no installed change.
+
+
+## M751 — Native output coverage and bounded whole-status retry pass (2026-11-19)
+
+Supersede M748–750's native deferrals only for matching5344c5c closed retained
+recordings, e0af PID1 and e2b545e status harness. Fresh COW07 passes actual CLI/
+official-SDK output coverage, original/indexed/redacted exports, helper0/QEMU0 and
+strict compact-status parsing with no interruption. Independent read-only kernel
+exports execute no source-disk code. Python decodes170/32 original frames and
+checks stream-only169/31frames(3149/1191bytes), first/last output sequence/time,
+earliest/latest wall time, every index row/offset/chain, filters/cursors, ZIP/chunk
+hashes, escaped spans and final coverage. New output fields change neither JSONL
+index file bytes nor complete redacted manifests compared with prior4c0b16e.
+See [native evidence and limits](diagnostics/2026-11-19-recording-output-coverage-native.json).
+
+Both independent SQLite copies check ok; original controls/history/intent/rows,
+raw files, roots/inputs/backings remain exact except one fresh observed_at and
+revision75→76. COW06's complete retained proof independently passes too; its old
+whole status remains failed. The corrected bounded serializer accepts that exact
+full report without exposing its inputs. Fresh COW07 supplies whole completion.
+All six exact native/reader scopes end empty and frozen artifacts/cases recheck.
+Final full charge50,184,650,752 stays below48GiB.
+
+This qualifies only the selected retained closed prefix. Host/session-wide oldest
+inventory, active capture/pressure/age/retirement/other factories, remaining issue
+tracks and final59/native-plugin/preserved DEV gates remain. Installed/manual DEV,
+production, protected/existing ships and tmux remain unchanged. The completed
+read-only overlays add no required state/version transition; compact exact SQL/
+proof/archives/source/logs suffice, with immutable recording07 and original app/
+recording transition fixtures kept for future runs under the user's cleanup rule.
+
+
+## M752 — Consolidate completed output-read overlays under the user retention rule (2026-11-19)
+
+COW06 remains the whole status-framing failure, with complete independently
+verified product/SQL/frame proof and the whole-message correction. COW07 supplies
+the corrected whole/native/independent pass. Keep every compact exact database,
+recording/query/ZIP proof, source, binary and log. Neither copied closed-read
+overlay adds a required state/version transition: immutable original recording07
+retains the same source, and original app62, actual recording64 and current app65
+full fixtures remain. Earlier failed/passed statuses remain historically unchanged.
+
+Classify only their four image/input files(95,027,200allocated bytes), verify1481
+retained pins and exact native/reader/supervisor scopes ended. Removal is not yet
+applied. This follows the user's broader cleanup authorization and supersedes
+whole-copy retention for these two exact disposable read overlays only. See
+[notes and classification](diagnostics/2026-11-19-recording-output-cow-retirement.json).
+Production/manual DEV/user/tmux ships remain excluded.
+
+
+M752 execution update: the four classified output-read image/input files are
+removed under the broader user authorization. All1481 retained pins match;
+95,027,200allocated bytes are reclaimed. DISPOSED markers prevent old-case reuse.
+Full charge50,090,250,240 stays below48GiB. Original app62/recording64 and current
+app65/recording65 full transition fixtures, every exact compact store/proof/source/
+binary/log, and all production/manual DEV/user-ship exclusions remain preserved.
+
+
+## M753 — Keep project-action dependencies through both native observation boundaries (2026-11-19)
+
+Prepare the remaining native issue16 transition gate by factoring the existing
+public action through a private dependency-taking implementation. The public
+entry supplies ordinary defaults; the same dependencies reach initial and
+post-Stop snapshots. All existing ownership/process/pier/namespace checks and
+manager save callbacks remain. No public override, fixture signal mechanism,
+format/schema65 or deployment change is introduced at this checkpoint.
+
+Focused races(4.930s) and vet pass. The test verifies serialized stop-dispatched
+intent binds the original operation/full container/StartedAt before the single
+signal, save refusal/cancellation dispatch nothing, a changed process after the
+signal refuses completion without repeating it, and unselected peer bytes stay
+exact. Existing real observer transition/mismatch and read-only retained recovery
+source tests also pass. [Evidence](diagnostics/2026-11-19-project-action-dependencies-source.json)
+records50,127,073,280-byte full post-charge under48GiB.
+
+A guarded qualification-only helper and matching native injection remain pending.
+Do not claim this source refactor proves the actual incident predicate or transfer
+5344c5c's older recording qualification to later artifacts. Production/manual DEV,
+existing/protected/tmux ships and needed transition fixtures remain untouched.
+
+
+## M754 — Guarded qualification-only native Stop timing helper source passes (2026-11-20)
+
+Prepare the real-engine injection without a product fault switch. Only the
+explicit `omabit_disposable_qualification` build tag includes the guarded runtime
+helper and test-manager backend. Ordinary Go file selection proves the runtime
+hook absent. The test backend preserves real queued operation/save/terminal
+receipt behavior, refusing other projects/members/actions. Complete VM/source/
+uid/home/runtime/required-flag guards precede opening a store/socket; only two
+fixed newly created fake members in the current65 fixture are accepted.
+
+The test-only interceptor binds the durable exact original Stop intent before
+holding the selected process with SIGSTOP and delivering one real SIGTERM. It
+captures the real preliminary running response, rechecks process identity before
+SIGCONT, waits for exact clean exit, then returns the unchanged earlier response
+so the real bracket observes exited. Fresh bounded failure cleanup releases only
+the same process; changed processes, other mutations/execs and repeated SIGTERM
+refuse. No ownership/pier/container/namespace validation is removed. This is a
+fixture breakpoint, not a proposed runtime pause feature.
+
+Tagged runtime races(1.834s), manager refusal/host-skip races(1.015s) and both-package
+vet pass with inert engines. Coverage includes lost TERM/CONT replies, inspection
+failure, replacement, cancellation, trace failure, journal refusal and peer
+preservation. The first read-only file-list check fails its Go template quoting;
+retain it and use the corrected range/println form. Corrected ordinary/tagged
+selection passes with ambient GOFLAGS cleared. CI adds these inert safety/vet and
+ordinary omission gates. [Source evidence](diagnostics/2026-11-20-project-stop-native-timing-helper-source.json)
+records50,273,107,968-byte post-charge below48GiB.
+
+No native timing fault has run. A fresh launcher/guest/separately frozen PID1,
+matching normal products plus explicitly tagged/source-pinned helper, storage
+admission and independent actual native receipt/pier/peer checks remain required.
+Do not claim this proves the original incident predicate. Needed transition
+fixtures and all production/manual DEV/user/tmux ship exclusions remain intact.
+
+
+## M755 — Prepare isolated native project-transition capsule (2026-11-20)
+
+Ten inert launcher/guest guards pass for no-run/host/foreign-case refusal, frozen
+source boundary, ordinary-versus-tagged products, bounded input inflation and
+whole serial status. The fresh offline COW has a distinct current-app backing
+name, with exact original pending-app/pristine dependencies read-only. It creates
+two new fake members and preserves the inherited stopped app/pier/journals. The
+case requires actual Stop terminal success, six exact timing traces, one TERM,
+lookup-only receipt replay after reopen, same-pier Start, peer/anchor preservation
+and final clean stops. See [capsule scope](../scripts/qualification/project-transition-cow/README.md).
+
+No VM has run and initial boot pins deliberately refuse pending a separate clean
+PID1/binary freeze. Matching products/tagged helper, storage admission and actual
+native plus independent checks remain pending. The storage check requires the
+host's established read-only DEV user-namespace authority; the sandbox-only read
+cannot see that PID and correctly refuses. Full measured charge50,273,296,384
+leaves insufficient space for the declared2GiB native scratch. Apply the user's
+broader obsolete-test retention authority after lessons and needed transition
+state are retained. Human-review disks containing credentials remain preserved,
+as do all production/installed DEV/protected/tmux exclusions.
+
+
+## M756 — Resume bounded0.5.0 release completion (2026-11-20)
+
+The user authorized finishing the reviewed release plan. Continue on
+release/0.5.0 from4856f15, preserving the original topic worktree and importing
+its pending M755 changes through a hash-verified snapshot. The
+[release checklist](release-0.5.0-plan.md) identifies finite delivery scope and
+explicit remaining issue work; issue22 and production deployment stay excluded.
+
+Review finds M755's predecessor path accidentally names a nonexistent transition
+capsule. Correct it to the exact retained successful runtime COW05 and extend the
+existing backing-chain regression to pin that input. All ten inert capsule guards
+pass. Storage admission now counts existing build directories across registered
+worktrees, preventing the handoff from omitting843,911,168bytes of retained tools.
+All six admission tests pass, including the new cross-worktree/symlink case.
+Full measured charge50,273,591,296bytes leaves insufficient native scratch; no
+native transition test or deployment has run at this checkpoint.
+
+
+## M757 — Preserve recording fixtures losslessly and freeze Stop qualification tools (2026-11-20)
+
+Archive the ended recording07 root/input and recording02 input with full decoded
+SHA256 verification before removing their uncompressed copies. Retain all compact
+proof, original state and pristine dependencies; restore exact bytes under storage
+admission before later read-only/COW use, never resume an ended capsule. This
+reclaims1,220,263,936allocated bytes. The initial unsupported fuser option refused
+before writes; a256MiB compression scope then failed by OOM with original intact.
+Its incomplete output was discarded after rehashing the source, and the bounded
+1GiB retry passed. [Archive record](diagnostics/2026-11-20-release050-fixture-archives.json)
+preserves these distinctions and exact original/archive identities.
+
+Clean68bf233 builds matching CLI/collector/runner, explicitly tagged test manager
+and separately frozen boot helper. All4043 tracked input hashes remain unchanged;
+ordinary builds omit the timing hook, source/host-refusal checks pass, and PID1
+refuses host execution with80. [Artifact pins](diagnostics/2026-11-20-project-stop-native-artifacts.json)
+record49,235,075,072charged bytes after the monitored build, under48GiB. The native
+transition run and independent checks remain pending; no final release, installed
+upgrade, preserved DEV or production qualification is claimed.
+
+
+## M758 — Native Stop setup exhausts scratch before the transition (2026-11-20)
+
+The first fresh transition capsule reaches its1920MiB root-file ceiling while
+adding the second fake. Guest ext4 reports I/O errors; QEMU remains alive. End
+only that owned disposable scope and record native exit-15, never a clean Stop
+or transition pass. The first project member was created, but the intended
+Stop interleaving was not reached. All original backing hashes remain exact.
+
+A separately pinned host-refusing read-only kernel exports the ended SQLite,
+WAL/SHM and eight command records without running any source-disk program.
+SQLite integrity passes, and all23 inherited app/recording tables match the
+original current65 fixture exactly. Preserve the compact database/log/source/
+input evidence and [failed-case record](diagnostics/2026-11-20-project-stop-native-scratch-failure.json).
+The failed root and its generated input image add no required transition fixture;
+retire just those two images after verifying ended scopes, absent holders and
+pins. Original app62/current65/recording fixtures remain intact.
+
+Automatic approval review rejects the proposed lossless archive/removal of older
+runtime-input trees02/04/06 as outside clearly authorized test-image retirement.
+That script is not executed; all three directories remain untouched. Instead,
+clear only the reproducible Go compilation cache, preserving module downloads,
+frozen binaries and original inputs. A3GiB fresh scratch reservation supplies one
+additional GiB over the failed setup. Add prompt hard-ceiling detection and a
+regression so a live QEMU process cannot hide this setup failure until deadline.
+All eleven inert guards pass. The fresh retry, exact native transition, final
+stable upgrade, preserved DEV and release gates remain pending.
+
+
+## M759 — Native transition passes; fix receipt-projection assumptions (2026-11-20)
+
+Fresh transition COW02 with unchanged68bf233 tools completes the actual six-step
+preliminary-running/bracketed-exited interleaving, one native TERM, clean exit,
+terminal Stop success and helper0/QEMU0. Whole qualification fails at the next
+harness comparison, so same-pier Start and final clean Stops remain unqualified.
+
+Independent read-only extraction proves the actual post-restart lookup equals
+the complete original saved SQLite operation exactly. The harness mistakenly
+compares a ProjectOperationSummary with the full protocol.Operation: summary
+omits project_id and message. Capture the full original stored receipt before
+manager reopen, validate its project/summary binding and compare every replay
+field against that saved receipt. Also correct the unfinished harness's expected
+ordinary-instance count: project members are composed from project ledgers, and
+the original instances table must remain at one, not grow to three. Preserve the
+complete inherited projection unchanged. Save partial proof before later gates
+so a subsequent failure retains its complete native observations.
+
+All twelve inert guards pass, including actual summary/full-receipt shape and
+foreign/missing/changed saved receipt refusals. Independent SQLite integrity,
+six ordered operation/container/start bindings and all23 original app/recording
+tables pass; the original stopped instance/runtime and backing hashes remain
+unchanged. [Evidence and cleanup classification](diagnostics/2026-11-20-project-stop-native-replay-harness.json)
+retains exact SQL, logs, traces and source/input pins. Under the existing test-image
+retention authorization, retire only COW02's diagnosed images and redundant boot
+archives after verifying ended scopes and absent holders. Needed original
+app62/current65/recording transition fixtures remain intact. No product/runtime
+binary changes or installed/DEV/production actions occur. A fresh complete retry
+is still required; the historical incident predicate remains unproven.
+
+The recording guide now leads with the dated current candidate contract and
+labels earlier source-only sections as historical checkpoints. It preserves the
+explicit pilot/default-off behavior, incomplete-capture limits and remaining
+final qualification gates rather than treating older milestones as current claims.
+
+
+## M760 — Complete exact native Stop transition and independent verification (2026-11-20)
+
+Fresh COW03 with frozen68bf233 tools and92e6880 harness passes all eight native
+gates: six exact timing traces, one TERM, terminal Stop success, original full
+receipt replay after reopen, same-pier Start with a distinct container, unchanged
+peer/anchor processes, inherited stopped app preservation and final clean Stops.
+A separately pinned read-only inspector exports complete proof/SQL/traces without
+executing source-disk programs. Independent checks confirm original receipt,
+mounts, signals, final state and all23 inherited app/recording tables. Only normal
+ordinary-instance observed_at/runtime_revision refresh differs; identity, intent,
+configuration and runtime binding remain exact. The initial verifier's stronger
+whole-row assumption is corrected explicitly, not treated as a product failure.
+
+The first admission attempt refuses before creating an output. Losslessly archive
+four superseded generated qualification executables, verifying full decoded hashes
+before removing raw copies, to reclaim48,529,408bytes. Preserve original worktree
+source/pending changes and all historical executable bytes. The fresh native
+admission fits48GiB with3GiB scratch plus64MiB overhead. After independent success,
+classify only the ended COW03 root/payload and redundant boot archives for removal;
+retain exact compact evidence and original app62/current65/recording fixtures.
+[Full evidence and classification](diagnostics/2026-11-20-project-stop-native-complete.json)
+records identities, limits and cleanup.
+
+This supersedes M759's whole-case deferral for this exact development Stop case.
+It does not prove the historical incident predicate or qualify the final combined
+0.5.0 artifacts, stable59 upgrade, preserved DEV or production deployment.
+
+M760 cleanup execution: the five classified ended images/boot copies are removed
+after scope/holder/hash checks, reclaiming1,706,594,304allocated bytes. Full charge
+48,266,706,944bytes remains below48GiB. Compact evidence and all needed original
+transition fixtures remain.
+
+## M761 — Expose bounded Grubbery source/restart compatibility (2026-11-20)
+
+Replace the stale unconditional missing-workflow-adapter result with the explicitly
+scoped versioned source/restart contract. Require both Grubbery source/recovery
+adapters and their independent receipt APIs alongside desk effects, operator role
+and exact current target policy. Old or partial runners still refuse before
+app-specific creation. The result includes workflow_scope; this does not claim
+peer/permit/route/asset readiness or authorize a native effect. Align packaged
+guidance with this finite release scope.
+
+Focused selected-runner race cases and vet pass, including each missing API or
+adapter, read-only behavior, current-generation policy denial and Gall independence.
+Twelve inert native Stop guards, packaged skill validation and shared-guidance
+synchronization also pass. Two initial test invocations fail at Unix socket bind
+because their GOTMPDIR makes paths too long; a short fully counted Go test directory
+resolves the environment problem. [Evidence](diagnostics/2026-11-20-grubbery-bounded-preflight-source.json)
+records48,523,718,656bytes after testing. Matching final artifacts and native/DEV
+qualification remain required. Correct the PR template's superseded minor-only
+wording to the existing release/X.Y.Z and tested-upgrade policy.
+
+
+## M762 — Prepare bounded native recording pressure qualification (2026-11-20)
+
+Prepare a separate fresh offline capsule for the remaining recording pilot gates.
+Install the matching candidate, create one new fake, and exercise three same-pier
+sessions: bounded synthetic binary-line/stderr output through the native Docker
+pipes, an encoded1MiB session ceiling, and actual free space below a512MiB reserve
+on a640MiB guest-only recording filesystem. Job/state/pier storage remains separate
+so incomplete capture can persist its explicit result. Require unchanged native
+process identity, saved original prefixes, ordinary Stop/drain, no implicit capture
+resume after freeing space, and retained-job capacity refusal without eviction.
+
+Six inert capsule guards and eight existing recording-harness guards pass; focused
+capture/refusal races and the default-skipped native observer pass. An independent
+bounded raw decoder verifies segment/frame identity, links, hashes and timing,
+including corruption/torn-tail refusal. Fix an inert expected-length arithmetic
+typo before the clean guard pass. [Source evidence](diagnostics/2026-11-20-recording-pressure-capsule-source.json)
+records48,698,540,032charged bytes. No native pressure VM has run.
+
+The launcher reserves2304MiB with a1664MiB hard root-file ceiling, checks complete
+aggregate storage, and retains the one-runtime/no-concurrent-build boundary. The
+existing read-only observer accepts only this additional exact frozen scenario;
+no product fault switch or runtime permission is added. Raw tmpfs evidence is
+copied into bounded private output before shutdown, including failed cases.
+Matching clean artifacts, native completion and independent extraction are next.
+
+
+## M763 — Native recording pressure passes selected gates; correct capacity observation check (2026-11-20)
+
+Frozen c88784c tools complete all three native recording sessions: exact1.5MiB
+original line and64 stderr messages, encoded1MiB ceiling, and actual separate
+filesystem free space below512MiB. Captures close durably; limit failure retains a
+gap, free-space refusal explicitly reports an unsaved gap, and each native process
+continues until ordinary Stop. Earlier bytes remain immutable. Independent
+read-only extraction/raw decoding matches all original segments, metadata, hashes
+and saved jobs. The content-free writer.lock is represented by its empty-file
+hash in the saved proof rather than exported.
+
+The whole case fails at the final capacity assertion. The original failed Start
+receipt correctly reports exhausted recording admission; exactly three jobs
+remain. Generic failed-Start completion publishes unknown/recovery_required with
+the requested running intent until observation/cleanup. The harness incorrectly
+requires its public row to already say stopped as proof of no new process. Compare
+actual full container inventory and immutable job inventory, bind the exact saved
+capacity refusal, then perform the already planned explicit final Stop. Seven
+inert guards pass, including foreign receipt/new-job/new-container refusals.
+No product behavior is changed to satisfy the harness.
+
+[Exact failed-case evidence](diagnostics/2026-11-20-recording-pressure-native-first.json)
+retains compact SQL/raw/job/command/source proof. Classify only this ended
+disposable root/payload and redundant boot copies for retirement under the user's
+existing rule; original transition fixtures remain. A fresh whole pass, final
+combined release, stable59 upgrade and preserved DEV remain required.
+
+M763 cleanup execution: five classified completed/failed-case images and redundant
+boot copies are removed after evidence/scope/holder/pin checks, reclaiming
+1,563,996,160allocated bytes. Full charge49,105,166,336 remains below48GiB. Exact
+compact recording/job/SQL evidence and every original transition fixture remain.
+
+## M764 — Strengthen final stable upgrade rehearsal before artifact freeze (2026-11-20)
+
+The inherited release-upgrade launcher counted evidence roots but omitted retained
+worktree builds/caches. Reuse the complete issues-goal charge, acquire its shared
+runtime lock, select a separately frozen host-refusing boot helper, and remove
+in-launch compilation. Require clean candidate ancestry and the release-policy
+post-freeze allowlist. Keep4GiB scratch with an explicit hard root-file ceiling,
+one CPU and no swap. Nothing is launched by these edits.
+
+Add an explicit app-workflow option independent of Theme/DMS. The previous stable
+CLI creates a source desk plus policy/settings/receipt history before upgrade.
+Verify original table DDL and row digests through actual migration and manager
+restart, then use a distinct candidate desk. Close SQLite read handles explicitly,
+including errors. Three inert guards pass for no-run, wrong boot-image refusal,
+original table selection/digest changes and connection closure. Actual final
+0.4.0/schema59 to0.5.0/schema65 qualification remains pending.
+
+## M765 — Native capacity refusal preserves jobs; correct admission-lock counting (2026-11-20)
+
+The second pressure case again passes all three capture/pressure cases but fails
+its whole-case inventory assertion. Independent read-only extraction confirms
+exact original recordings and three saved jobs, the original failed capacity
+receipt, and empty complete Docker inventories before and after that Start.
+The harness counts every recording-jobs entry, including the writer's empty
+admission.lock, as a job. This is a fixture assertion defect, not evidence of a
+fourth job or a new container. No product code changes to satisfy the test.
+
+Inventory the lock separately and require every saved job-file hash to remain
+unchanged. Save before/after inventories before asserting, so failures retain the
+exact inputs. Eight inert guards pass, including the actual three-directory plus
+lock layout, changed job bytes and malformed/symlink lock refusal. The final Stop
+and commitment check are still pending a fresh whole pass. The second case remains
+failed; [independent evidence](diagnostics/2026-11-20-recording-pressure-native-second.json)
+preserves its exact compact proof and classified ended-image retention. Original
+transition fixtures and installed/manual-review state remain unchanged.
+
+## M766 — Prepare0.5.0 component versions and finite support claims (2026-11-20)
+
+Set root, component and UI versions to0.5.0. Add candidate release notes with the
+explicit intended stable0.4/schema59→65 window and unchanged default-off recording
+service behavior. Mark named-client recipes and local HTTP experimental; retain
+catalog exclusions and the finite app/source/restart scope. No issue-wide closure,
+production deployment or final qualification follows from a version bump.
+
+Native plugin, skill packaging/shared guidance, release-policy, JavaScript models
+and snapshot installer fixtures pass. [Preparation record](diagnostics/2026-11-20-release050-scope-preparation.json)
+binds the reviewed inputs and limits. Existing0.4 distribution pins remain until
+matching frozen assets and upgrade evidence pass. The final source/race/QML,
+packaging/native workflows, preserved DEV and reviewed publication gates remain.
+
+## M767 — Preserve fail-closed storage accounting during runtime qualification (2026-11-20)
+
+The third recording pressure attempt is interrupted by complete-storage accounting
+when a concurrently run snapshot-installer fixture removes its temporary output
+between root enumeration and measurement. The monitor correctly rejects the
+incomplete measurement and terminates only the disposable VM. This is an experiment
+scheduling error; no product/pressure pass is inferred. Keep all temporary-output
+fixture suites, as well as Go builds, idle during a VM. Do not weaken measurement
+to bypass disappearing paths.
+
+[Exact interruption](diagnostics/2026-11-20-recording-pressure-interruption.json)
+retains host/source/log evidence. Retire only its four classified fresh-fake
+images/boot copies after scope/holder/backing checks, reclaiming1,547,980,800bytes.
+No original app/recording transition fixture is removed; no successful tmpfs
+recording export is claimed. Standard Go compilation-cache cleanup separately
+reclaims789,917,696bytes while preserving module sources and every frozen tool.
+A new whole run remains required with no concurrent fixture activity.
+
+## M768 — Complete the recording job-layout regression and require measured storage (2026-11-20)
+
+The fourth case reaches the inventory check after all three native capture cases,
+but the new strict file allowlist omits each job's empty worker.lock. This is
+another harness defect: the independent content export intentionally omitted
+empty lock files, so copying its JSON-only inventory was insufficient. Review the
+actual job writer and usage inventory; a closed job has five JSON files plus
+worker.lock. Require that complete six-file set, an empty regular lock and exact
+hashes of every entry. The regression now models the real complete closed layout,
+including malformed locks. Nine inert guards pass.
+
+[Fourth-case evidence](diagnostics/2026-11-20-recording-pressure-native-fourth.json)
+independently verifies all original recording content, three jobs and the earlier
+ordinary Stops. Capacity/final Stop did not run; the whole case remains failed.
+Retire only its classified ended images after preserving compact evidence and
+checking original fixture hashes. The next native case must complete with final
+matching0.5.0 artifacts rather than promoting any partial pass.
+
+The shared issues-goal budget now rejects the older storage helper's estimated
+unreadable-directory fallback: every DEV namespace measurement must complete.
+This enforces the user's current no-incomplete-measurement rule without altering
+the older general launcher's contract. The new regression refuses estimated
+admission before passing any data to the budget calculator.
+
+Separately,40 unused public Go module extracts match every byte in their retained
+original ZIPs and those ZIPs' h1 content hashes. Removing only these reproducible
+extracts reclaims1,893,773,312bytes; current/previous-stable declared dependencies,
+original ZIP archives and all frozen executables remain. Exact inventory and
+verification are retained in /tmp/omabit-050-handoff/module-cache-retirement-result.json.
+
+## M769 — Freeze0.5.0 assets and pass desktop/interface qualification (2026-11-20)
+
+Freeze product/UI/skill/packaging inputs at bdf43978e1d0ea858c3349b787e2ff8eaa1252ad.
+The isolated Go1.27.3 packager builds all six0.5.0 assets, schema65 and the unchanged
+pinned Recommended Apps pill. Every asset hash matches its manifest. Plain and
+qualification-tagged helpers carry that source identity; three separately pinned
+read-only inspectors refuse host execution. No artifact is rebuilt after pinning.
+
+Actual0.4.0→0.5.0 desktop activation in a private compositor preserves preferences
+and recovers from a synthetic failed candidate. Private Recordings UI, persistent
+Agent Help and old two-skill compatibility pass. Full selected service/MCP/guidance/
+CLI source-race suites pass, as do all180 networkless help entries. Separately,
+actual packaged CLI/collector and official-SDK stdio pass three lost-reply/exact
+saved-lookup/reopen cases against real managed API/SQLite with inert native
+observations. These distinct evidence types are recorded explicitly in
+[frozen validation](diagnostics/2026-11-20-release050-frozen-validation.json).
+
+Full release-head CI and matching native Stop/app/recording/upgrade cases remain
+gates. The final stable59→65 service rehearsal, preserved DEV and protected
+review/publication have not occurred. The existing production and DEV services,
+plugins, piers, preferences and history remain unchanged.
+
+## M770 — Final0.5.0 native recording pressure and capacity gate passes (2026-11-20)
+
+The fifth whole case uses the actual frozen bdf4397 release binaries and passes
+all nine gates. Independently decode all three original session exports and hash
+every content file plus all five JSON files per job. SQLite preserves the exact
+failed capacity receipt; complete native inventories remain empty, all three jobs
+remain byte-identical, and the final ordinary Stop leaves desired/observed stopped.
+Commitments remain17MiB for three retained jobs. Empty lock hashes are guest-proof
+evidence, explicitly distinguished from independently exported content.
+
+[Final pressure evidence](diagnostics/2026-11-20-recording-pressure-final.json)
+qualifies finite synthetic burst/long-line Docker transport, a1MiB session ceiling,
+and actual isolated-filesystem free-space refusal with explicit incomplete coverage.
+It does not establish automatic retirement, age enforcement, host-wide pressure
+recovery, other factories or active-worker upgrades. M763/M765/M768 partial cases
+remain failed; this fresh whole pass supersedes their pending retry requirement.
+
+Retire only five classified ended images/boot copies after independent verification,
+no-holder/scope checks and unchanged original backing hashes, reclaiming1,611,563,008
+allocated bytes. Full aggregate charge46,739,451,904bytes remains below48GiB.
+Original app/recording transition fixtures, compact evidence and all installed/DEV
+state remain. Final native Stop/app/export and stable59→65/DEV/release gates remain.
+
+## M771 — Final0.5.0 native Stop transition and preservation pass (2026-11-20)
+
+Fresh COW04 uses the actual frozen bdf4397 release binaries and matching tagged
+helper. All eight whole-case gates pass, followed by clean guest/host completion.
+Independent read-only exports verify six exact ordered timing bindings, one TERM,
+the exact saved original Stop receipt after reopen, same-pier Start in a distinct
+container, unchanged peer/anchor processes and final clean Stops. All23 inherited
+app/recording tables remain exact; the original ordinary instance differs only by
+its expected observation timestamp/runtime revision refresh.
+
+[Final Stop evidence](diagnostics/2026-11-20-project-stop-native-final.json)
+supersedes M760's final-artifact retry requirement for this exact interleaving.
+It does not establish the historical incident's exact predicate or qualify the
+stable59 upgrade, preserved DEV or publication. The first invocation refused an
+incorrect runtime input path before creating any output; the verified retained
+runtime path was then used. No product/harness edits were needed.
+
+Retire five classified ended images/boot copies only after retaining independent
+SQL/proof/traces/commands and checking empty scopes, holders and original hashes.
+This reclaims1,723,985,920bytes; full charge46,756,741,120bytes is below48GiB.
+Original app62/current65 and recording transition fixtures remain. Read-only DEV
+inventory separately confirms the expected review runner identity and schema59;
+no DEV update or ship action has occurred.
+
+## M772 — Explicit user pause and reboot-safe preservation (2026-11-20)
+
+The user paused to restart/update the machine. Gracefully power off only the
+active disposable stable-upgrade guest through its own QMP socket; its scope is
+inactive/empty and host exits0. No completed guest result exists, so the upgrade
+remains interrupted/unqualified. Retain its whole partial capsule and pause receipt;
+never resume that overlay. Production and both manual DEV installations are unchanged.
+
+Because /tmp is volatile tmpfs, move the generated Omabit temporary files into
+private durable evidence with a complete pre-move SHA256 manifest and verified
+transfers, then independently verify all50,638 retained regular files. Ended
+ephemeral sockets/pipes are listed separately. The full post-move charge is
+46,809,341,952bytes, below48GiB. The original app/recording fixtures, tools, source
+and compact evidence are preserved. [Resume checkpoint](release-0.5.0-resume.md)
+records exact paths, final artifacts, completed gates, interrupted upgrade and
+remaining work. Goal is paused at the user's request; no release is published.
+
+## M773 — Resume, qualify candidate01 stable upgrade and correct two release inputs (2026-11-20)
+
+The user explicitly resumed after the machine update, superseding M772's paused
+status. Verify the preserved manifest and required input hashes, then launch a
+fresh offline upgrade guest from the pristine base; never resume the interrupted
+overlay. Actual published0.4/schema59 tools create source/policy/settings/receipt
+history before candidate01 bdf4397 upgrades to65. The whole guest and host pass:
+original app table rows/DDL survive migration and manager restart; running
+container/engine, stopped intent, identities, access and history remain preserved;
+authorization denial/retry and actual old-reader refusal leave state intact.
+A separate candidate desk workflow and final ordinary Stop also pass.
+
+[Exact candidate01 upgrade evidence](diagnostics/2026-11-20-release050-candidate01-upgrade.json)
+includes independently extracted report, commands and SQLite. The exported report
+matches the complete serial result; schema65, all13 original app table definitions,
+all five original runtime-operation receipts and the final successful Stop are
+verified independently. All three fresh instances finish with stopped intent.
+Retain compact evidence from both capsules; the original pause remains interrupted
+and unqualified. Retire only ten classified ended image/boot files after empty
+scope, holder and backing checks, reclaiming3,329,003,520bytes. Original app62,
+current65, recording fixtures and both manual DEV roots remain unchanged.
+
+Review finds stale packaged guidance claiming the Grubbery adapter is missing.
+Correct both synchronized references to the actual bounded source-and-restart
+preflight contract; peer/permits/routes/assets remain separate. Seven packaging
+tests, shared-reference synchronization and both skill validators pass.
+
+The exact bdf4397 source CI run44792728375 passes every source/race/QML job. Its
+duplicate run44792713306 fails only the64-recovery history test at93.05seconds
+under a90-second context; the other run passes it in60.83seconds. Timing is
+consistent with deadline expiration, but the old diagnostic did not preserve
+context.Err(), so do not claim that cause proven. Extend only this test's context
+to5minutes and report the iteration/context on failure, retaining all64 recoveries,
+overflow refusal and exact row/latest-binding assertions. The focused race test
+passes in66.32seconds. [Correction evidence](diagnostics/2026-11-20-release050-resumed-corrections.json)
+retains both original logs and the local result.
+
+These packaged skill/test changes require a new clean freeze and matching
+artifacts/qualification. M769–M771 and this upgrade qualify bdf4397 only; they do
+not qualify the next candidate. No runtime product behavior, installed DEV,
+production service or distribution pin changes here. Final app/export/upgrade,
+preserved DEV, required PR checks, protected merge and publication remain gates.
+
+## M774 — Freeze candidate02 and pass matching desktop, interfaces and stable upgrade (2026-11-20)
+
+Freeze corrected product/UI/skill/test/packaging source at
+59d83aab49384d2f26531320bb5ab68e1257aeb5 and publish that checkpoint to draft PR23.
+Build all six immutable0.5.0 assets in an isolated clean Git-blob export with
+Go1.27.3, schema65 and the same pinned Recommended Apps pill. Backend source digest
+is494115a0837095352b1c27dede8e5c65b63319ec08e76d093f633993308b1a13.
+This supersedes M769's source selection for the intended release; retain all
+candidate01 artifacts/evidence under their original identity.
+
+[Candidate02 validation](diagnostics/2026-11-20-release050-candidate02-frozen-validation.json)
+passes all asset hashes, matching plain/tagged helpers and host-refusing read-only
+inspectors. Four full selected interface race suites and all180 offline help
+entries pass. Three actual packaged CLI/collector and official-SDK lost-reply,
+exact saved-lookup and manager-reopen cases pass with inert native observations.
+Actual private desktop cold/hot activation, preferences, failed-candidate recovery,
+Recordings UI, persistent Agent Help and legacy two-skill compatibility pass.
+
+Fresh `patch-upgrade-050-final03` then passes the actual published0.4/schema59 to
+candidate02/schema65 upgrade. [Final matching upgrade evidence](diagnostics/2026-11-20-release050-final-upgrade.json)
+retains original stable app history/DDL through migration and manager restart,
+running/stopped intent, original runtime/engine processes, identities, access,
+authorization denial/retry, actual old-reader refusal unchanged, the candidate
+desk workflow and final ordinary Stop. Independent read-only extraction matches
+the full report and verifies schema65, all13 original app table definitions, all
+five original runtime-operation receipts, final successful Stop and stopped intent
+for all three fresh instances. No source-disk code executes in the inspector.
+
+After complete evidence, empty-scope/holder and original-backing verification,
+retire only five classified ended image/boot files, reclaiming2,481,082,368bytes.
+Full charge47,193,726,976bytes remains below48GiB; original fixtures and all installed
+state remain. Final matching native pressure, Stop, Grubbery and closed exports,
+full release-head CI, preserved DEV and reviewed publication are still required.
+No production deployment or issue-wide completion is implied.
+
+## M775 — Candidate02 recording pressure and independent preservation pass (2026-11-20)
+
+Fresh pressure06 uses the exact frozen59d83aa release binaries and matching helper.
+All nine whole-case gates pass, including exact burst/long-line capture, the1MiB
+session bound, actual isolated-filesystem pressure refusal, explicit incomplete
+coverage, same-pier sessions, immutable earlier recordings, capacity refusal
+without eviction and final clean Stop. Independent read-only extraction verifies
+all three original recordings, three saved jobs totaling17MiB of commitments,
+the exact saved failed-admission receipt, no new container and stopped intent.
+
+[Candidate02 pressure evidence](diagnostics/2026-11-20-recording-pressure-candidate02.json)
+supersedes M770's final-artifact retry requirement for this bounded transport.
+It does not qualify automatic retirement, age enforcement, host-wide pressure
+recovery, other factories or active-worker upgrades. Preserve these scope limits.
+
+After complete compact evidence, empty-scope/holder and original-backing checks,
+retire only five ended image/boot files, reclaiming1,611,763,712bytes. Full aggregate
+charge47,209,918,464bytes is below48GiB. Durable original app62/current65/recording
+fixtures and both manual DEV roots remain unchanged. Matching Grubbery, Stop,
+closed exports, preserved DEV, required checks and reviewed publication remain.
+
+## M776 — Candidate02 Grubbery recovery, two versions and restart pass (2026-11-20)
+
+Fresh offline COW06 uses frozen59d83aa product binaries and its matching helper,
+with original app62 as a read-only backing. The whole guest and host pass: original
+uncertain-phase observation without redispatch, explicit audited replacement,
+completion of original source through CLI, second-version source through MCP,
+retained app state and changed code, same-pier replacement, manager restart,
+original/audit receipt replay, one dispatch per phase and final clean Stop.
+
+[Candidate02 Grubbery evidence](diagnostics/2026-11-20-grubbery-candidate02.json)
+records the exact source and retained proof. The separate read-only reader exports
+58 fixed files without executing source-disk code; all original images remain
+unchanged. Independent SQLite/proof checks preserve the original header prefix,
+all17 original events and pier binding. Current schema65 has two app operations,
+63 events and zero leases; the saved runtime audit matches exactly and final
+intent/observation are stopped. This resolves the matching final-artifact repeat
+for the previously qualified12f case, not broader peers/permits/routes/assets or
+process-death cleanup.
+
+After complete evidence and ended-scope/holder/backing checks, retire only five
+classified image/boot files, reclaiming345,944,064bytes. Full charge at this point
+is48,996,470,784bytes under48GiB. Preserve both physical temporary backings until
+the remaining Stop case has finished, and retain their durable originals.
+
+Compiler provenance correction: M774's prose incorrectly names Go1.27.3 for
+candidate02. Its immutable release.json, recorded validation and all three binary
+build-info records identify Go1.27.4. That compiler statement is superseded here;
+source59d83aa and all artifact hashes are unchanged. Older standalone boot helpers
+keep their separately pinned source/compiler records. Matching Stop, closed
+exports, preserved DEV and protected reviewed publication remain required.
+
+## M777 — Candidate02 exact native Stop and independent preservation pass (2026-11-20)
+
+Fresh transition05 uses frozen59d83aa products and its separately tagged helper.
+All eight whole-case gates pass: the guarded native inspection transition, one
+SIGTERM, successful terminal Stop, original receipt replay after manager restart,
+ordinary same-pier Start, unchanged peer/anchor processes, inherited stopped app
+preservation and clean final Stops. The host exits0 with no interruption.
+
+[Candidate02 Stop evidence](diagnostics/2026-11-20-project-stop-candidate02.json)
+supersedes M771's matching-artifact repeat requirement. A fixed read-only reader
+exports11 files and leaves all source/backing images unchanged. Independent
+verification checks six ordered traces with one original operation/container/start
+binding, exact original full receipt equality, one SIGTERM, a different resumed
+container on the same pier, unchanged peer/anchor state and23 inherited tables.
+Only the original stopped app's permitted fresh observation fields change.
+All three disposable fakes end stopped. This bounded interleaving does not establish
+the historical incident's exact failing predicate.
+
+To fit the declared3GiB plus64MiB reservation, first retire only the previously
+authorized standard Go compiler cache,764,129,280bytes across5955 files, verifying
+all named release artifacts/helpers unchanged. No Go build runs during the VM.
+After independent evidence and ended-scope/holder checks, retire five ended Stop
+image/boot files, reclaiming1,734,213,632bytes. Both COW consumers have now finished,
+so retire the six verified temporary physical backing/metadata duplicates, freeing
+another1,766,367,232bytes while rechecking every exact durable original.
+[Retirement evidence](diagnostics/2026-11-20-native-input-retirement.json) retains
+the classifications and full-record hashes. Aggregate charge46,487,318,528bytes
+remains below48GiB. Final closed exports, preserved DEV, review/checks and release
+publication remain; no production or manual-ship operation occurred.
+
+## M778 — Candidate02 closed recording exports independently verified (2026-11-20)
+
+Fresh closed-export08 uses the exact frozen59d83aa products and matching helper.
+The whole host/guest case passes all ten product checks: original bytes/policy,
+CLI/SDK measurements, original manifest/parts/ZIP, indexed ZIP, timing queries,
+selected-prefix coverage and complete redacted manifest/parts/ZIP. Host exit0 has
+no interruption. This is the final matching-artifact repeat of M751's bounded case.
+
+[Candidate02 export evidence](diagnostics/2026-11-20-recording-exports-candidate02.json)
+retains the proof. A fixed read-only inspector exports12 files without executing
+source-disk code and leaves all source/backing/payload hashes unchanged. Independent
+Python analysis compares all four retained files byte for byte against the original
+recording backing, verifies ZIP manifests/chunks/modes and both complete frame
+chains (170 and32 frames), and checks indexed/redacted content against the previous
+qualified exports. Both SQLite copies pass; every original logical row remains,
+except the one permitted observation refresh. No automatic retention, active-worker
+upgrade, other runtime factory or broader incident behavior is inferred.
+
+After proof and ended-scope/holder checks, retire only five ended scratch files,
+reclaiming88,170,496bytes. Then remove the three verified temporary recording07
+restoration duplicates, reclaiming1,268,256,768bytes, while rechecking the exact
+durable compressed original and metadata. The [retirement record](diagnostics/2026-11-20-recording-input-retirement.json)
+retains the receipt hash and original pins. Full aggregate charge46,503,624,704bytes
+remains under48GiB. All original transition fixtures and manual DEV state remain.
+Preserved DEV, final release pins/checks/review and publication are still required.
+
+## M779 — Preserved DEV manager and matching desktop update pass (2026-11-20)
+
+After M774–M778 pass on the exact candidate, update only review040 under the
+user's DEV authorization. The original manual `review-zod` already has desired
+running, unknown observation and recovery-required with a stopped exit1 container.
+Preserve this state; do not repair, start or use that ship as a test fixture.
+
+The [DEV upgrade record](diagnostics/2026-11-20-preserved-dev050-upgrade.json)
+binds exact59d83aa helpers and schema59→65. Stop only management, retain complete
+offline state, old binaries and desktop preferences, install matching tools and
+start only management without resume-running. Verify all45 original non-instance
+tables, original configuration/intent/recovery/history, engine/container state,
+owner, access registry and pier object identity unchanged. The actual dedicated
+engine server reports29.9.2. The old backup remains in
+`/srv/dev/urbit-040/state/upgrade-050-20261120`.
+
+Two conservative backup guards exposed harness assumptions: the DEV parent is
+root-owned, so the first mkdir refused before mutation; the second attempt found
+original empty Docker-config directories after manager stop. Preserve those
+folders and continue the exact saved checkpoint with original binaries/runtime
+verified, rather than rerunning or resetting state. These are qualification-driver
+corrections; frozen product artifacts did not change.
+
+Complete UI staging retains the inner bundle, three helper hashes and skill pins,
+with only the isolated review wrapper/DEV button overlay. Normal rescan keeps the
+old keepLoaded service. A targeted DEV disable/enable destroys it, but Quickshell
+then reports File name case mismatch for newly introduced filenames at the cached
+old path. Move the complete candidate atomically to the fresh versioned directory
+`~/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v050`, keeping the same
+review040 plugin ID, IPC, profile and state. It loads0.5.0 with the exact matching
+helper paths and selected original runner. No shell restart occurs; the only
+normalization added by the shell toggle (an empty tray key) is reverted under an
+exact-value guard, preserving original shell configuration bytes. The original
+plugin tree remains outside the watched directory in the upgrade evidence root.
+
+This supersedes M575's installed-version/path statement only. Manual state remains
+protected. A new private declared-API client was built after every VM ended under
+a2GiB scratch admission; no release artifact was rebuilt. Fresh app creation,
+scoped app-policy decisions and workflow evidence are still pending. Production,
+protected ships and the earlier DEV namespace remain excluded.
+
+## M780 — Fresh DEV app, closed permissions and preserved restart pass (2026-11-20)
+
+The [fresh DEV workflow](diagnostics/2026-11-20-dev050-app-workflow.json) passes
+with exact frozen59d83aa installed tools. Create only `release050-app-zod`, then
+use the user's explicit temporary approval for Create on that new ship and Commit
+only on its `releasecheck` desk. Publish remains blocked and unrelated policy
+unchanged. Observe desk creation, staged sample source, commit and local activation
+through the saved original operations; never substitute a retry request.
+
+The declared Gall sample APIs pass authenticated watch/poke, duplicate/nontext
+refusal and state checks. A source reload adds an on-load marker and preserves the
+first entry and session. Close Commit and Create grants at policy revisions3/4
+before ordinary Stop/Start. The new container uses the same pier, the original
+Stop receipt replays exactly, and the same session retains the first entry and
+accepts a second. Revoke the test session and finish with a clean exit0 Stop.
+The fresh pier/history remain; its project anchor is unchanged.
+
+Independent final observations preserve all eight original manual operation
+receipts, original manual intent/configuration/recovery, engine invocation,
+container state and pier object identity. The existing `review-zod` stays in its
+original running-intent/unknown/recovery-required state with its stopped exit1
+container; no repair or lifecycle action targets it. Retain427 exact private
+evidence files after removing credentials. M779's pending-app statement is now
+superseded by this bounded pass; broader app capabilities remain excluded.
+
+Storage accounting correction: the frozen generic enumerator lists the old DEV
+plugin path and missed the fresh versioned directory after M779's move. Explicitly
+measure and add its71,323,648bytes for all remaining admissions; earlier post-move
+totals undercounted that amount. Corrected measurement remains within the original
+scratch reservation and48GiB cap, with final charge47,809,650,688bytes. Earlier VM
+qualification predates the move. This changes only the private qualification
+adapter, not frozen product inputs. Draft verification, final pins/checks/review,
+protected merge and publication remain gates. Production is unchanged.
+
+## M781 — Exact0.5.0 draft downloads and distribution pins verified (2026-11-20)
+
+Create draft release453321091 at frozen59d83aa with the six original assets,
+original release.json/SHA256SUMS and the completed qualification record. Authenticated
+downloads match every local size/hash and GitHub SHA256 digest. No asset is rebuilt
+or replaced. The public tag lookup returns404 for the unpublished draft; continue
+verification using the unique saved release ID, without repeating creation.
+
+[Draft verification](diagnostics/2026-11-20-release050-draft-downloads.json) binds
+all nine assets. Latest stable remains0.4.0. Install only the matching distribution
+pins on release/0.5.0; all post-freeze changes are documentation or those pins.
+Complete corrected storage charge47,976,513,536bytes stays below48GiB.
+Final trusted release-policy/source/QML checks and review, protected merge-commit
+publication, public downloads and private cold native startup remain required.
+No production deployment or issue-wide completion is claimed.

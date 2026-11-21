@@ -4,6 +4,7 @@ package runtimequalify
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io/fs"
 	"os"
@@ -52,7 +53,32 @@ func ApplyManaged(ctx context.Context, action string, state ManagedState, persis
 	return applyManaged(ctx, action, state, persist, defaults())
 }
 
+// ApplyManagedWithRecording opts into the trusted ordinary-runtime recording
+// handoff. It is not selected by normal server launch yet. Projects, maintenance
+// and existing-running attachment need their own qualified recording paths.
+func ApplyManagedWithRecording(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, lifecycle ManagedRecordingLifecycle) (ManagedState, ManagedObservation, error) {
+	if lifecycle.BeforeStart == nil || lifecycle.BeforeRemove == nil || action != "start" && action != "startup-resume" && action != "stop" {
+		return state, ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}, ErrRecordingWorker
+	}
+	d := defaults()
+	d.recording = &lifecycle
+	return applyManaged(ctx, action, state, persist, d)
+}
+
+func managedRecordingSnapshot(state ManagedState, runtime Result) (ManagedState, error) {
+	state.Runtime = runtime
+	raw, err := json.Marshal(state)
+	var snapshot ManagedState
+	if err != nil || json.Unmarshal(raw, &snapshot) != nil {
+		return ManagedState{}, ErrRecordingWorker
+	}
+	return snapshot, nil
+}
+
 func managedSession(state *ManagedState, persist func(ManagedState) error, d dependencies) (*qualifier, error) {
+	if d.recording != nil && (d.recording.BeforeStart == nil || d.recording.BeforeRemove == nil) {
+		return nil, ErrRecordingWorker
+	}
 	if !runIDPattern.MatchString(state.ID) || state.Port < 1024 {
 		return nil, errors.New("invalid managed instance identity or HTTP port")
 	}
@@ -187,6 +213,17 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	q.config = filepath.Join(dir, "docker-config")
 	if persist != nil {
 		q.d.persist = func(r Result) error { state.Runtime = r; return persist(*state) }
+	}
+	if d.recording != nil {
+		q.beforeRuntimeRemove = func(ctx context.Context, id string) error {
+			ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+			defer cancel()
+			snapshot, err := managedRecordingSnapshot(*state, q.r)
+			if err != nil {
+				return err
+			}
+			return d.recording.BeforeRemove(ctx, snapshot, id)
+		}
 	}
 	return q, nil
 }
@@ -657,6 +694,22 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 	q.r.Stage = "starting-runtime"
 	if err := q.save(); err != nil {
 		return finish(unknown, err)
+	}
+	if q.d.recording != nil {
+		snapshot, err := managedRecordingSnapshot(state, q.r)
+		if err != nil {
+			return finish(unknown, err)
+		}
+		prepareCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
+		guard, err := q.d.recording.BeforeStart(prepareCtx, snapshot, q.r.Containers[i].ID)
+		cancel()
+		if err != nil {
+			return finish(unknown, err)
+		}
+		if guard == nil {
+			return finish(unknown, ErrRecordingWorker)
+		}
+		q.beforeRuntimeStart = guard
 	}
 	if _, err := q.control(ctx, i, q.d.times.command, "start"); err != nil {
 		return finish(unknown, err)

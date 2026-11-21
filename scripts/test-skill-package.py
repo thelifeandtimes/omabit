@@ -2,6 +2,7 @@
 """Skill archive provenance/content checks; no installer or desktop access."""
 import importlib.util
 import json
+import re
 from pathlib import Path
 import shutil
 import tarfile
@@ -13,6 +14,16 @@ spec=importlib.util.spec_from_file_location('packager',ROOT/'scripts/package-rel
 packager=importlib.util.module_from_spec(spec);spec.loader.exec_module(packager)
 
 class SkillPackageTests(unittest.TestCase):
+    def test_each_skill_is_independently_link_complete(self):
+        for name in packager.skill_names(ROOT):
+            directory=(ROOT/'skills'/name).resolve()
+            for path in directory.rglob('*.md'):
+                for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
+                    if '://' in target or target.startswith('#'):
+                        continue
+                    resolved=(path.parent/target.split('#',1)[0]).resolve()
+                    self.assertTrue(resolved.is_relative_to(directory) and resolved.is_file(),str(path)+': '+target)
+
     def test_complete_source_bound_reproducible_archive(self):
         digests=[]
         with tempfile.TemporaryDirectory(prefix='omabit-skills-') as directory:
@@ -64,10 +75,18 @@ class SkillPackageTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'inventory'):
                 packager.package_skills(root,root,root,{},0)
 
+    def test_declared_third_skill_cannot_disappear(self):
+        with tempfile.TemporaryDirectory(prefix='omabit-skills-missing-third-') as directory:
+            root=Path(directory);shutil.copyfile(ROOT/'SKILLSET.json',root/'SKILLSET.json')
+            for name in ('omabit-operator','omabit-plugin-developer'):
+                shutil.copytree(ROOT/'skills'/name,root/'skills'/name)
+            with self.assertRaisesRegex(ValueError,'inventory'):
+                packager.skill_manifest(root,{'version':'fixture','source_commit':'a'*40})
+
     def test_link_or_executable_resource_is_not_packaged(self):
         for kind in ('link','executable'):
             with self.subTest(kind=kind),tempfile.TemporaryDirectory(prefix='omabit-skills-unsafe-') as directory:
-                root=Path(directory);shutil.copytree(ROOT/'skills',root/'skills')
+                root=Path(directory);shutil.copytree(ROOT/'skills',root/'skills');shutil.copyfile(ROOT/'SKILLSET.json',root/'SKILLSET.json')
                 resource=root/'skills/omabit-operator/references/unsafe.md'
                 if kind=='link':resource.symlink_to('/etc/passwd')
                 else:resource.write_text('not an executable package');resource.chmod(0o755)

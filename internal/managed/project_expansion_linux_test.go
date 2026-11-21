@@ -16,8 +16,9 @@ import (
 
 type expansionFixtureBackend struct {
 	*queuedProjectBackend
-	calls     int
-	preflight bool
+	calls      int
+	preflight  bool
+	shipAction func(context.Context, *runtimequalify.ProjectExpansion, string, string, string, func(runtimequalify.ProjectExpansion) error) error
 }
 
 func (b *expansionFixtureBackend) AddProjectMember(ctx context.Context, s *runtimequalify.ProjectExpansion, id string, save func(runtimequalify.ProjectExpansion) error) error {
@@ -41,8 +42,66 @@ func (*expansionFixtureBackend) ExpandedProjectFleet(context.Context, runtimequa
 func (*expansionFixtureBackend) ExpandedProjectCode(context.Context, runtimequalify.ProjectExpansion, string, string) (string, error) {
 	return "", nil
 }
-func (*expansionFixtureBackend) ProjectShipAction(context.Context, *runtimequalify.ProjectExpansion, string, string, string, func(runtimequalify.ProjectExpansion) error) error {
+func (b *expansionFixtureBackend) ProjectShipAction(ctx context.Context, s *runtimequalify.ProjectExpansion, id, action, op string, save func(runtimequalify.ProjectExpansion) error) error {
+	if b.shipAction != nil {
+		return b.shipAction(ctx, s, id, action, op, save)
+	}
 	return nil
+}
+
+func TestExpandedStopReplaySurvivesUnavailableBackend(t *testing.T) {
+	r, original, _, _ := projectQueueFixture(t)
+	p, reviewed, _ := readyStopProject(t, r.s)
+	selection, err := r.s.projectFleetSelection(p.ID, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, err := runtimequalify.SeedProjectExpansion(selection)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := state.Members[0]
+	b := &expansionFixtureBackend{queuedProjectBackend: original}
+	b.shipAction = func(_ context.Context, s *runtimequalify.ProjectExpansion, id, action, _ string, save func(runtimequalify.ProjectExpansion) error) error {
+		if action != "stop" || id != m.Member.InstanceID {
+			t.Error("wrong stop target")
+		}
+		for i := range s.Members {
+			if s.Members[i].Member.InstanceID == id {
+				s.Members[i].Phase = "stop-dispatched"
+			}
+		}
+		if err := save(*s); err != nil {
+			return err
+		}
+		return errors.New("fixture exit observation unavailable")
+	}
+	r.b = b
+	req := protocol.ProjectActionRequest{Kind: "member-stop", InstanceID: m.Member.InstanceID, ContainerID: m.Creator.Container.ID, ExpectedRevision: p.Revision, ReviewDigest: reviewed.ReviewDigest, RequestID: "interrupted-stop", ConfirmAction: true}
+	op, _, err := r.queueProjectAddition("actor", p.ID, req, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitProjectWorker(t, r)
+	before, err := loadOperation(r.s.db, op.ID)
+	if err != nil || before.Status != "interrupted" || !strings.Contains(before.Message, "member stop paused") {
+		t.Fatal(before, err)
+	}
+	r.b = nil
+	r.failed.Store(true)
+	got, hit, err := r.queueProjectAddition("actor", p.ID, req, true)
+	if err != nil || !hit || !reflect.DeepEqual(got, before) {
+		t.Fatal("lookup depended on runtime health", got, hit, err)
+	}
+	req.RequestID = "missing-stop"
+	if _, _, err := r.queueProjectAddition("actor", p.ID, req, true); err == nil || !strings.Contains(err.Error(), "no matching project member receipt") {
+		t.Fatal("missing lookup changed semantics", err)
+	}
+	var after protocol.Operation
+	after, err = loadOperation(r.s.db, op.ID)
+	if err != nil || !reflect.DeepEqual(after, before) || r.updateWorkers != 0 {
+		t.Fatal("lookup changed evidence or dispatched work", err)
+	}
 }
 
 func TestProjectExpansionAdmissionReplayAndUnknownOutcome(t *testing.T) {

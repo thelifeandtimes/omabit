@@ -202,18 +202,36 @@ def package_documentation(source, package):
                 raise ValueError("unsupported documentation resource")
         shutil.copytree(folder, package / relative)
 
+    if (source / "SKILLSET.json").exists() or (source / "SKILLSET.json").is_symlink():
+        skill_names(source)
+        shutil.copyfile(source / "SKILLSET.json", package / "SKILLSET.json")
+
+
+def skill_names(source):
+    """New source declares its complete inventory; old exports retain the pair."""
+    legacy = ("omabit-operator", "omabit-plugin-developer")
+    current = legacy + ("omabit-app-developer",)
+    path = source / "SKILLSET.json"
+    if not path.exists() and not path.is_symlink():
+        return legacy
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 4096 or path.stat().st_mode & 0o111:
+        raise ValueError("unsafe source skill inventory")
+    if json.loads(path.read_text()) != {"format": 1, "skills": list(current)}:
+        raise ValueError("unsupported source skill inventory")
+    return current
+
 
 def skill_manifest(source, metadata):
     """Ship source-bound documentation without installing into an agent's config.
 
     Historical source exports without skills keep their existing asset set.
-    New exports must carry the complete, self-contained pair, with no links or
+    New exports must carry the complete declared inventory, with no links or
     executable resources. This is packaging validation, not YAML/skill validation.
     """
     skills = source / "skills"
     if not skills.exists() and not skills.is_symlink():
         return None
-    names = ("omabit-operator", "omabit-plugin-developer")
+    names = skill_names(source)
     if skills.is_symlink() or not skills.is_dir() or sorted(p.name for p in skills.iterdir()) != sorted(names):
         raise ValueError("unexpected skill package inventory")
     entries, total = [], 0

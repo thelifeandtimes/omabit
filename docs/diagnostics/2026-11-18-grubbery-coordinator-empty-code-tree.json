@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "status": "failed-native-observer-expectation",
+  "scope": "fresh pinned kernel with actual managed guard/store/cache/native owner calls; synthetic lifecycle, no product Docker transport or public app API qualification",
+  "artifact_source": "e1e4b5d333d91ce42f8a7ffb630265dd96c1cefb",
+  "artifact_sha256": "7097925adf6d7037d0d1555baf20fdd4ef9551ff2a86682348a23968fdeb25ad",
+  "workflow_case": "grubbery-managed-coordinator-v1",
+  "workflow_exit": 1,
+  "clean_shutdown": true,
+  "bootstrap_observed": true,
+  "source_marker_observed": true,
+  "original_release_parent_observed": true,
+  "selected_phase": "make-directory",
+  "selected_phase_states": [
+    "dispatched",
+    "acknowledged",
+    "uncertain"
+  ],
+  "reason": "The observer required foundational mark source files immediately after code-namespace creation. The actual acknowledged native namespace was an empty code tree. The retained observation-unavailable event stays uncertain; no later phase or retry was dispatched.",
+  "actual_created_code_tree": {
+    "neck": "code",
+    "files": {},
+    "dirs": {}
+  },
+  "app_activated": false,
+  "original_result_sha256": "07a8fd1d7fd5779810bcadd79aa80a2492d6b91ef04ac698427cb4f582138b2d",
+  "workflow_log_sha256": "57a01cf16a0cba0ad1c7da3553070b415cd552d674410b6e8dc3c10c57372eb4",
+  "proof_sha256": "1d809961aa4fc1af13e03226f987add233b0ee5321bcd93a467fed43cd647a97",
+  "last_native_read_metadata_sha256": "5e7448a8c66b6c7ad824d8d563160a7dc4daa0a3c5b8d1aa40a1139614aea0b8",
+  "last_native_read_body_sha256": "00ee0a2ea4cbd259c4be347fbe339faafe42985010d2c2d071f6dc36ec0da368",
+  "next": "Observe native tree/byte/compile boundaries in a separate fresh fixed kernel contract, then correct the trusted source projection and its inert model. Preserve the original app header and uncertain events.",
+  "qualification_claims": []
+}

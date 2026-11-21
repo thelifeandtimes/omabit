@@ -183,7 +183,23 @@ func testEndpointSocket(t *testing.T, dir string, b backend) (*Server, *client.C
 	if err != nil {
 		t.Fatal(err)
 	}
-	socket := filepath.Join(privateDir(t), "runner.sock")
+	var runnerOnce sync.Once
+	closeRunner := func() {
+		runnerOnce.Do(func() {
+			if err := r.Close(); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+	t.Cleanup(closeRunner) // setup failure must not leak polling workers
+	// t.TempDir follows GOTMPDIR in Go1.27; long build roots can exceed the
+	// Unix sockaddr limit. This is an owned, short fixture only.
+	socketDir, err := os.MkdirTemp("/tmp", "omabit-sock-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.RemoveAll(socketDir) })
+	socket := filepath.Join(socketDir, "runner.sock")
 	listener, err := localrpc.Listen(socket)
 	if err != nil {
 		t.Fatal(err)
@@ -198,9 +214,7 @@ func testEndpointSocket(t *testing.T, dir string, b backend) (*Server, *client.C
 			c.Close()
 			_ = httpServer.Close()
 			<-done
-			if err := r.Close(); err != nil {
-				t.Error(err)
-			}
+			closeRunner()
 		})
 	}
 	t.Cleanup(shutdown)

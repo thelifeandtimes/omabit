@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "kind": "disposable-native-app-recovery-failure",
+  "passed": false,
+  "artifact_source": "6e810bc937e57a9f5ff521c8957502fdceb71bb5",
+  "harness_source": "15f766a047a0d1c5d3041326f6d2a4721ec431a9",
+  "candidate_binaries": {
+    "omabit": {
+      "sha256": "99e49dfa47662a5db5b09a1aa731171e862573b16049ed5cf33c4c4632c6ec18",
+      "bytes": 17191175
+    },
+    "urbit-collector": {
+      "sha256": "52f9ee1bebc77a1cf834768c417b2db59b494c8947eaf5858cf0e1c0d2a7ec3b",
+      "bytes": 9031943
+    },
+    "urbit-runner": {
+      "sha256": "da31f97354f8060e865f180aac10dcd0ad2314caea0e89128aa4ad686193d133",
+      "bytes": 20562183
+    },
+    "managed.test": {
+      "sha256": "f1b57a49ccb0e7d82d175907b339dfcf5f7e4b95edfd96d72a09a5c50a043b92",
+      "bytes": 29503751
+    }
+  },
+  "runtime": {
+    "image_manifest": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "vere": "4.6-5a7614f",
+    "actual_engine": "29.9.1",
+    "rootless_bundle_label": "29.7.2",
+    "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b"
+  },
+  "source_schema": 62,
+  "target_schema": 63,
+  "original_header_and17_event_prefix_exact": true,
+  "records": [
+    {
+      "steps": 12,
+      "events": 36,
+      "all_observed": true,
+      "each_phase_dispatches_once": true
+    },
+    {
+      "steps": 9,
+      "events": 27,
+      "all_observed": true,
+      "each_phase_dispatches_once": true
+    }
+  ],
+  "runtime_audits": 1,
+  "remaining_app_leases": 0,
+  "state_and_new_code_reads_before_and_after_second_same_pier_restart_passed": true,
+  "saved_storage_identity_config_and_revision_exact": true,
+  "failure": {
+    "observed": "Immediately after successful systemctl runner restart, pinned snapshot GET returned missing Unix socket. The fixture failed immediately.",
+    "eventual_manager_health": "not observed; a normal startup window is plausible, not proven",
+    "helper_elapsed_seconds": 2825.69,
+    "subsequent_api_replay_checks_executed": false,
+    "final_state_update": "acknowledged before manager restart; final read-back not executed"
+  },
+  "shutdown": {
+    "guest_cleanup_result_available": false,
+    "stall_cause": "unknown",
+    "host_scope_term_after_more_than_five_minutes_without_result": true,
+    "clean_shutdown_qualified": false
+  },
+  "evidence": {
+    "full_failure_root_retained": true,
+    "root_sha256": "bc441563af4825a74d8b586b06256faf848f4176a7f9792e1bfb618c91e3402e",
+    "root_logical_bytes": 314638336,
+    "root_allocated_bytes": 265424896,
+    "sqlite_sha256": "96382d3c8880f73614ba197bf133bd3b71d0d14d76306110b623c71e808b8e06",
+    "wal_sha256": "4d07b5da3d441ad7c7a520360205f546e5000781104197fd13e0f009b046044e",
+    "quick_check": "ok",
+    "exported_files": 53,
+    "read_only_no_source_code_execution": true,
+    "original_source_backings_payload_unchanged": true
+  },
+  "scope": "Actual source runner/Docker, CLI and official-SDK stdio on fixed disposable copied pier only. Whole case failed. No complete permits/routes/assets/peers workflow, recording integration, installed upgrade, DEV or production qualification."
+}

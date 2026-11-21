@@ -1,0 +1,208 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "bounded original-ready journal projection, actual authenticated API, Linux metadata walker fixtures and actual CLI/official-SDK stdio source parity only; no real Urbit project allocation or installed/native upgrade qualification",
+  "reviewed_source_base": "f8a93917fdb60c212886a6a7344ebfded5d5d2af",
+  "clean_artifact_freeze": false,
+  "implementation_inputs": [
+    {
+      "path": "cmd/omabit/core_project_allocation_test.go",
+      "sha256": "c8148bc7fcf65d1147c994608e93aa842e7b6439610bbc7634f00eaf738d4c53"
+    },
+    {
+      "path": "internal/client/project_allocation_test.go",
+      "sha256": "d4da2d2aea275a6a9f120487f7415840b81aa17c565b3043c3f8a70c90060c28"
+    },
+    {
+      "path": "internal/managed/project_allocation_linux.go",
+      "sha256": "03a88c90e6daf5735381976a28320df0f647ae3f8d6e632295899f4f65d5cccb"
+    },
+    {
+      "path": "internal/managed/project_allocation_original_linux.go",
+      "sha256": "e73e1944c44feecde68dc92aa47d9ff3601271ade71feb17059d455341f85245"
+    },
+    {
+      "path": "internal/managed/project_allocation_original_linux_test.go",
+      "sha256": "c493d287be8a7b0890456bdb67dfdd7946c88fd819988379e71c8f3f3dde55b1"
+    },
+    {
+      "path": "internal/projectusage/scan_linux_test.go",
+      "sha256": "ddf9cf5e15c57cbe45a239c0742c95efac45ea16b738412daaf2459bd164283e"
+    },
+    {
+      "path": "internal/projectusage/types.go",
+      "sha256": "9b0e4654c2c96b9edc5545dc41ffefbbe3641c0f739017231a37540672bcd5ad"
+    },
+    {
+      "path": "internal/projectusage/types_test.go",
+      "sha256": "0896caff2bfcf2d760c9756c59501341c06bfdcb5e1ae05006188a6aba206779"
+    },
+    {
+      "path": "internal/runtimequalify/project_allocation_linux.go",
+      "sha256": "771b430c9e3767044e5473088f8ace882557e9b50fb6a05d537aa37531aa16e0"
+    },
+    {
+      "path": "internal/runtimequalify/project_allocation_linux_test.go",
+      "sha256": "51b4fca9bb148e27b5795f6ad2d28828f79743a5d694d2e065d180572bf6c813"
+    },
+    {
+      "path": "internal/service/project_allocation.go",
+      "sha256": "10fc56bb997c9f9936a2d19f95cd5e06731112af7cebc2fcc0667f175b5ec238"
+    }
+  ],
+  "operation": "project.allocation.v1",
+  "runner_feature": "project-allocation-read-v1",
+  "persistent_formats_changed": false,
+  "runner_schema": 65,
+  "ledger_kinds": [
+    "expanded-ledger-v1",
+    "original-ready-history-v1"
+  ],
+  "original_source_contract": {
+    "requires_all_members_completed_original_boot_and_initialized_readiness": true,
+    "derives_read_only_projection_without_persisting_expansion_or_member_phase": true,
+    "strict_initial_creator_and_pier_mount_identities": true,
+    "conflicting_initialized_original_proofs_refused": true,
+    "raw_selected_observed_readiness_and_all_project_operations_runtime_mirrors_fingerprints_bound": true,
+    "before_after_history_changes_withheld": true,
+    "max_operations": 1024,
+    "max_readiness_rows": 1024,
+    "max_raw_bytes_per_source_group_before_decode": 4194304,
+    "reservations_unfinished_initial_boot_retired_resumed_or_recovered_original_histories_unsupported": true,
+    "no_engine_or_process_http_probe": true,
+    "no_measured_file_content_read_or_explicit_filesystem_database_mutation": true,
+    "historical_readiness_is_not_current_runtime_health": true,
+    "no_full_budget_shared_allowance_or_action_authority": true
+  },
+  "coverage": [
+    "all original initialized member identities preserved; no new expansion row; every SQL row remains exact",
+    "raw readiness whitespace and operation fingerprint changes independently withhold a census while the same immutable member projection would otherwise match",
+    "oversized invalid original readiness refuses at byte admission before body decoding",
+    "legitimate retired and recovering original histories refuse without scanning or adopting historical creators",
+    "unstarted reservations still refuse; existing expanded/pending-stop behavior and original interrupted receipts remain unchanged",
+    "real disposable Linux original creation/mount/pier/cache fixture reads without invoking engine commands",
+    "typed unknown ledger kind rejected; different known source kinds invalidate growth baselines",
+    "actual CLI/official SDK accepts both source kinds, preserves integers above2^53, and retains private role/capability/consent/identity/mode/unknown/transport refusals",
+    "focused source races and seven-package race-configuration vet"
+  ],
+  "checks": [
+    {
+      "source_check": 10,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/projectusage",
+        "./internal/runtimequalify",
+        "./internal/managed",
+        "./internal/client",
+        "./internal/access",
+        "./cmd/omabit",
+        "./internal/service",
+        "-run",
+        "Test(Allocation|ExpandedProjectAllocation|ProjectAllocation|CLIAndMCPProjectAllocation|Catalog|SchemaValidationPreservesLargeIntegerBindings|ReadOnlyPOSTLossDoesNotSuggestMutationRecovery)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "package_results": [
+        [
+          "internal/projectusage",
+          "1.081"
+        ],
+        [
+          "internal/runtimequalify",
+          "2.446"
+        ],
+        [
+          "internal/managed",
+          "20.595"
+        ],
+        [
+          "internal/client",
+          "1.014"
+        ],
+        [
+          "internal/access",
+          "1.163"
+        ],
+        [
+          "cmd/omabit",
+          "9.672"
+        ],
+        [
+          "internal/service",
+          "2.648"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51471007744,
+      "full_post_charge_bytes": 51301109760
+    },
+    {
+      "source_check": 11,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/service",
+        "-run",
+        "TestCatalog",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "package_results": [
+        [
+          "internal/service",
+          "2.213"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51340517376,
+      "full_post_charge_bytes": 51326320640
+    },
+    {
+      "source_check": 11,
+      "passed": true,
+      "command": [
+        "go",
+        "vet",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/projectusage",
+        "./internal/runtimequalify",
+        "./internal/managed",
+        "./internal/client",
+        "./internal/access",
+        "./internal/service",
+        "./cmd/omabit"
+      ],
+      "package_results": [],
+      "sampled_fast_peak_bytes": 51339677696,
+      "full_post_charge_bytes": 51326320640
+    }
+  ],
+  "storage": {
+    "budget_bytes": 51539607552,
+    "source10_reserve_bytes": 335544320,
+    "source11_reserve_bytes": 134217728,
+    "source10_cap_stop_margin_bytes": 67108864,
+    "no_monitor_interruption": true,
+    "final_full_charge_bytes": 51326320640,
+    "additional_vm_or_original_evidence_retirement": false
+  },
+  "supersedes": "M735 original/nonexpanded adapter pending boundary only; its scoped passed/failed evidence remains retained",
+  "remaining": [
+    "original replacements and recovered-anchor resource adapters",
+    "matching native current project allocation/growth and independent stat/history preservation",
+    "historical/shared/full project budget and event-payload evidence",
+    "explicit configured budgets/shared allowances, durable incident latch, reviewed resume and journaled containment",
+    "matching artifacts, actual previous-stable upgrades and preserved DEV qualification"
+  ],
+  "production_installed_and_manual_review_state_changed": false
+}

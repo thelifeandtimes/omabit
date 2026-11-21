@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "status": "failed-before-framework-or-app",
+  "scope": "fresh disposable native qualification; source fixture guard refusal, no product/native app qualification",
+  "artifact_source": "dca9e8d69912e16b8473dc34f65a0e5d1075ad9b",
+  "artifact_sha256": "ff728e8d786f8e0495882967065c6f40b16ad777a442f6e130552b09947ea5b0",
+  "workflow_case": "grubbery-managed-coordinator-v1",
+  "workflow_exit": 1,
+  "clean_shutdown": true,
+  "reason": "The native fixture identity guard retained its older closed case list and refused the new coordinator case with the literal framework desk.",
+  "guard_retained": {
+    "separate_namespaces": true,
+    "no_host_home_or_sockets": true,
+    "private_loopback_only": true,
+    "explicit_scope_admission": true,
+    "pinned_vere": true
+  },
+  "framework_operations_executed": false,
+  "app_operations_executed": false,
+  "app_store_created": false,
+  "original_result_sha256": "07a8fd1d7fd5779810bcadd79aa80a2492d6b91ef04ac698427cb4f582138b2d",
+  "workflow_log_sha256": "0a495cffadae996fb00d3181cab35f0d8a0116411ea5b362ba51d7dfaeff0a6f",
+  "correction": "Add only the explicit coordinator case to the fixture desk identity guard, test accepted and refused identities, and run a new fresh capsule. Original failed result remains unchanged.",
+  "qualification_claims": []
+}

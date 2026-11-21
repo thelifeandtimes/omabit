@@ -26,6 +26,7 @@ func TestBootstrapSchemaUpgradePreservesLegacySelection(t *testing.T) {
 	// Schema-12 fake/comet records omitted selection and used the pinned preset.
 	v.Runtime.Bootstrap = nil
 	v.Public.Bootstrap = nil
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	tx, err := s.db.Begin()
 	if err != nil {
 		t.Fatal(err)

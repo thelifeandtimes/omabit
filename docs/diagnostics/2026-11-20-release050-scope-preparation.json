@@ -1,0 +1,26 @@
+{
+  "kind": "release050-version-and-scope-preparation-v1",
+  "status": "prepared-not-qualified",
+  "versions": {
+    "manifest.json": "0.5.0",
+    "plugins/omabit/manifest.json": "0.5.0"
+  },
+  "source_base": "64678ba",
+  "checks_passed": [
+    "native-plugin fixtures (9)",
+    "skill package fixtures (7)",
+    "shared app guidance synchronized",
+    "release policy fixtures (15)",
+    "panel and resource JavaScript models",
+    "snapshot installer fixtures (10)"
+  ],
+  "inputs": {
+    "manifest.json": "98e47b556a1315629f0f01a7146e7ec3030ec2b0c968efdad6c12507ead80987",
+    "plugins/omabit/manifest.json": "b231d0b370b4ea253f106caa75e46971225424738778d43740ec01156f692d68",
+    "plugins/omabit/Service.qml": "29cf1b69423c720b843b732f1479a1b9325c4d2879e8f269e2c0a7bb98223b93",
+    "docs/release-0.5.0.md": "02edc019c026fd9852b03596414fec93f867611ea15e14f6cbaf1bca310bb960",
+    "docs/mcp-clients.md": "25eef221c1f6dfe5516ae060e855c5437e84d6f42a61264ef684d9cab78682f5",
+    "docs/mcp-http.md": "98c067bc6fdc8a9af23bb54b5d552e85f59bb2a3f824482db8aa619fe1874f04"
+  },
+  "limits": "No final artifact build, native final-source upgrade, preserved DEV update or stable publication yet."
+}

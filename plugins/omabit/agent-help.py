@@ -16,7 +16,8 @@ import tempfile
 import uuid
 from urllib.parse import urlsplit
 
-SKILLS = ("omabit-operator", "omabit-plugin-developer")
+LEGACY_SKILLS = ("omabit-operator", "omabit-plugin-developer")
+SKILLS = LEGACY_SKILLS + ("omabit-app-developer",)
 ENV_KEYS = {"XDG_CONFIG_HOME", "XDG_STATE_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME"}
 RECEIPT = ".omabit-skill.json"
 
@@ -69,15 +70,19 @@ class Bundle:
         build = json.loads(ordinary(root / "BUILD.json"))
         manifest = json.loads(ordinary(root / "SKILLS.json"))
         ui_manifest = json.loads(ordinary(ui / "manifest.json"))
-        if (manifest.get("format") != 1 or manifest.get("skills") != list(SKILLS)
+        if (manifest.get("format") != 1 or manifest.get("skills") not in (list(SKILLS),list(LEGACY_SKILLS))
                 or manifest.get("version") != build.get("version")
                 or manifest.get("source_commit") != build.get("source_commit")
                 or manifest.get("development") != build.get("development")
                 or ui_manifest.get("version") != build.get("version")
                 or not re.fullmatch(r"[0-9a-f]{40}", str(build.get("source_commit", "")))):
             raise ValueError("Bundled skill provenance does not match this desktop")
+        self.skills = tuple(manifest["skills"])
+        skills_root = root / "skills"
+        if skills_root.is_symlink() or not skills_root.is_dir() or sorted(p.name for p in skills_root.iterdir()) != sorted(self.skills):
+            raise ValueError("Bundled skill inventory changed or is incomplete")
         expected = {}
-        for name in SKILLS:
+        for name in self.skills:
             expected.update({"skills/" + name + "/" + path: sha for path, sha in files(root / "skills" / name).items()})
         if manifest.get("files") != expected:
             raise ValueError("Bundled skill files changed or are incomplete")
@@ -85,7 +90,7 @@ class Bundle:
         self.identity = digest(canonical(manifest))
 
     def skill_files(self, name):
-        if name not in SKILLS:
+        if name not in self.skills:
             raise ValueError("Unknown bundled skill")
         prefix = "skills/" + name + "/"
         return {path[len(prefix):]: sha for path, sha in self.manifest["files"].items() if path.startswith(prefix)}
@@ -311,7 +316,7 @@ def help_prompt(bundle, context):
         command += ["app-development-status"] if topic == "app-development" else ["setup-status"]
     return (topics[topic] + "\n\n"
             "Read this exact bundled skill and its referenced files, even if your harness has no skill discovery:\n"
-            + str(bundle.root / "skills/omabit-operator/SKILL.md") + "\n\n"
+            + str(bundle.root / ("skills/omabit-app-developer/SKILL.md" if topic=="app-development" and "omabit-app-developer" in bundle.skills else "skills/omabit-operator/SKILL.md")) + "\n\n"
             + "Omabit release: " + bundle.manifest["version"] + "\nSource: " + bundle.manifest["source_commit"]
             + "\nDesktop profile: " + profile + "\nRecorded stage: " + phase
             + "\nRead-only diagnostic command:\n" + shlex.join(command)
@@ -359,7 +364,7 @@ def main():
     target = args.target or target_default(agent)
     if args.action == "status":
         value = {"version": 1, "agent": agent, "problem": problem, "bundle": bundle.manifest,
-                 "target": target, "skills": [installation(bundle, clean_target(target), name) for name in SKILLS] if target else []}
+                 "target": target, "skills": [installation(bundle, clean_target(target), name) for name in bundle.skills] if target else []}
     elif args.action == "install":
         if not args.skill:
             raise ValueError("Select a skill to install")

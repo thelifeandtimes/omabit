@@ -26,6 +26,7 @@ class AgentHelpTests(unittest.TestCase):
         root=self.root/name;root.mkdir();(root/'ui').mkdir();(root/'bin').mkdir()
         (root/'bin/omabit').write_text('fixture only')
         shutil.copytree(ROOT/'skills',root/'skills')
+        shutil.copyfile(ROOT/'SKILLSET.json',root/'SKILLSET.json')
         (root/'skills/omabit-operator/SKILL.md').write_text((root/'skills/omabit-operator/SKILL.md').read_text()+'\nFixture '+letter+'\n')
         metadata={'version':'0.4.0-rc.1','source_commit':letter*40,'development':{'label':name}}
         (root/'BUILD.json').write_text(json.dumps(metadata));(root/'ui/manifest.json').write_text(json.dumps({'version':metadata['version']}))
@@ -38,6 +39,7 @@ class AgentHelpTests(unittest.TestCase):
     def test_complete_install_update_and_old_generation_preserved(self):
         self.assertEqual(self.install()['state'],'installed')
         self.install(name='omabit-plugin-developer')
+        self.install(name='omabit-app-developer')
         old=(self.target/'omabit-operator/SKILL.md').read_bytes()
         second=self.make_bundle('second','b')
         self.assertEqual(agent.installation(second,self.target,'omabit-operator')['action'],'update')
@@ -47,6 +49,20 @@ class AgentHelpTests(unittest.TestCase):
         self.assertEqual(agent.installation(self.bundle,self.target,'omabit-plugin-developer')['state'],'installed')
         self.assertIn(str(self.bundle.root),agent.help_prompt(self.bundle,{}))
         self.assertIn(str(second.root),agent.help_prompt(second,{}))
+        self.assertIn(str(second.root/'skills/omabit-app-developer/SKILL.md'),agent.help_prompt(second,{'topic':'app-development'}))
+
+    def test_old_two_skill_bundle_remains_usable(self):
+        root=self.root/'legacy';root.mkdir();(root/'ui').mkdir();(root/'bin').mkdir()
+        for name in agent.LEGACY_SKILLS:
+            shutil.copytree(ROOT/'skills'/name,root/'skills'/name)
+        metadata={'version':'0.4.0','source_commit':'c'*40}
+        (root/'BUILD.json').write_text(json.dumps(metadata));(root/'ui/manifest.json').write_text(json.dumps({'version':metadata['version']}))
+        packager.write_skill_manifest(root,metadata)
+        bundle=agent.Bundle(root,root/'ui')
+        self.assertEqual(bundle.skills,agent.LEGACY_SKILLS)
+        self.assertEqual(self.install(bundle)['state'],'installed')
+        with self.assertRaises(ValueError):bundle.skill_files('omabit-app-developer')
+        self.assertIn(str(root/'skills/omabit-operator/SKILL.md'),agent.help_prompt(bundle,{'topic':'app-development'}))
     def test_custom_and_edited_skills_are_never_replaced(self):
         self.target.mkdir(parents=True);custom=self.target/'omabit-operator';custom.mkdir();(custom/'SKILL.md').write_text('my custom skill')
         self.assertEqual(agent.installation(self.bundle,self.target,'omabit-operator')['state'],'preserved')

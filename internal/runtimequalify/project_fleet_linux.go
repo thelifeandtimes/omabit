@@ -123,19 +123,31 @@ func projectFleetInspect(ctx context.Context, e *projectCurrentReadinessEngine) 
 		if c.State == nil || c.State.Running == nil {
 			return projectMemberSnapshot{}, errUntrustedContainer
 		}
-		if !*c.State.Running && c.State.Status == "exited" {
+		if *c.State.Running || c.State.Status == "exited" {
 			started, err := time.Parse(time.RFC3339Nano, c.State.StartedAt)
-			if err != nil || started.IsZero() {
+			if err != nil || started.IsZero() || !m.processStartedAt.IsZero() && !m.processStartedAt.Equal(started) {
 				return projectMemberSnapshot{}, errUntrustedContainer
 			}
+			// Bind the process before the bracket. It may exit before either
+			// inspection, but a replacement process must never be rebound here.
 			e.source.members[i].allowExited = true
 			e.source.members[i].processStartedAt = started
 		}
 	}
-	if e.recovery != nil {
-		return e.recovery.inspectMembers(ctx, e.source.members, nil)
+	for attempt := 0; attempt < 3; attempt++ {
+		var snapshot projectMemberSnapshot
+		if e.recovery != nil {
+			snapshot, err = e.recovery.inspectMembers(ctx, e.source.members, nil)
+		} else {
+			snapshot, err = e.source.anchor.inspectProjectMemberSnapshot(ctx, e.source.members)
+		}
+		if !errors.Is(err, errProjectProcessExited) || ctx.Err() != nil {
+			return snapshot, err
+		}
+		// Only a verified running-to-exited transition is retried, with the
+		// same process binding and all ownership checks repeated from scratch.
 	}
-	return e.source.anchor.inspectProjectMemberSnapshot(ctx, e.source.members)
+	return projectMemberSnapshot{}, errProjectProcessExited
 }
 
 // ReadProjectLoginCode verifies the same owned project/container before and after

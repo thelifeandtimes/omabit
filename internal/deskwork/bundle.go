@@ -23,10 +23,28 @@ const MaxBundleBytes = MaxTreeBytes + MaxManifestBytes + int64(len(bundleMagic))
 // in manifest order. No archive paths, modes, links or executable scripts are
 // interpreted. It is staged outside a pier and cannot commit anything to Clay.
 func WriteBundle(ctx context.Context, directory string, m Manifest, w io.Writer) error {
+	st, err := os.Lstat(directory)
+	if err != nil {
+		return err
+	}
+	if !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
+		return errors.New("source must be an ordinary directory")
+	}
+	root, err := os.OpenRoot(directory)
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+	return WriteBundleRoot(ctx, root, m, w)
+}
+
+// WriteBundleRoot streams only the exact observed manifest through a pinned
+// directory handle. It never reopens a caller-controlled absolute path.
+func WriteBundleRoot(ctx context.Context, root *os.Root, m Manifest, w io.Writer) error {
 	if err := m.Validate(); err != nil {
 		return err
 	}
-	before, err := Snapshot(directory)
+	before, err := SnapshotRoot(root)
 	if err != nil {
 		return err
 	}
@@ -49,11 +67,6 @@ func WriteBundle(ctx context.Context, directory string, m Manifest, w io.Writer)
 	if _, err = w.Write(body); err != nil {
 		return err
 	}
-	root, err := os.OpenRoot(directory)
-	if err != nil {
-		return err
-	}
-	defer root.Close()
 	for _, item := range m.Files {
 		if err = ctx.Err(); err != nil {
 			return err
@@ -84,7 +97,7 @@ func WriteBundle(ctx context.Context, directory string, m Manifest, w io.Writer)
 			return errors.New("source changed during transfer")
 		}
 	}
-	after, err := Snapshot(directory)
+	after, err := SnapshotRoot(root)
 	if err != nil {
 		return err
 	}

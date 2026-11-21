@@ -45,7 +45,9 @@ Item {
         var response=JSON.parse(root.output)
         if(!response || response.version!==1)throw new Error("Unsupported agent response")
         if(action==="status"){
-          if(typeof response.agent!=="string" || typeof response.target!=="string" || !Array.isArray(response.skills) || response.skills.length>2)throw new Error("Invalid agent status")
+          var names=response.bundle ? response.bundle.skills : null
+          var pair="omabit-operator,omabit-plugin-developer"
+          if(typeof response.agent!=="string" || typeof response.target!=="string" || !Array.isArray(names) || (names.join(",")!==pair && names.join(",")!==pair+",omabit-app-developer") || !Array.isArray(response.skills) || response.skills.length>3 || (response.skills.length!==0 && response.skills.length!==names.length) || !response.skills.every(function(row,index){return row && row.name===names[index] && typeof row.target==="string"}))throw new Error("Invalid agent status")
           root.value=response;root.target=response.target
         }else if(action==="install"){
           if(!response.installed || response.installed.state!=="installed")throw new Error("Skill installation needs review")

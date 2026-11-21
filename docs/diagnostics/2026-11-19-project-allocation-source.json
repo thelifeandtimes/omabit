@@ -1,0 +1,401 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "read-only filesystem/SQL/HTTP/SSH/client/catalog and actual CLI/official-SDK stdio source fixtures only; no actual native project allocation, installed upgrade, DEV or production qualification",
+  "reviewed_source_base": "393c08172c424a0b85fed1a4c3c8477d1b1fb5ce",
+  "clean_artifact_freeze": false,
+  "implementation_inputs": [
+    {
+      "path": ".github/workflows/checks.yml",
+      "sha256": "1ce6557429560e6019a25d0d4e2862828892d9293bd9d852862871c2b9149f6f"
+    },
+    {
+      "path": "cmd/omabit/core_project_allocation_test.go",
+      "sha256": "453c9996075e39351a3a5a6083cd6bdaac9f7866b9c97c4f92be178cde1f4e3c"
+    },
+    {
+      "path": "internal/access/desk.go",
+      "sha256": "00c43e38c7a32409203b831ba34c158469389875b8354db25594e62eb2aa5d50"
+    },
+    {
+      "path": "internal/access/project_allocation_test.go",
+      "sha256": "0bb350f6dd6507d10002b711a28dfd07c3fdb0b359648ffb1623d26cec44d613"
+    },
+    {
+      "path": "internal/client/project_allocation.go",
+      "sha256": "94252abc09f675880b5439d513647596590ca7dc6c6acf579520445c55942efe"
+    },
+    {
+      "path": "internal/client/project_allocation_test.go",
+      "sha256": "e8af224f0d2e77a27c23fe4e9c275cfcc9811145f2fb68c589d8b25686eed56d"
+    },
+    {
+      "path": "internal/managed/project_allocation.go",
+      "sha256": "b3f04949ffeb59eb3533c001e9584496bccdad9ac1342e58eee61ce1a7db077f"
+    },
+    {
+      "path": "internal/managed/project_allocation_linux.go",
+      "sha256": "f4bd1932cf088f22fc704cb65119571bc3814b5685dc6617b422c1e1d5d0ab19"
+    },
+    {
+      "path": "internal/managed/project_allocation_linux_test.go",
+      "sha256": "0cecaeb18f07bb713374a757ca71ba59f0e954d9cf09318373eed711f15f9fb6"
+    },
+    {
+      "path": "internal/managed/project_allocation_other.go",
+      "sha256": "38c5fa8248fea613b2025dfa4bbf02e59f3c432cc2fc0dfae4c7dad9da71f9f8"
+    },
+    {
+      "path": "internal/managed/server.go",
+      "sha256": "69ffaeaa550e6582cd6e1c9fbae0a3136b625053084a1a5069aa892337d24aee"
+    },
+    {
+      "path": "internal/projectusage/scan_linux.go",
+      "sha256": "af49b476683bfb75bd6ef05cfdb4dec25ad4eb6d516ee4e601a1804736d4314c"
+    },
+    {
+      "path": "internal/projectusage/scan_linux_test.go",
+      "sha256": "094d05e7f9851e3c43fc122460422152725717f7df6a762d4e48df62546f3aec"
+    },
+    {
+      "path": "internal/projectusage/types.go",
+      "sha256": "cf60102444733c4a0d41c69d2fb4ada2647928ff6f42b6fdb602ad3e08a2fe12"
+    },
+    {
+      "path": "internal/projectusage/types_test.go",
+      "sha256": "79785c53d690a8410b405c42f9a57f20cd02a5455fbea2ef6d8a5c28ee4eb8ab"
+    },
+    {
+      "path": "internal/protocol/project_allocation.go",
+      "sha256": "ba383b9bb9ac5acd9259353f1de22d012541be186c9e1937284fbfbcba6510d6"
+    },
+    {
+      "path": "internal/runtimequalify/project_allocation_linux.go",
+      "sha256": "ccca1e9d719986dffdd75c896d239fdc4e19dc36d083450731e140b58ea85860"
+    },
+    {
+      "path": "internal/runtimequalify/project_allocation_linux_test.go",
+      "sha256": "e2591dac99ad98abc8317c0e54a448af9edbaed250ea921a9796c4185b895255"
+    },
+    {
+      "path": "internal/service/operations.go",
+      "sha256": "640c249e4b929f379a7ad457d0cb672b5b82f2c68b0df4516e97eefab321d2da"
+    },
+    {
+      "path": "internal/service/project_allocation.go",
+      "sha256": "0e7acbd6acc7f924aaef35f40e19a33bb84315a4c1ff0bf87f6b7ffc33afaa13"
+    },
+    {
+      "path": "internal/service/timeouts.go",
+      "sha256": "2684bc50e8f728691b42fac3308e1a00ef7c1eaf6e16e4354abe35a3d1cd4df5"
+    },
+    {
+      "path": "internal/service/timeouts_test.go",
+      "sha256": "be69127b2224137ac91f65c1279774403914ddae757cbcc886a632522007cf58"
+    }
+  ],
+  "operation": "project.allocation.v1",
+  "runner_feature": "project-allocation-read-v1",
+  "runner_path": "/v1/projects/allocation",
+  "persistent_formats_changed": false,
+  "runner_schema": 65,
+  "contract": {
+    "operator_private_consent": true,
+    "exact_saved_revision_plan_and_before_after_raw_ledger_binding": true,
+    "expanded_current_members_only": true,
+    "no_request_paths_or_prior_sample": true,
+    "scope": "current-member-mounts-and-private-caches-v1",
+    "full_project_budget_known": false,
+    "shared_allowance_status": "not-configured",
+    "no_partial_unknown_totals": true,
+    "server_owned_monotonic_samples": true,
+    "sample_map_max_projects": 32,
+    "window_seconds": [
+      1,
+      300
+    ],
+    "one_census_at_a_time": true,
+    "entry_limit": 65536,
+    "root_limit": 65,
+    "depth_limit": 64,
+    "request_timeout_seconds": 30,
+    "filesystem_responsiveness_remains_required": true,
+    "no_background_loop_or_containment_authority": true,
+    "no_measured_file_content_engine_or_http_probe": true,
+    "no_explicit_filesystem_or_database_mutation": true
+  },
+  "coverage": [
+    "sparse versus allocated inode bytes; internal and external hardlinks; directories, FIFO and Unix socket metadata",
+    "exact bound mount/pier identities and current creation contracts without engine or HTTP effects",
+    "private-cache mode, symlink, replacement/change, missing, cancellation, entry/depth and overflow refusals; injected cross-mount fingerprint",
+    "unknown, incomplete, stale and changed responses withhold partial totals and prior growth",
+    "all SQL rows, interrupted original receipt and pending fence unchanged by reads",
+    "one global census does not hold manager mutex while scanning; concurrent ledger changes withhold response",
+    "cloned bounded prior samples, finite monotonic windows, binding changes, fast polls and eviction",
+    "actual authenticated server route stays readable while mutation admission is fenced",
+    "exact client/SSH timeout and no retry; actual CLI/official-SDK parity with integers above 2^53",
+    "operator/capability/consent/identity/mode/transport refusals and privacy; schema and catalog effects/timeouts"
+  ],
+  "checks": [
+    {
+      "source_check": 2,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-trimpath",
+        "./internal/projectusage",
+        "./internal/runtimequalify",
+        "./internal/managed",
+        "./internal/client",
+        "./internal/access",
+        "-run",
+        "Test(Allocation|BoundTree|ExpandedProjectAllocation|ProjectAllocation)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": false,
+      "package_results": [
+        [
+          "internal/projectusage",
+          "0.050"
+        ],
+        [
+          "internal/runtimequalify",
+          "0.153"
+        ],
+        [
+          "internal/managed",
+          "0.248"
+        ],
+        [
+          "internal/client",
+          "0.003"
+        ],
+        [
+          "internal/access",
+          "0.155"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51300302848,
+      "full_post_charge_bytes": 51175800832
+    },
+    {
+      "source_check": 3,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-trimpath",
+        "./cmd/omabit",
+        "./internal/service",
+        "-run",
+        "Test(CLIAndMCPProjectAllocation|CatalogAndInputGuardsStayOffline|CatalogTimeoutsCoverLongRPCAndIdentityHandshakeBounds)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": false,
+      "package_results": [
+        [
+          "cmd/omabit",
+          "0.648"
+        ],
+        [
+          "internal/service",
+          "0.108"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51257221120,
+      "full_post_charge_bytes": 51216502784
+    },
+    {
+      "source_check": 5,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/runtimequalify",
+        "-run",
+        "TestExpandedProjectAllocation",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": true,
+      "package_results": [
+        [
+          "internal/runtimequalify",
+          "2.426"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51034181632,
+      "full_post_charge_bytes": 50996273152
+    },
+    {
+      "source_check": 6,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/managed",
+        "-run",
+        "TestProjectAllocation",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": true,
+      "package_results": [
+        [
+          "internal/managed",
+          "9.533"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51221479424,
+      "full_post_charge_bytes": 51084263424
+    },
+    {
+      "source_check": 7,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/projectusage",
+        "./internal/client",
+        "./internal/access",
+        "./internal/service",
+        "-run",
+        "Test(Allocation|ProjectAllocation|CLIAndMCPProjectAllocation|Catalog|SchemaValidationPreservesLargeIntegerBindings|ReadOnlyPOSTLossDoesNotSuggestMutationRecovery)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": true,
+      "package_results": [
+        [
+          "internal/projectusage",
+          "1.100"
+        ],
+        [
+          "internal/client",
+          "1.013"
+        ],
+        [
+          "internal/access",
+          "1.165"
+        ],
+        [
+          "internal/service",
+          "2.620"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51135217664,
+      "full_post_charge_bytes": 51102076928
+    },
+    {
+      "source_check": 8,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./cmd/omabit",
+        "-run",
+        "TestCLIAndMCPProjectAllocation",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "race": true,
+      "package_results": [
+        [
+          "cmd/omabit",
+          "8.284"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51213463552,
+      "full_post_charge_bytes": 51141984256
+    },
+    {
+      "source_check": 9,
+      "passed": true,
+      "command": [
+        "go",
+        "vet",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/projectusage",
+        "./internal/runtimequalify",
+        "./internal/managed",
+        "./internal/client",
+        "./internal/access",
+        "./internal/service",
+        "./cmd/omabit"
+      ],
+      "race": true,
+      "package_results": [],
+      "sampled_fast_peak_bytes": 51147464704,
+      "full_post_charge_bytes": 51145261056
+    }
+  ],
+  "interrupted_check": {
+    "source_check": 4,
+    "reason": "bounded source storage/deadline threshold",
+    "whole_check_passed": false,
+    "completed_package_only": "internal/projectusage",
+    "stop_threshold_bytes": 51417665536,
+    "sampled_fast_peak_bytes": 51454492672,
+    "full_post_charge_bytes": 51454816256,
+    "budget_bytes": 51539607552,
+    "subsequent_focused_race_checks_passed": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "original_report_retained": true
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "cache40_removed_files": 331,
+    "cache40_freed_bytes": 336089088,
+    "cache40_preserved_pins_exact": 205,
+    "cache41_larger_classification_refused_without_removal": true,
+    "cache42_temporary_classifier_typo_refused_without_removal": true,
+    "cache43_removed_files": 551,
+    "cache43_freed_bytes": 153899008,
+    "cache43_preserved_pins_exact": 209,
+    "scratch_classification_initially_refused_incomplete_elf_without_removal": true,
+    "source04_regenerable_scratch_removed_files": 776,
+    "source04_regenerable_scratch_freed_bytes": 308461568,
+    "source04_protected_pins_exact": 206,
+    "unique_vm_or_original_recording_sql_log_source_artifacts_removed": false,
+    "final_full_charge_bytes": 51145261056
+  },
+  "remaining": [
+    "original/nonexpanded and recovered-anchor resource adapters",
+    "matching native current project allocation/growth versus independent stat and preservation checks",
+    "historical/shared/full project budget and event-payload growth evidence",
+    "explicit configured project budgets/shared allowances, durable incident latch, reviewed resume and journaled containment",
+    "matching frozen artifacts, full previous-stable upgrade and preserved DEV qualification"
+  ],
+  "production_and_installed_state_changed": false,
+  "final_source_scopes_inactive_and_empty": [
+    5,
+    6,
+    7,
+    8,
+    9
+  ]
+}

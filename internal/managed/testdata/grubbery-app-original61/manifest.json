@@ -1,0 +1,14 @@
+{
+  "candidate_go_input_manifest_sha256": "29c9ebf6a624b89bfee06e9de42cfa1c13a649a53c3f453d6092a9551b25af84",
+  "fixture_helper_sha256": "72ef7ee55884c618b86c1485f37e03905c71294023e3a37654f268ffed2e9475",
+  "gzip_sha256": "77da7ea436ac07bf816218f8097ee1a4b6b40b1aae41a11cad27e1db5a20f5c5",
+  "original_database_sha256": "f9c6f02bbf3ec0b1cd88a5dcb089d6de16e82b12c018f5a994613c83b7c72fab",
+  "provenance_note": "product Go inputs match frozen6407cda; exact invoked writer/fixture helpers retained; full build input manifest in original rehearsal identifies unused historical-test overlays",
+  "raw_sql_sha256": "5378277b1ed5199ec8ffe8ffa2f2b202698ba499f073340a8ee8a53162044871",
+  "schema": 61,
+  "scope": "synthetic actual61 app journal1 with original59/60 ancestry; no native app write or installed state",
+  "source_commit": "6407cda23bdc3bbfa25a2ed661e4860fcf5f2763",
+  "writer_binary_sha256": "19db3903b84b6db79310d41766587e6dfa6f79717bf1baeb00a512d32944138f",
+  "writer_test": "TestGrubberyOriginal60MigrationRehearsal",
+  "writer_test_source_sha256": "37773c5b161193b745e3e7bcda9b011a72d2342f058b9a42ffaaf907241085b2"
+}

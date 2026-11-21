@@ -32,6 +32,7 @@ func TestNativeAllShipsSchema17PreservesBodiesAndReceipts(t *testing.T) {
 	if err = s.db.QueryRow("SELECT body FROM operations WHERE id=?", op.ID).Scan(&receipt); err != nil {
 		t.Fatal(err)
 	}
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	if _, err = s.db.Exec("PRAGMA user_version=17"); err != nil {
 		t.Fatal(err)
 	}

@@ -1,0 +1,1 @@
+{"version":1,"job_id":"11111111111111111111111111111111","job_sha256":"8466615252134e37298f4307a5ee59588ec3c4c0ed1fc5c12f01e79ebc6d95e2","worker":{"executable_sha256":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","pid":4242,"host_boot_id":"11111111-2222-3333-4444-555555555555","namespaces":{"user":1,"mount":2,"pid":3,"network":4}}}

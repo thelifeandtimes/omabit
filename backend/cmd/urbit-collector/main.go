@@ -68,6 +68,10 @@ Start with help for offline task topics, or help TOPIC for a focused guide.
 
 Commands:
   help [TOPIC]  Offline guidance in JSON (default) or --format text.
+  project-diagnose PROJECT --member INSTANCE --operation STOP [--probe]
+              Diagnose an exact interruption; --probe prepares a read-only review.
+  project-reconcile-stop PROJECT --review FILE --request-id ID --confirm-action
+              Verify stopped state and resolve its exact fence; never starts a ship.
   projects    Read selected runner project reservations; does not probe runtime.
   project-create  Create and boot a complete fresh fake network; use --help.
   project-add PROJECT  Add one fresh fake to an existing project; use --help.
@@ -245,6 +249,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	if command == "project-operate" {
 		return runProjectOperate(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-diagnose" || command == "project-reconcile-stop" {
+		return runProjectStopRecovery(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
 	if command == "project-register" {
 		return runProjectRegister(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)

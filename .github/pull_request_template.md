@@ -10,6 +10,7 @@
 - Upgrade/state preservation evidence:
 - Remaining scope limits:
 
-For master, use `release/X.Y.0`, follow `docs/development-policy.md`, and include
+For master, use `release/X.Y.Z`, follow `docs/development-policy.md`, and include
 the frozen source, matching artifact pins and non-destructive upgrade record.
-Small UI/QoL iterations belong on edge; backend changes require a new minor line.
+Patch releases are allowed. Runner/collector changes require coordinated artifacts,
+migration/recovery qualification and a stated support window for every release.

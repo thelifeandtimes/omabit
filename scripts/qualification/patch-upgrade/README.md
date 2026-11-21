@@ -1,6 +1,6 @@
 # Guided patch and review-candidate upgrades
 
-Explicit `--portable`, `--previous`, `--candidate`, `--rootless`, `--output` and
+Explicit `--portable`, `--previous`, `--candidate`, `--rootless`, `--init`, `--output` and
 `--run` are required. The previous and candidate paths contain exact published
 and frozen release assets, respectively. Their verified manifests supply the
 versions, including immutable `-rc.N` review candidates. `--rootless` supplies the verified
@@ -28,10 +28,8 @@ guided identity discovery and a complete stopped import with the new runner.
 All companion bytes survive and the unrelated running fake retains its process.
 No production pier or prior manual review state is used.
 
-If owner-only accounting cannot descend into rootless overlay work directories,
-the launcher records that limitation and reserves an additional 4 GiB. Any other
-measurement failure refuses the run. Reported charged usage includes this reserve;
-it is not a claim that inaccessible directories were fully measured.
+Storage accounting must complete through the shared namespace-aware inventory.
+An incomplete measurement refuses admission; it is not replaced by an estimate.
 
 For targets starting at 0.3.6, the guest adds a sparse file of 100 GB + 1 byte
 to that disposable stopped source. It demonstrates the 0.3.5 collector rejection,
@@ -60,3 +58,20 @@ opens only the new fake/desk's Setup gates and verifies its observed receipt.
 The gates are closed afterward. Native three-ship fixtures separately qualify
 Treaty, frontend bytes and receiver delivery; this guest scenario does not claim
 those paths. All desks, sources, grants and credentials are generated in the VM.
+
+
+For the bounded0.5.0 rehearsal, pass `--app-workflow` to create a source desk,
+policy/settings and receipt history with the actual previous stable tools before
+upgrading. Exact original table/DDL/row digests must survive migration and manager
+restart; a separate fresh desk then exercises the candidate workflow. This is
+independent of the optional Theme/DMS fleet fixture. It does not claim a complete
+Gall/Grubbery application workflow from a source-text desk.
+
+The launcher now requires a separately frozen `--init` (SHA256
+`63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7`, unchanged
+release-upgrade PID1 source at d2bb3ba). It performs no Go build. Clean candidate
+source and the release-policy freeze boundary are checked before staging. The
+shared experiment lock, complete cross-worktree/cache/DEV budget, one-CPU/no-swap
+scope and hard root-file growth ceiling apply. The declared4GiB scratch remains.
+SQLite projection readers now close their handles explicitly. Three inert guards
+pass; these changes still need final matching release artifacts and native proof.

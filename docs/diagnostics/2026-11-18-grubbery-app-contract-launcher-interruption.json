@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "date": "2026-11-18",
+  "scope": "fresh native app contract launcher interruption before app checks; no installed/production operation",
+  "source_commit": "f00f5fbfbf2e8be6e6c017607f98cb444f1da61c",
+  "workflow_sha256": "bbadfdb273839fe941fad9dfc2be49d5c4f7e165c57b08638dbf3e99e5693a73",
+  "passed": false,
+  "launcher_exit": 143,
+  "scope_inactive_confirmed": true,
+  "scope_result": "success",
+  "clean_shutdown": "unconfirmed",
+  "phase": "framework activation uncertainty",
+  "cause": "unestablished; scope journal records about180seconds wall time. External command lifetime is a hypothesis, not native failure evidence.",
+  "original_receipts_preserved": true,
+  "original_store_schema": 62,
+  "original_store_quick_check": "ok",
+  "receipt_states": [
+    {
+      "action": "create-desk",
+      "state": "observed",
+      "states": [
+        "planned",
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ],
+      "body_sha256": "0ab260b777b418095641e55ef95206dc7bdaedd6de7ca0bb2301187e42e4294c"
+    },
+    {
+      "action": "commit",
+      "state": "observed",
+      "states": [
+        "planned",
+        "dispatched",
+        "acknowledged",
+        "observed"
+      ],
+      "body_sha256": "6d2f2bf99b50da6d7ec993074b03410120c228f7ff3dded46cad9f4ebde94689"
+    },
+    {
+      "action": "activate-local",
+      "state": "uncertain",
+      "states": [
+        "planned",
+        "dispatched",
+        "uncertain"
+      ],
+      "body_sha256": "b5bfd5f7e736082f96229b0c51ec1491b982c1419775a6af7c445e83cdf80cea"
+    },
+    {
+      "action": "adopt-source",
+      "state": "observed",
+      "states": [
+        "planned",
+        "observed"
+      ],
+      "body_sha256": "913e75e700fca0c6579dafb13b1ccdc300f900bf60d6e00708e95731b193c5b5"
+    }
+  ],
+  "observation_sha256": "624420e338ba7b47d084df9cc98123120e49350df337290d1948b3a2099a1c9d",
+  "disposition": "preserve original capsule and pending activation; no install or app mutation replay. A separately owned supervisor will launch only a fresh successor fixture."
+}

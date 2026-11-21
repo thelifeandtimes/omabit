@@ -1,0 +1,236 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "complete derived redacted ZIP, portable common verified source, disposable codec fixtures and actual CLI/official-SDK manifest/part/ZIP parity only; no native derived export, frozen current artifacts or installed/preserved DEV qualification",
+  "reviewed_source_base": "dc6529be93a749f09b18a10ae2c1ae5014fd37c2",
+  "clean_artifact_freeze": false,
+  "implementation_inputs": [
+    {
+      "path": "cmd/omabit/core_recording_timing_test.go",
+      "sha256": "78675271389d9c3df0ef4916c1818c6ad8d4569303a8eb4929e4b481d4071d44"
+    },
+    {
+      "path": "cmd/omabit/recording_export.go",
+      "sha256": "77bec5b9dfe68d39fc85ed81a74885b4984a4f768cc4c73c79ef8f64a450f16d"
+    },
+    {
+      "path": "internal/recording/export_scan.go",
+      "sha256": "5f279227fdc829d1209152be2ec905d55624b2cb9b2a4e8eb457ee5b450d1e42"
+    },
+    {
+      "path": "internal/recording/redacted.go",
+      "sha256": "08093216b314a52dc4eb008ead49b3468778115674d357a9d05ca6f3271dbfa9"
+    },
+    {
+      "path": "internal/recording/redacted_bundle.go",
+      "sha256": "57f764f54412f05ee4f2d658e66c2926858f5f2130dd6d5ebc4f14c7830cefbd"
+    },
+    {
+      "path": "internal/recording/redacted_bundle_linux_test.go",
+      "sha256": "92532b1781593876f06082ed2801c0e32bcaa5e1af1c1363f647850129eb7175"
+    },
+    {
+      "path": "internal/recording/redacted_export.go",
+      "sha256": "23b7db495ffc03fb1ebe46c15c1db1e1421ee765a04e6ec4f5864f2f62fc8569"
+    },
+    {
+      "path": "internal/recording/redacted_export_linux_test.go",
+      "sha256": "abb21ea9d720c1bc20e9d4adafadf86af52981961327ba15ef0d2de798d1d9ee"
+    },
+    {
+      "path": "internal/recording/timing_index.go",
+      "sha256": "f87c41e2044ce27ce417640aadb774f3bc984e89382372181da23af7553f2a8a"
+    },
+    {
+      "path": "internal/service/recording_redacted_export.go",
+      "sha256": "5a13fd82665f132af0db0a30f65cd218c2e5639ba6807962717a1ad2e3be54cb"
+    },
+    {
+      "path": "internal/service/recordings.go",
+      "sha256": "90c5dce44e61b6c2e76d2a28f77584cc9ec3df0aba4e3fbf811ce0ed5356b895"
+    },
+    {
+      "path": "internal/service/timeouts.go",
+      "sha256": "4bebdb53f855af6c8e322a30929ce10465f1aedb1c797daf78494af205860f53"
+    },
+    {
+      "path": "internal/service/timeouts_test.go",
+      "sha256": "51a0e5097fce33d4a29b5f9b38a74d9e457052a6f8ffdf4521a01559b111867a"
+    }
+  ],
+  "operations": [
+    "runtime.recording-redacted-export-manifest.v1",
+    "runtime.recording-redacted-export-part.v1"
+  ],
+  "cli": "recording-export --redacted (mutually exclusive with --original and its --timing-index option)",
+  "runner_adapter": "existing runtime-recording-export-v1; no new runner endpoint",
+  "persistent_formats_changed": false,
+  "runner_schema": 65,
+  "contract": {
+    "explicit_redacted_and_operator_private_consent": true,
+    "raw_source_read_conversion_private_to_transform_never_original_formatter_fallback": true,
+    "common_metadata_chunk_whole_file_and_codec_chain_verifier_with_index": true,
+    "original_files_unchanged": true,
+    "entries": [
+      "manifest.json",
+      "redacted-frames.jsonl",
+      "coverage.json"
+    ],
+    "entry_and_archive_mode": "0600 in existing physical owner0700 parent; partial/no-overwrite final publication reused",
+    "exact_runner_instance_container_operation_request_names_paths_attachment_body_omitted": true,
+    "technical_strings_hashes_and_times_remain_sensitive": true,
+    "finite_credential_rules_require_owner_review_before_sharing": true,
+    "escaped_literal_spans_omission_reasons_original_timing_and_digest": true,
+    "partial_leading_trailing_lines_withheld_prior_verified_newline_context_only": true,
+    "gaps_reset_stream_context": true,
+    "typed_exit_technical_status_preserved_container_alias_and_omission_explicit": true,
+    "omitted_stream_bytes_separate_from_aliased_exit_bindings": true,
+    "optional_go_formatter_literals_ephemeral_single_line_only": true,
+    "shared_default_policy_has_no_secret_file_selector": true,
+    "max_window_frames": 64,
+    "max_window_payload_bytes": 131072,
+    "max_record_bytes": 4194304,
+    "max_derived_content_and_shared_zip_bytes": 268435456,
+    "max_verified_frames": 1048576,
+    "no_unparsed_raw_tail_bytes_in_derived_output": true,
+    "no_final_coverage_or_zip_completion_before_all_source_and_transform_checks": true,
+    "source_whole_zip_and_256KiB_part_hashes": true,
+    "each_part_rederives_and_verifies_whole_source_and_zip_no_persistent_cache": true,
+    "large_export_cost_and_six_minute_operation_bound_explicit": true,
+    "no_paths_background_runtime_retention_or_publication_authority": true,
+    "runtime_complete": false
+  },
+  "coverage": [
+    "original diagnostic atoms survive; credential values and selected split single-line literal spans remain omitted across windows/gaps",
+    "all frame timing/sequence metadata retained; sanitized exit137/OOM and gap evidence; final coverage/content counts and frame hash verified",
+    "ZIP has only three derived0600 entries; excluded exact bindings/credentials and all raw metadata/recording files absent",
+    "source/whole/hash/request/choice/consent/literal/writer failures return no completed archive or data; originals byte-identical",
+    "derived ZIP manifest/parts reassemble exact formatter bytes; read timestamp changes do not change deterministic source/ZIP identity",
+    "independent selected chunk/whole hashes checked across arbitrary writer boundaries",
+    "actual CLI/official-SDK manifests and parts match; actual --redacted ZIP checked for omission/diagnostic evidence",
+    "mutually exclusive original/redacted/index flags refuse before source reads",
+    "role/capability/consent/original-choice/wrong target/part/transport refusals preserve no retries and no private error-data leakage",
+    "existing original/index/timing/redaction/segment regressions and focused race-configuration vet"
+  ],
+  "checks": [
+    {
+      "source_check": 1,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "-run",
+        "Test(RedactedBundle|Timing|Redact|Segment|OriginalBundle|OriginalExport)",
+        "-count=1",
+        "-timeout=90s"
+      ],
+      "package_results": [
+        [
+          "internal/recording",
+          "1.683"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51155943424,
+      "full_post_charge_bytes": 51141869568
+    },
+    {
+      "source_check": 3,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "-run",
+        "Test(Redact|Timing|Segment|OriginalBundle|OriginalExport)",
+        "-count=1",
+        "-timeout=120s"
+      ],
+      "package_results": [
+        [
+          "internal/recording",
+          "1.775"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51239075840,
+      "full_post_charge_bytes": 51296468992
+    },
+    {
+      "source_check": 3,
+      "passed": true,
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./cmd/omabit",
+        "./internal/service",
+        "-run",
+        "Test(CLIAndMCPTimingQuery|CLIAndMCPPrivateRecordingHistoryAndExactPage|Catalog)",
+        "-count=1",
+        "-timeout=180s"
+      ],
+      "package_results": [
+        [
+          "cmd/omabit",
+          "40.469"
+        ],
+        [
+          "internal/service",
+          "2.247"
+        ]
+      ],
+      "sampled_fast_peak_bytes": 51384512512,
+      "full_post_charge_bytes": 51296468992
+    },
+    {
+      "source_check": 4,
+      "passed": true,
+      "command": [
+        "go",
+        "vet",
+        "-race",
+        "-p=1",
+        "-trimpath",
+        "./internal/recording",
+        "./internal/service",
+        "./cmd/omabit"
+      ],
+      "package_results": [],
+      "sampled_fast_peak_bytes": 51297038336,
+      "full_post_charge_bytes": 51297136640
+    }
+  ],
+  "retained_failed_run": {
+    "source_check": 2,
+    "codec_passed": true,
+    "interfaces_passed": false,
+    "reason": "fixture reused c*64 for container ID and original image digest; privacy assertion matched intentionally retained technical image digest",
+    "correction": "distinct9*64 container fixture; no weakening of binding omission or technical metadata policy; explicit omission counters/manifest checks also tightened",
+    "whole_failed_invocation_retained": true
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "no_monitor_interruption": true,
+    "no_additional_cache_scratch_vm_or_original_evidence_retirement_in_this_slice": true,
+    "source03_admission_bytes": 268435456,
+    "source04_admission_bytes": 134217728,
+    "final_full_charge_bytes": 51297136640
+  },
+  "remaining": [
+    "matching frozen tools and generated representation/flag reference",
+    "independent actual native current indexed/redacted exports/queries and exact original/history preservation",
+    "oldest output coverage, explicit recording retirement/pressure recovery and other factories",
+    "configured resource containment and remaining application/client tracks",
+    "actual previous-stable and preserved DEV upgrade qualification"
+  ],
+  "production_installed_existing_ship_manual_review_state_changed": false
+}

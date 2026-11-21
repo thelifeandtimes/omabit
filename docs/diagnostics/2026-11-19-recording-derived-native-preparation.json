@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "status": "prepared-not-native-qualified",
+  "scope": "fixed offline closed native recording fixture; current source original/indexed ZIP, timing query and derived redacted manifest/parts/ZIP assertions",
+  "python_guards": {
+    "tests": 11,
+    "passed": true
+  },
+  "required_scenario_flags": [
+    "require_original_exports",
+    "require_derived_exports"
+  ],
+  "source_inputs_sha256": {
+    "internal/managed/issues_recording_usage_vm_test.go": "d8eb6ed2466a5ef3be2240715282fdf655de572dc8a6fbed856a99b42ffce26f",
+    "internal/managed/issues_recording_export_vm_test.go": "cc59b75e325fc4d94ca2721eb7d94ebe1d2bc562ca8f2f248e397f3ca79bf167",
+    "internal/managed/issues_recording_derived_vm_test.go": "62d42232b5d61cd6cb13368cde408c9cd9544626b42b0fa9eaa9293aecc21a9a",
+    "scripts/qualification/recording-usage-cow/run.py": "2508221805bd41c830b8579bc41c88b3e09f70b55a449c1c6c32d7e2a34ea85c",
+    "scripts/qualification/recording-usage-cow/guest.py": "15a3173a772fad410fd8f5fda636eaed7441c99df821b434c81bb517499eb655",
+    "scripts/qualification/recording-usage-cow/test_guards.py": "8ec7dbe18f8a6b5018236a583727f50aa73834264f43f92e9469925535b23270"
+  },
+  "native_pending": [
+    "clean matching product/helper artifacts",
+    "actual helper identity/refusal guard",
+    "measured fresh COW admission",
+    "actual native execution",
+    "independent read-only codec/archive/SQLite/preservation verification"
+  ],
+  "boundaries": [
+    "no source Go tests or builds while VM/reader active",
+    "no original VM writable boot",
+    "no production, installed DEV or existing-ship changes",
+    "no capture, policy or retention action"
+  ]
+}

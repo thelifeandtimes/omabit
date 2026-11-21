@@ -1,0 +1,105 @@
+{
+  "format": 1,
+  "status": "failed",
+  "passed": false,
+  "case": "cow-recover-pending-zod-v1",
+  "original_schema": 62,
+  "target_schema": 65,
+  "source_commit": "12f789521d7303ed182e43fb3c55e00d7e6dca5f",
+  "artifacts": {
+    "omabit": {
+      "sha256": "f6dec754e51c03fcff90b5abe3e55d37be46cb3c30ef741288426ee1e161bcf4",
+      "bytes": 17932448
+    },
+    "urbit-collector": {
+      "sha256": "bfff81f4e714148fcab8ec68d20997a9ccf78ef032293a5661664dfd5d8eedd9",
+      "bytes": 8986784
+    },
+    "urbit-runner": {
+      "sha256": "20af5a66f00339d40800d997e9a24c29b7f1c21e9faed17716f5bb9f996d0feb",
+      "bytes": 21147808
+    },
+    "managed.test": {
+      "sha256": "62a306cc001b5d5a4c78d9f4178d4a79d0659710d2f5ea29225264933627289d",
+      "bytes": 30027936
+    }
+  },
+  "tracked_inputs_verified": 3937,
+  "boot": {
+    "source_commit": "bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214",
+    "sha256": "aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9",
+    "source_sha256": "bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8"
+  },
+  "predecessor_root_sha256": "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9",
+  "capsule_scratch_bytes": 939524096,
+  "preparation_reserve_bytes": 67108864,
+  "root_hard_file_bytes": 805306368,
+  "whole_host_deadline_seconds": 6100,
+  "scope": "one fresh offline COW overlay; exact original pending-app image and pristine backing read-only. Supported same-pier lifecycle and audited recovery, original phase observation, two app source versions/state, replacement and manager restart. No original/installed/DEV/production mutations.",
+  "limits": [
+    "App helper and independent preservation checks passed; the whole native case failed and is not promoted to a full qualification.",
+    "Not installed59-to65 upgrade, preserved DEV, peers/permits/routes/assets, full workflow readiness or stable release",
+    "Native scoped recording allocation observation remains a separate gate"
+  ],
+  "observed_checkpoints": {
+    "copied_original62_to65_opening": true,
+    "first_same_pier_replacement": true,
+    "cli_runtime_review_and_mcp_linked_audit": true,
+    "original_unknown_phase_observed_without_redispatch": true,
+    "original_source_workflow_completed": true,
+    "initial_state_and_state_update_checks": true,
+    "second_source_review_started": true,
+    "second_source_workflow_state_and_code": true,
+    "second_same_pier_replacement_state": true,
+    "manager_restart_audit_and_original_receipt_replay": true,
+    "one_durable_dispatch_per_original_phase": true,
+    "independent_original_header_and17_event_prefix_preservation": true
+  },
+  "remaining_in_this_case": [
+    "This ended whole run remains failed; a fresh corrected native case must finish final clean Stop and whole-case shutdown."
+  ],
+  "helper_passed": true,
+  "helper_seconds": 2879.43,
+  "failure": {
+    "stage": "outer guest orchestration/final clean Stop",
+    "detail": "Actual generated oneshot unit retains TimeoutStartSec=2400 although the helper process allows5700s and guest helper deadline5750s. Outer logging ends at guest2401.78s; the independent user-session helper passes at2885.82s. No final guest report or clean Stop is produced. The obsolete unit timeout is consistent with this exact boundary; no retained journal proves its exit status.",
+    "host_action": "TERM only the exact fresh COW04 scope after preserving the completed helper evidence; both original backings remain unchanged",
+    "host_exit": -15,
+    "missing_guest_result": true,
+    "clean_shutdown_qualified": false
+  },
+  "retained_failure": {
+    "root_sha256": "12ca7c7fc5852aa3e5377018a54eb6293fe0e55dc54658c2eac0492a479bc47b",
+    "root_bytes": 325058560,
+    "root_allocated_bytes": 274075648,
+    "input_sha256": "38ac581f1be7bc8175c4099b909d96c40c9c59c0c06eaa5328474fc145b0af0f",
+    "serial_sha256": "63fa99285c2fc483f5311481fb14d08b5791eb5a0c34942dcf5dc435a8b541ac",
+    "proof_sha256": "1f2d2c45bb99a5e93495f4c92fd72cf4a4425c10bb72e0fb8beaa24046b3f529",
+    "whole_image_retained": true
+  },
+  "independent_read_only_extraction": {
+    "passed": true,
+    "files": 59,
+    "source_and_base_and_predecessor_unchanged": true,
+    "executed_source_disk_code": false,
+    "mounts": "read-only,noload,nodev,nosuid,noexec",
+    "original_schema": 62,
+    "current_schema": 65,
+    "original_events": 17,
+    "current_events": 63,
+    "current_operations": 2,
+    "current_leases": 0,
+    "quick_check": "ok on separate analysis copies",
+    "original_header_and17_events_preserved": true,
+    "raw_sqlite_wal_shm_preserved": true,
+    "native_and_supervisor_and_reader_scopes_empty": true
+  },
+  "correction": {
+    "generated_unit_start_seconds": 6000,
+    "generated_unit_stop_seconds": 30,
+    "regression_old_unit_failed": true,
+    "inert_guards_passed": 11,
+    "inert_guard_seconds": 0.052,
+    "new_boot_artifact_and_native_retry": "pending; runtime artifacts are still frozen12f78952"
+  }
+}

@@ -32,6 +32,16 @@ var bootIDPattern = regexp.MustCompile(`^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{1
 // NewDevelopmentService enables the explicitly requested startup policy. Boot ID
 // comes from the host, never an RPC request, and deduplicates attempts on restart.
 func NewDevelopmentService(dir, keys string, resume bool) (*Server, error) {
+	return newDevelopmentService(dir, keys, resume, false)
+}
+
+// NewDevelopmentRecordingService opts into the bounded ordinary-runtime pilot.
+// It is not comprehensive recording support and does not adopt running containers.
+func NewDevelopmentRecordingService(dir, keys string, resume bool) (*Server, error) {
+	return newDevelopmentService(dir, keys, resume, true)
+}
+
+func newDevelopmentService(dir, keys string, resume, record bool) (*Server, error) {
 	boot := ""
 	if resume {
 		data, err := os.ReadFile("/proc/sys/kernel/random/boot_id")
@@ -43,7 +53,11 @@ func NewDevelopmentService(dir, keys string, resume bool) (*Server, error) {
 			return nil, errors.New("invalid host boot identity")
 		}
 	}
-	r, err := newServerWithStartup(dir, realBackend{}, 10*time.Second, true, boot)
+	var configure func(*Server) error
+	if record {
+		configure = configureRecordingServer
+	}
+	r, err := newServerConfigured(dir, realBackend{}, 10*time.Second, true, boot, configure)
 	if err == nil {
 		r.keys = keys
 	}

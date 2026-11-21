@@ -1,5 +1,287 @@
 # Stable-release upgrade requirement
 
+## 0.5.0: qualified local0.4.0→0.5.0 support window
+
+The [exact qualification](releases/0.5.0/qualification.json) binds frozen59d83aa
+artifacts and the actual published0.4.0/schema59→0.5.0/schema65 owner-user upgrade.
+It preserves identities, piers, access, settings, intent and original operation/app
+history; manager restart, denial/retry and actual older-reader refusal pass.
+Separate native desktop and preserved review040 DEV evidence pass, including a
+fresh Gall sample's reload/restart state and final Stop after closing temporary
+permissions. This supersedes historical pending final-artifact/DEV statements
+only for the linked scenarios. Active recording-worker upgrades, remote service
+upgrades, power-loss durability and arbitrary development snapshots remain outside
+this window. Earlier stable versions follow their documented path to0.4.0 first.
+Never downgrade markers, reset piers or discard history to update a manager.
+Final protected publication remains separate and authorizes no production update.
+
+## Development: native closed output-coverage response, schema65 unchanged
+
+Matching5344c5c [native output coverage/export](diagnostics/2026-11-19-recording-output-coverage-native.json)
+passes actual CLI/SDK and independent raw-frame/SQL checks. The new summary does
+not change JSONL index files or complete redacted manifests versus4c. No original
+recording/job/control/schema65 encoding, admission or lifecycle change is made.
+This selected closed-prefix gate does not qualify active pressure/retirement,
+other factories, final59 upgrade, plugin packaging or preserved DEV.
+
+
+## Development: optional derived output coverage, persisted schema65 unchanged
+
+The current core adds optional completed `output_coverage` to timing/index
+summaries. Original/index/redacted files, metadata, jobs, controls, endpoints and
+schema65 stay unchanged. Older omission is unavailable, not zero; current values
+cover only the exact verified retained prefix. First/last sequence time differs
+from earliest/latest wall time when clocks reverse. [Focused races/interfaces](diagnostics/2026-11-19-recording-output-coverage-source.json)
+pass; matching artifacts/reference and current native verification remain gates.
+This adds no retention, runtime or installed upgrade authority.
+
+
+## Development: closed indexed/query/redacted native gate, schema65 unchanged
+
+Matching4c0b16e tools pass the [closed original/index/timing/redacted export case](diagnostics/2026-11-19-recording-derived-export-native.json)
+with actual CLI/stdio, independent raw-frame/archive/span/hash checks and exact
+original capture/control/table/intent preservation except one fresh observation.
+No persistent format, schema65, admission or lifecycle change is introduced.
+The failed earlier whole case is retained; its framing correction passes a fresh
+retry. This qualifies these closed development reads only. Active/retention/
+pressure, final previous-stable59 upgrade, plugin packaging and preserved DEV
+still require evidence; no production service change is implied.
+
+
+## Development: original recording exports, schema65 unchanged
+
+The new original manifest/part reads and private CLI ZIP writer change no stored
+recording, job, receipt, control or schema. Operator/selected adapter and explicit
+original/private choice remain required; older runners lacking the new feature
+refuse. Source tests preserve stationary original bytes and report verified
+prefix/torn-tail evidence separately from whole retained files. The source
+[evidence](diagnostics/2026-11-19-recording-original-export-source.json) includes
+actual CLI/SDK parity, role/path/hash/privacy and archive failure checks. Matching3fc6 [native closed original exports](diagnostics/2026-11-19-recording-original-export-native.json) now pass, including independent original/ZIP/chain/SQL preservation checks. Installed stable upgrade, preserved DEV and a final support window remain pending. This does not qualify active capture/pressure/retirement or redacted bundles; no installed or production change is implied.
+
+## Development: optional recording storage observations, schema65 unchanged
+
+`capacity.usage` adds transient read evidence without changing stored jobs,
+recordings, receipts, policy or schema65. New clients accept older omission as
+unavailable, and an actual frozen703de9f2 CLI ignores newer measured/unknown
+fields while preserving its old settings/commitments. Source race/API/SDK/UI and
+reply-bound checks pass; see the [evidence and limits](diagnostics/2026-11-19-recording-usage-source.json).
+Matching frozen f37 tools now pass the [closed-capture native measurement case](diagnostics/2026-11-19-recording-allocation-native.json): actual CLI/stdio measurements
+match independent filesystem counts, with original captures, controls, history
+and stopped intent preserved. Only one fresh observation timestamp/revision is
+permitted. Active capture growth, pressure/retirement, installed upgrades and
+preserved DEV still require qualification. The earlier703de9f2 native pass is not
+evidence for those later measurement behaviors.
+
+## Development: recording policy/API native64→65 gate
+
+The [matching-artifact native rehearsal](diagnostics/2026-11-19-recording-policy-native-upgrade.json)
+passes at703de9f2: online activation preserves the old detached worker, native
+container/engine and saved history; raw API windows match independent retained
+bytes; audited policy/replay/lookup/pin and immutable old/new worker limits pass.
+Two same-pier sessions Stop cleanly. The genuine old64 executable refuses the
+closed65 database unchanged, and candidate reopen preserves controls. This
+supersedes prior deferral only for that explicit development pilot/scenario.
+Published0.4.0/schema59→65, installed/preserved DEV and the remaining recording
+features still require their own qualification. No production service or stable
+release changes are implied.
+
+## Development: recording launch intents, schema64 — gates pending
+
+Schema64 adds empty private recording intent/head tables without rewriting older
+instances, operations, app journals, leases, audits or access. New intents bind the
+authenticated original Start operation and exact saved runtime/configuration state
+to one job, executable and admission digest. Insertion and independent count/digest
+head advancement commit atomically; a missing tail or original ancestry refuses.
+Saved replay is historical and cannot authorize another worker submission. Opening
+performs no job claim, service submission or native effect.
+
+Focused source/race gates preserve original59/60/61/62 and synthetic11–63 stores,
+and cover concurrent admission, process exit after committed/no-response intent,
+head-write rollback, corruption and mixed-schema refusal. Actual frozen63 writer/
+reader refusal, relevant native/installed upgrades, final matching artifacts and
+support window remain required. Normal launch still submits no recording jobs.
+Never lower markers or remove recording history to run an older manager.
+
+The [actual frozen63 writer/reader rehearsal](diagnostics/2026-11-18-recording-schema64-source-upgrade.json)
+now passes for candidate6fd35d6d and unchanged1589158b with a declared synthetic
+helper. Original rows/DDL/access, pending Start and earlier linked audit ancestry
+stay exact; one new recording intent/head replays unchanged. The genuine63 reader
+refuses populated64 unchanged. A compact actual63 SQL fixture verifies repeated
+preservation and rollback in ordinary race tests. This supersedes only the source
+writer/reader deferral above. Native capture, active-worker/installed upgrades and
+final matching artifacts remain unqualified; normal submission is still disabled.
+
+M694 adds an explicit unqualified development-only `--record-runtime` pilot.
+Default service startup still submits nothing. Its source manager/server/CLI
+gates do not qualify native capture or an installed/active-worker upgrade. Do not
+select it for preserved manual-review state until those gates have been assessed.
+
+## Development: explicit recording bootstrap identity, metadata4 — gates pending
+
+New comet creation has no ship name before mining, and a first launch need not
+yet have a pier/.urb object. The prepared metadata4 model distinguishes a
+registered expected name from pending-comet-mining, and an existing-pier object
+binding from a prepared-storage contract. Pending identity never receives a
+guessed ship name or future inode. This is attachment intent, not proof of a
+successful process, initialized pier or answered native identity. Later verified
+observations need separate linked evidence; original metadata is immutable.
+
+Metadata1–3 retain their exact canonical bytes and omitted basis fields. The
+segmented format introduced by3 is also used by4; frame codec1 is unchanged.
+The source coordinator selects current4 for new captures; generic legacy-format
+source fixtures remain explicitly readable without promotion. No installed file
+or runner database changes, and no recording feature is advertised.
+
+The [actual original3 writer/reader rehearsal](diagnostics/2026-11-18-recording-metadata4-source-upgrade.json)
+passes for candidate0b28bac and unchanged frozen6e810bc9 code with a declared
+helper in `scripts/test-recording-bootstrap-upgrade.py`. Original3 segments,
+cross-segment cursors, omitted identity basis and repeated reopen stay exact. The
+actual old reader refuses populated4 without changing it. A compact actual
+original3 fixture with source/helper/writer pins runs in ordinary tests.
+Full recording race tests, focused ordinary native
+factory/process/attachment race tests and vet now pass with inert engine/private
+filesystem fixtures. Native capture factories,
+worker lifecycle, later observed identity, real Docker/Vere, installed upgrade
+and final artifact/support-window gates remain required. This is an unreleased
+development format, not qualified recording support.
+
+The private recording-worker job codec is version1 and currently unwired. It has
+no installed predecessor, state database entry or running worker. Unknown or
+noncanonical versions refuse. Before enabling persistent jobs, qualify durable
+claim/readiness and exact-executable admission, add the runner's downgrade guard
+and preserve old jobs/recordings through upgrade. Do not allow a schema63 binary
+to ignore newly active recording authority or replace an existing session.
+
+The unwired job-file source layer now writes immutable version1 jobs, readiness
+and finite results plus claim2 under an explicitly supplied private test root.
+Claim2 adds worker process-start ticks and service invocation. Legacy claim1
+lookup leaves those fields unknown and cannot grant current worker authority;
+the [actual original-writer gate](diagnostics/2026-11-18-recording-claim2-source-upgrade.json)
+now passes for candidate252aa548 and unchanged85ac7c6 plus a declared synthetic
+helper. Original1 bytes survive reopen/refused reclaim; the genuine old reader
+refuses claim2 unchanged. A compact exact fixture runs in ordinary tests. This is
+source filesystem compatibility only, not active-job/installed upgrade support.
+Unknown/corrupt or
+partial originals refuse and remain retained. Lookups preserve those bytes, and
+closed claims cannot be retried as new captures. Source fsync/locking tests are
+not native crash/power-loss or supervision qualification. The source worker now
+observes only its kernel-selected self executable/process/namespaces; source
+composition checks do not qualify independent process lifetime. These gates
+and the active-job runner downgrade/upgrade guard are still required before
+enabling this layer in installed launch.
+
+File visibility is not proof that fsync returned. Installed launch must require a
+separate post-sync supervisor acknowledgement and exact live-worker observation;
+it may not treat a readable marker or Type=exec submission as that authority.
+
+## Development: separate app runtime recovery audits, schema63
+
+Schema63 adds immutable linked runtime recovery receipts and exact per-operation
+heads. Migration seeds only empty heads, preserving every original app plan,
+event, lease, framework receipt, runtime, access and other history row/DDL.
+Opening never rebinds, starts, signals or redispatches a runtime. Missing/changed
+audit ancestry or unowned successor tables refuse without repair; failed
+migration rolls back. The internal apply transaction admits an exact prefix/head/
+lease CAS only, with at most64 receipts. Saved exact replay returns the original
+audit after expiration and manager restart without modifying original uncertainty.
+
+The actual frozen62 writer at3e780879 contains acknowledged plan2 uncertainty
+and original59/60 ancestry. Its synthetic metadata fixture is retained under
+`internal/managed/testdata/grubbery-app-original62`. Focused race checks cover
+preservation, rollback, process exit after committed audit/no response, replay,
+concurrent admission, corruption and bounded history. The actual62 reader has
+refused a populated63 store unchanged. The clean frozen217275f rehearsal passes
+through `scripts/test-app-runtime-recovery-upgrade.py`, with
+[source/binary/fixture pins](diagnostics/2026-11-18-app-runtime-audit63-source-upgrade.json).
+No downgrade through marker/table edits is
+supported. Native recovery, matching final artifacts, installed upgrades and
+preserved DEV qualification remain required; no workflow readiness is advertised.
+
+## Development: native version signals and rejected app writes, schema62
+
+Schema62 fences explicit app plan/journal2 while retaining the schema61 table
+shape and every original plan1/header/event/lease byte. New plans carry a native
+`version` value plus source/epoch/original-request metadata. The first plain-root
+marker uses the pinned native file-make parent behavior, avoiding a separate
+unmarked-root phase. Fresh admission must still refuse existing unowned roots.
+A complete validated native pre-effect rejection is separately retained as
+`refused`; transport errors and5xx never become that evidence. Refused writes
+cannot acquire ownership through later matching content or observation.
+
+Legacy plan1 is retained for saved replay, exact read-only recovery and narrowly
+safe preactivation abandonment. A pending legacy phase cannot be dispatched or
+silently converted into the corrected payload, even with source bytes available.
+Unknown activation remains fenced. The original61 writer fixture and original
+59/60 history preserve all rows and uncertainty across reopen. The actual60 and
+61 readers refuse real populated62 without modifying the closed store; see the
+[source evidence](diagnostics/2026-11-18-grubbery-app-store62-migration.json).
+These gates extend development source evidence only. Matching final artifacts,
+native corrected source following/state tests, installed upgrade and preserved
+DEV qualification remain required; published releases and support pins stay
+unchanged. Never relabel a user database or edit old receipts to downgrade.
+
+## Development: immutable app phase journals, schema61
+
+Schema61 transactionally adds Grubbery app creation order, immutable intent
+headers, append-only phase events and exact namespace leases. Opening validates
+ancestry and changes no native state. Unknown mixed schemas, missing tables,
+receipts, events, clock entries or leases refuse; opening does not repair them.
+Applied ownership is derived from original observed marker receipts rather than
+an independently editable current-owner row. Completed or narrowly abandoned
+preactivation operations release their exact lease without deleting staged code
+or live app data. Unknown writes and dispatched activation remain fenced.
+
+The development source gate preserves the actual0.4.0/schema59 fixture and an
+actual d24c960/schema60 writer's populated state, including its linked Stop
+resolution. Repeated open/replay, migration rollback, corruption and process death
+after committed dispatch are covered. The genuine60 reader refuses populated61
+without changing the closed database bytes. See the [source evidence](diagnostics/2026-11-18-grubbery-app-store-migration.json)
+and `scripts/test-grubbery-app-upgrade.py`. The older RC.12/schema20 qualification
+record and release pins remain frozen; its historical source tests now target61.
+Synthetic compatibility tests explicitly omit only empty successor app tables;
+they are not original-writer or user downgrade procedures.
+
+The supported source-reader fixtures include the stable0.4.0/schema59 boundary
+and the unreleased60 predecessor alongside the separately frozen older inventory.
+This does not qualify installed59→61, interrupted native projects, managed app
+state, DEV installation or a stable release. Build matching collector/runner
+artifacts and rehearse the relevant non-destructive native/installed paths before
+promotion. Never lower markers, remove tables or reset a user store to downgrade.
+The live Grubbery workflow remains unadvertised pending the native adapter gates.
+
+## Development: interrupted project Stop reconciliation, schema60
+
+Schema60 adds separately attributed clean-stop reconciliation receipts and
+pre-signal process bindings for new expanded-member stops. Migration preserves
+all prior rows, grants no permissions, and signals/starts no runtime. Historical
+omitted stop-intent fields remain omitted. Reconciliation preserves the original
+interrupted operation and resolves only its exact fence through a new audited
+receipt. Unknown, corrupt or missing resolution ancestry refuses unchanged.
+
+The frozen synthetic schema59 fixture was written by actual0.4.0 source
+`a9623329a538ebf83d63365053d2d1011ade091e`, with the declared test helper. The
+original-writer rehearsal preserves every original table across repeated
+schema60 opening and tests exact resolution replay after reopen. The actual old
+reader refuses populated60 without modifying it. See
+[project member recovery](project-member-recovery.md) and
+`scripts/test-project-stop-recovery-upgrade.py` for reproducing these gates.
+
+The later exact development snapshot at d24c960 passes a local Linux/AMD64
+installed0.4.0/schema59→60 gate with two fresh ordinary fakes: running/stopped
+intent, identity, configuration, history, access, engine invocation and the
+running container process remain unchanged. The actual old reader refuses60
+unchanged and the new manager restarts without touching that process. See the
+[exact artifact evidence and limits](diagnostics/2026-11-17-issues-installed-upgrade-section.json).
+That capsule stops later at a harness duplicate-enrollment refusal before its
+recovery project. The same four frozen artifacts later pass a separate fresh
+[native clean-stop recovery case](diagnostics/2026-11-17-issues-native-stop-recovery.json)
+with exact reviewed reconciliation, store/manager reopen, original receipt
+preservation, one SIGTERM, same-pier resume and unchanged peer. Neither case
+qualifies migration of an already interrupted native project, managed application
+state, desktop/DEV deployment, later artifacts or a stable release. Matching final artifacts and relevant disposable runtime
+recovery/upgrade gates remain required before promotion.
+Never lower the schema marker or reset a store to run an older manager.
+
 ## 0.4.0 candidate: installed0.3.7→0.4.0 qualification
 
 The [exact-artifact rehearsal](releases/0.4.0/rehearsal.json) passes the local
@@ -1245,3 +1527,89 @@ published for archival or disable an already accepted successor when cleaning it
 parent. Previous stable readers still refuse4. A new explicit reviewed retry can
 clear a retired predecessor's cancellation; periodic maintenance cannot do so.
 CLI and full registry/issuer fixtures cover the transition and interrupted archive.
+
+## Development: recording attachment metadata2
+
+The unwired recording store now admits only metadata2 for new captures, with
+full attachment target/pier/engine/host/project-namespace identity. Version1
+canonical metadata and original frame/header bytes remain readable, with missing
+identity left unknown; no new capture or generation inference is allowed from it.
+No runner database format changes or installed data rewrites are part of this
+source change. The frame codec remains1, bound to the metadata's digest.
+
+Focused source race checks pass. The original3218e6f writer/reader rehearsal is
+prepared but pending; qualify its exact original files and refusal of successor
+metadata before claiming format compatibility. Matching final artifacts, native
+capture lifecycle/pressure/retention and installed upgrade remain required. This
+is an unreleased development boundary, not a published recording support window.
+
+The later [frozen5041406 original-writer gate](diagnostics/2026-11-18-recording-metadata2-source-upgrade.json)
+passes the recording1→metadata2 source boundary: original raw/metadata/lifecycle
+files survive repeated new-reader cursor/reopen, new legacy capture is refused,
+and the actual original reader refuses metadata2 unchanged. The retained original
+fixture covers subsequent source reads. This resolves only the earlier pending
+original-writer rehearsal; all integration/native/installed requirements remain.
+
+## Development: recording retention controls, schema65 — gates pending
+
+Schema65 adds empty recording control event/head tables. Policy and exact incident
+pin changes use canonical original actor/request receipts, a bounded hash chain
+and a revision/digest CAS. Earlier managers must refuse rather than ignore these
+storage controls. Opening preserves every prior row and performs no raw retirement
+or native effect. Actual64 writer/refusal, original fixture migration, matching
+artifacts and installed/active-worker upgrade gates are required before deployment.
+Source control storage alone does not qualify deletion, automatic retention or
+pressure recovery. Never relabel or remove history to run an older manager.
+
+
+M701's actual64 writer/current65 source gate and pinned fixture now pass; see
+[the scoped report](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
+M702 adds intent2 within development schema65, binding each new launch to its
+selected control revision/digest. Intent1 encoding and historical receipts stay
+unchanged; historical reads/replay do not check current settings or grant fresh
+Start authority. New fresh authority requires the exact current control head.
+Old readers that cannot understand an intent must refuse without repairing or
+stripping it. Frozen native pilot2d028197 predates controls and their APIs; final
+matching artifacts and actual active-worker/native upgrades remain mandatory.
+
+## Development: read-only project allocation — persistent formats unchanged
+
+`project-allocation-read-v1` and shared `project.allocation.v1` add bounded,
+operator-private current member storage observations. Schema65 and
+original rows/receipts remain unchanged. Growth samples are bounded volatile
+memory with monotonic completion times, discarded on manager restart. Missing
+capability or an unsupported project phase refuses explicitly. A census never
+resolves an operation fence, reserves free space or supplies containment authority.
+See the [contract and exclusions](project-allocation.md). Source fixtures do not
+qualify matching native measurements or an installed/preserved DEV upgrade. A
+future durable incident latch or guard requires its own persistent contract,
+old-reader refusal and non-destructive upgrade evidence before deployment.
+
+M736 adds `ledger_kind` to this unshipped read contract, distinguishing an exact
+saved expansion from a bounded original-ready history projection. Derivation
+preserves all stored rows and does not create an expansion or change a phase.
+Matching development tools are required; no persistent schema or downgrade
+contract changes. Original replacement/recovery adapters and native project
+measurement/installed-upgrade qualification remain pending.
+
+## Development: derived timing index/query — persistent formats unchanged
+
+The optional `recording-export --timing-index` writes a separate derived JSONL
+entry in a private ZIP; it does not place a sidecar in immutable recording storage.
+The default original exporter retains its existing one-pass behavior. Shared
+`runtime.recording-timing.v1` queries use the existing original manifest/part
+capability and authorization, with no new runner endpoint, background job,
+retention effect or schema65 migration. Stable source identity excludes a volatile
+read timestamp and binds exact immutable content; continuation refuses changes.
+Focused source/interface checks do not qualify current native indexed exports,
+matching artifacts, installed upgrades or preserved DEV. Complete redacted
+bundles and pressure/retirement remain separate work.
+
+M739 adds complete derived redacted ZIPs through distinct shared manifest/part
+operations and an explicit `--redacted` CLI choice. Both derived representations
+use the same bounded original-frame verifier; original/index regression checks
+remain required after refactoring. Exact binding/body omissions and escaped
+views never rewrite raw storage. No sidecar/cache, persistence schema or new
+retention/runtime authority is added. Every derived part re-verifies/re-derives
+the source and exact ZIP. Earlier callers remain usable; matching current
+tools/reference/native export and installed/preserved DEV gates remain required.
