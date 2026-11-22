@@ -4,8 +4,10 @@ package runtimequalify
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -223,4 +225,72 @@ func TestRuntimeProfileReviewedArchiveStagingAndPreflight(t *testing.T) {
 	if len(f.containers) != 0 || len(f.networks) != 0 {
 		t.Fatal("artifact staging created ship resources")
 	}
+}
+
+// Docker's containerd store cannot inspect a loaded OCI image by config digest.
+// Exercise actual distinct lookup availability, rather than accepting either
+// string in a fake that always returns the selected image.
+func TestRuntimeProfileImageStoreLookup(t *testing.T) {
+	p, _ := candidate.Resolve(candidate.JSONFixProfile)
+	for _, tc := range []struct {
+		name, profile, available string
+		want                     []string
+	}{
+		{"containerd", p.ID, p.ManifestDigest, []string{p.ManifestDigest}},
+		{"legacy", p.ID, p.ConfigDigest, []string{p.ManifestDigest, p.ConfigDigest}},
+		{"unavailable", p.ID, "", []string{p.ManifestDigest, p.ConfigDigest}},
+		{"official", "", candidate.Image, []string{candidate.Image}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := fixture(t)
+			f.d.runtimeProfile = tc.profile
+			var references []string
+			f.d.execute = func(ctx context.Context, args, env []string) (string, error) {
+				if len(args) != 7 || args[4] != "image" || args[5] != "inspect" {
+					t.Fatalf("unexpected command: %q", args)
+				}
+				references = append(references, args[6])
+				if args[6] != tc.available {
+					return "", errors.New("No such image")
+				}
+				return f.execute(ctx, args, env)
+			}
+			q := imageLookupFixture(t, f)
+			_, err := q.inspectImageReference(t.Context())
+			if (err != nil) != (tc.available == "") || !reflect.DeepEqual(references, tc.want) {
+				t.Fatalf("lookup: %v, %v; want %v", references, err, tc.want)
+			}
+		})
+	}
+}
+
+func TestRuntimeProfileImageLookupStopsOnCancellation(t *testing.T) {
+	f := fixture(t)
+	f.d.runtimeProfile = candidate.JSONFixProfile
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	calls := 0
+	f.d.execute = func(context.Context, []string, []string) (string, error) {
+		calls++
+		cancel()
+		return "", context.Canceled
+	}
+	q := imageLookupFixture(t, f)
+	if _, err := q.inspectImageReference(ctx); !errors.Is(err, context.Canceled) || calls != 1 {
+		t.Fatalf("cancelled lookup continued: calls=%d error=%v", calls, err)
+	}
+}
+
+func imageLookupFixture(t *testing.T, f *fakeEngine) *qualifier {
+	t.Helper()
+	q := &qualifier{d: f.d}
+	q.base = filepath.Join(f.d.home, ".local/share/urbit-runner/qualification")
+	q.r.Directory = filepath.Join(q.base, "image-lookup")
+	q.config = filepath.Join(q.r.Directory, "docker-config")
+	for _, path := range append(q.storagePaths(), q.r.Directory, q.config) {
+		if err := os.Mkdir(path, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return q
 }

@@ -7,7 +7,7 @@ installation. No production service or ship has been changed to prepare this wor
 
 ## What the candidate changes
 
-The intended review line is **0.6.0-rc.1**, based on stable0.5.0. It adds per-pier
+The intended review line is **0.6.0-rc.2**, based on stable0.5.0. It adds per-pier
 immutable runtime selection, a reviewed JSON decoder backport, capability-aware
 import review, runtime identity reporting and schema66. The existing default
 remains official Vere4.6. Existing enrollments and historical rows are retained;
@@ -18,13 +18,18 @@ The [runtime policy](runtime-policy.md) explains the supported ordinary-managed
 factory and explicit transition refusals. This is not a generic version-switcher
 or a change to project/private-chain runtimes.
 
-The first local review bundle is built from clean source
-`94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4`. Its
-[package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
-records the seven assets, exact hashes and passing isolated installer/provenance
-checks. It is not yet published or qualified for production. The checkout's native
-bootstrap pins still select stable0.5.0; checking out this topic branch is not an
-installation procedure for the new helpers.
+The initial0.6.0-rc.1 bundle failed native custom-runtime installation because its
+image lookup assumed Docker's legacy config identifier. The
+[diagnostic](diagnostics/2026-11-21-runtime-profiles-image-store.json) confirms the
+containerd store requires the manifest identifier. That candidate is superseded;
+0.6.0-rc.2 must be built from a new clean source and repeat qualification. No
+candidate is published or ready for production installation.
+
+The superseded rc.1 [package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
+records its clean source, assets and isolated installer checks. The checkout's
+native bootstrap pins still select stable0.5.0 until a qualified successor is
+published and pinned; checking out this topic branch is not yet an installation
+procedure for the new helpers.
 
 ## Exact reviewed artifact
 

@@ -60,11 +60,7 @@ func (q *qualifier) inspectImage(ctx context.Context) error {
 	if err := q.verifyProfileArchive(); err != nil {
 		return err
 	}
-	reference := p.Image
-	if p.Kind == "reviewed" {
-		reference = p.ConfigDigest
-	}
-	out, err := q.docker(ctx, q.d.times.command, "image", "inspect", reference)
+	out, err := q.inspectImageReference(ctx)
 	if err != nil {
 		return errors.Join(errImageUnavailable, err)
 	}
@@ -95,6 +91,32 @@ func (q *qualifier) inspectImage(ctx context.Context) error {
 	// the manifest target digest. Neither is accepted without the pins above.
 	q.r.ImageID, q.r.RepoDigest = i.ID, knownDigest
 	return nil
+}
+
+// inspectImageReference accommodates Docker's two image stores using only the
+// selected profile's immutable identifiers. The containerd store indexes loaded
+// OCI images by manifest digest; the legacy store indexes by config digest.
+// The caller authenticates the archive first and validates the returned image
+// identity/platform before recording it or creating any container. A successful
+// inspection with mismatched metadata is never retried under another reference.
+func (q *qualifier) inspectImageReference(ctx context.Context) (string, error) {
+	p := q.runtimeProfile()
+	references := []string{p.Image}
+	if p.Kind == "reviewed" {
+		references = []string{p.ManifestDigest, p.ConfigDigest}
+	}
+	var last error
+	for _, reference := range references {
+		out, err := q.docker(ctx, q.d.times.command, "image", "inspect", reference)
+		if err == nil {
+			return out, nil
+		}
+		last = err
+		if ctx.Err() != nil {
+			return "", errors.Join(last, ctx.Err())
+		}
+	}
+	return "", last
 }
 
 func (q *qualifier) managedImage(ctx context.Context) error {

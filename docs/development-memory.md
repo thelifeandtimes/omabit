@@ -14830,3 +14830,45 @@ Retired allocation is2,398,052,352bytes; complete charge is47,167,893,504bytes,
 leaving declared4GiB scratch within the approved48GiB ceiling. Immutable bases,
 inputs, originals and all existing ships remain untouched. This supersedes only
 the pending upgrade gate in M784, not the pending native patched-runtime gate.
+
+## M787 — Native review exposes Docker image-store lookup defect (2026-11-21)
+
+Frozen0.6.0-rc.1 is not installable for the reviewed custom profile: Docker29's
+containerd image store loads the exact archive but cannot inspect it by its config
+digest. An independent fresh diagnostic VM confirms both stock and patched image
+lookups succeed by manifest digest and fail by config digest. Both container
+binary checksums and banners match. Missing archive Start and corrupt archive
+installation refuse before runtime execution. See the
+[bounded diagnostic](diagnostics/2026-11-21-runtime-profiles-image-store.json).
+
+The first private harness incorrectly required missing-artifact registration to
+fail; registering a stopped, uninitialized selection is allowed. Correct that
+assertion to require Start refusal and no container/pier execution. Preserve the
+failed harness record. Diagnostic eval probes are not decoder evidence: Ivory
+lacks the de:json gate, and the guest's default virtual-memory policy refuses a
+16GiB mapping. Process exit0 on a Hoon %exit is not success.
+
+Fix lookup to try only the exact reviewed manifest and config IDs, preserving
+archive, returned identity, platform and executable verification. Do not retry
+successful inspection with mismatched metadata. Add distinct-store and
+cancellation regressions. The product change supersedes M783's rc.1 source freeze;
+prepare0.6.0-rc.2 from a new clean source and repeat native runtime and upgrade
+qualification. The earlier upgrade evidence remains historical, not evidence for
+an unbuilt successor. All protected ships and installed services remain untouched.
+
+## M788 — Image-store correction passes source and race checks (2026-11-21)
+
+The full runtimequalify package passes (70.795seconds), including exact-archive
+profile routing/staging, after correcting the fixture's private directories and
+using a short temporary root for Unix-domain socket tests. Focused runtime-profile
+race checks pass (1.615seconds). Native bootstrap9tests and packaging-provenance
+7tests pass;2full-rebuild fixtures remain deliberately skipped because the actual
+candidate build and smoke are separate gates. Preserve the earlier sandbox and
+fixture failures; they are not product qualification results.
+
+Prepare0.6.0-rc.2 with the native image-store correction, matching UI/component
+version and current bundle installation documentation. Only exact selected
+manifest/config identifiers are tried. Successful malformed image metadata never
+falls through to another lookup, and cancellation stops further inspection.
+Existing official references and all archive/platform/binary checks are retained.
+Native lifecycle and previous-stable upgrade checks must use the new frozen bytes.

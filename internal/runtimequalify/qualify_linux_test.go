@@ -238,11 +238,15 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		if err != nil {
 			t.Fatal(err)
 		}
-		reference := profile.Image
+		references := []string{profile.Image}
 		if profile.Kind == "reviewed" {
-			reference = profile.ConfigDigest
+			references = []string{profile.ManifestDigest, profile.ConfigDigest}
 		}
-		if !reflect.DeepEqual(args, []string{"image", "inspect", reference}) {
+		valid := false
+		for _, reference := range references {
+			valid = valid || reflect.DeepEqual(args, []string{"image", "inspect", reference})
+		}
+		if !valid {
 			t.Fatalf("unexpected image command: %q", args)
 		}
 		f.events = append(f.events, "image-inspect")

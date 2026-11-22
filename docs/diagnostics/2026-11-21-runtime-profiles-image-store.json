@@ -1,0 +1,154 @@
+{
+  "format": 1,
+  "checks": {
+    "missing_artifact_refuses_start_before_pier_execution": true,
+    "corrupt_archive_install_refuses_without_publication": true,
+    "captured_real_engine_lookup_contract": true,
+    "container_binary_checksums_and_versions": true
+  },
+  "eval": [
+    {
+      "runtime": "stock",
+      "loom": 31,
+      "case": "valid",
+      "input": "(de:json '[1,2]')",
+      "exit": 0,
+      "stdout": "\u001b[38;5;244m-find.de\u001b[0m\n",
+      "stderr": "boot: core limit: Invalid argument\nloom: mapped 2048MB\nlite: arvo formula 4ce68411\nlite: core 641296f\nlite: final state 641296f\neval (run):\n\neval: bail: %exit\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "stock",
+      "loom": 31,
+      "case": "invalid",
+      "input": "(de:json '[1,2')",
+      "exit": 0,
+      "stdout": "\u001b[38;5;244m-find.de\u001b[0m\n",
+      "stderr": "boot: core limit: Invalid argument\nloom: mapped 2048MB\nlite: arvo formula 4ce68411\nlite: core 641296f\nlite: final state 641296f\neval (run):\n\neval: bail: %exit\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "patched",
+      "loom": 31,
+      "case": "valid",
+      "input": "(de:json '[1,2]')",
+      "exit": 0,
+      "stdout": "\u001b[38;5;244m-find.de\u001b[0m\n",
+      "stderr": "boot: core limit: Invalid argument\nloom: mapped 2048MB\nlite: arvo formula 4ce68411\nlite: core 641296f\nlite: final state 641296f\neval (run):\n\neval: bail: %exit\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "patched",
+      "loom": 31,
+      "case": "invalid",
+      "input": "(de:json '[1,2')",
+      "exit": 0,
+      "stdout": "\u001b[38;5;244m-find.de\u001b[0m\n",
+      "stderr": "boot: core limit: Invalid argument\nloom: mapped 2048MB\nlite: arvo formula 4ce68411\nlite: core 641296f\nlite: final state 641296f\neval (run):\n\neval: bail: %exit\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "stock",
+      "loom": 34,
+      "case": "valid",
+      "input": "(de:json '[1,2]')",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "boot: core limit: Invalid argument\nboot: mapping 16384MB failed\nsee https://docs.urbit.org/user-manual/running/cloud-hosting for adding swap space\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "stock",
+      "loom": 34,
+      "case": "invalid",
+      "input": "(de:json '[1,2')",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "boot: core limit: Invalid argument\nboot: mapping 16384MB failed\nsee https://docs.urbit.org/user-manual/running/cloud-hosting for adding swap space\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "patched",
+      "loom": 34,
+      "case": "valid",
+      "input": "(de:json '[1,2]')",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "boot: core limit: Invalid argument\nboot: mapping 16384MB failed\nsee https://docs.urbit.org/user-manual/running/cloud-hosting for adding swap space\n",
+      "oom_killed": false
+    },
+    {
+      "runtime": "patched",
+      "loom": 34,
+      "case": "invalid",
+      "input": "(de:json '[1,2')",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "boot: core limit: Invalid argument\nboot: mapping 16384MB failed\nsee https://docs.urbit.org/user-manual/running/cloud-hosting for adding swap space\n",
+      "oom_killed": false
+    }
+  ],
+  "source_commit": "94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4",
+  "installation": {
+    "exit": 1,
+    "stderr": "candidate image inspection unavailable\n: docker command failed (exit 1)\n"
+  },
+  "image_lookup": {
+    "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245": {
+      "exit": 1,
+      "stderr": "Error response from daemon: No such image: sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245\n",
+      "image": []
+    },
+    "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd": {
+      "exit": 0,
+      "stderr": "",
+      "image": [
+        {
+          "Id": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+          "RepoTags": [
+            "tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+          ],
+          "RepoDigests": [
+            "tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+          ],
+          "Architecture": "amd64",
+          "Os": "linux"
+        }
+      ]
+    },
+    "sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58": {
+      "exit": 1,
+      "stderr": "Error response from daemon: No such image: sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58\n",
+      "image": []
+    },
+    "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d": {
+      "exit": 0,
+      "stderr": "",
+      "image": [
+        {
+          "Id": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+          "RepoTags": [
+            "omabit/vere:4.6-jsonfix-0774857c"
+          ],
+          "RepoDigests": [],
+          "Architecture": "amd64",
+          "Os": "linux"
+        }
+      ]
+    }
+  },
+  "scope": "Diagnostic only: exact frozen candidate install failure, image lookup and eval probes. Does not qualify lifecycle or production.",
+  "diagnostic_passed": true,
+  "candidate_qualified": false,
+  "decoder_regression_qualified": false,
+  "limits": [
+    "eval with the embedded Ivory pill lacks the de:json gate; %exit with process exit0 is not a decoder test.",
+    "Loom34 could not map in this no-swap 8GiB guest under its default virtual-memory policy. No decoder behavior was exercised.",
+    "Container image hashes and version banners did match; runtime installation failed at image lookup before pier execution."
+  ],
+  "evidence": {
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime03/host.json": "5df25aa91950b8b963e68dad20a697d55c3ccb4ac2eff1bbbb4af5acaebc9cc7",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime03/result.json": "d3304b7be9e7bd1a57e26b0ff6f6e3923e25998f1c098f8ec46bf7d21bee0171",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime03/serial.log": "9ad7298c8964cfd6bb176a8cd2e12427055181492fc815e099e6ea809a995294"
+  }
+}
