@@ -14872,3 +14872,26 @@ manifest/config identifiers are tried. Successful malformed image metadata never
 falls through to another lookup, and cancellation stops further inspection.
 Existing official references and all archive/platform/binary checks are retained.
 Native lifecycle and previous-stable upgrade checks must use the new frozen bytes.
+
+## M789 — Native artifact checks pass; shared preflight validation corrected (2026-11-21)
+
+Status: supersedes M788's rc.2 candidate readiness; no published or installed review.
+The exact rc.2 native archive installation, idempotent repeat and runner HTTP
+preflight passed in fresh offline runtime04. Missing and corrupt archives refused
+before pier execution. The shared CLI operation then refused its own catalogue
+ID because `RuntimeProfileInput.Validate` used the generic identifier validator,
+which excludes dots. Neither stock nor reviewed runtime IDs could pass it.
+
+Validation now requires a nonempty exact member of the finite runtime catalogue;
+runner target validation remains unchanged. A shared dispatch regression covers
+both catalogue IDs and rejects empty, unknown and path-like inputs before any
+registry access. The service, MCP server and CLI packages pass, as does the
+focused race check. Native evidence is in
+[the diagnostic](diagnostics/2026-11-21-runtime-profiles-shared-preflight.json).
+The ended VM's generated disks/boot copies were retired with checksum receipts;
+all compact evidence, sources and existing ships/manual DEV state remain intact.
+
+Freeze0.6.0-rc.3 next and repeat native qualification. The rc.1 upgrade result and
+rc.2 native image-store checks remain bounded historical evidence, not proof of
+full rc.3 qualification or permission to install it. The approved48GiB aggregate
+cap and single disposable VM restriction remain in effect.

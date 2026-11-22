@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "candidate": "0.6.0-rc.2",
+  "source_commit": "ad1650ab8b27882f90e379e799e2332f685a85c4",
+  "candidate_qualified": false,
+  "native_result": {
+    "format": 1,
+    "passed": false,
+    "checks": {
+      "missing_artifact_refuses_start_before_pier_execution": true,
+      "corrupt_archive_install_refuses_without_publication": true,
+      "exact_archive_install_idempotent_and_native_preflight": true
+    },
+    "eval": [],
+    "source_commit": "ad1650ab8b27882f90e379e799e2332f685a85c4",
+    "error": "",
+    "traceback": "Traceback (most recent call last):\n  File \"/opt/omabit-release-input/guest.py\", line 163, in <module>\n    try:main()\n        ~~~~^^\n  File \"/opt/omabit-release-input/guest.py\", line 89, in main\n    assert call.returncode==0,call.stderr\n           ^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "cause": "Shared RuntimeProfileInput incorrectly used protocol.ValidID, which rejects the dots in both catalogued runtime IDs. Native install and HTTP preflight passed; shared CLI/MCP preflight refused valid typed input before dispatch.",
+  "evidence": {
+    "host.json": "3e55fb6deb3e3bcffb862b9596ab878bf6220379947f34b3b57b8ad8765e4c69",
+    "result.json": "e852dfa4f4be72d6e63593d7246b69a800eb5653b2279c5ae6016f03afbc70a5",
+    "serial.log": "7a7fe5b4088fbae590aafd6c2d9089dea3fa8b795cb5c6e397d17d09d11b6c1c",
+    "generated-retirement.json": "39e37b36d477b3d7574b04c8b56497cb12ddaceaf3e3e378e4c56bf7573028c8"
+  },
+  "limits": "No pier booted. This does not qualify lifecycle or JSON regression behavior. All tests used a new offline disposable guest; existing ships and services untouched."
+}

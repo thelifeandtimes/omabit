@@ -1,4 +1,4 @@
-# Omabit 0.6.0-rc.2 review bundle
+# Omabit 0.6.0-rc.3 review bundle
 
 This Linux x86-64 prerelease contains matching `omabit`, `urbit-collector` and
 `urbit-runner` binaries, the Omarchy interface, CLI references and three agent

@@ -7,6 +7,7 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 // RuntimeProfileInput selects an enrolled runner and a finite reviewed artifact.
@@ -16,7 +17,10 @@ type RuntimeProfileInput struct {
 }
 
 func (in RuntimeProfileInput) Validate() error {
-	if in.Target.Validate() != nil || !protocol.ValidID(in.RuntimeProfile) {
+	if in.Target.Validate() != nil || in.RuntimeProfile == "" {
+		return invalid()
+	}
+	if _, err := runtimeprofile.Resolve(in.RuntimeProfile); err != nil {
 		return invalid()
 	}
 	return nil

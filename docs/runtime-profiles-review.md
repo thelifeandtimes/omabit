@@ -22,8 +22,11 @@ The initial0.6.0-rc.1 bundle failed native custom-runtime installation because i
 image lookup assumed Docker's legacy config identifier. The
 [diagnostic](diagnostics/2026-11-21-runtime-profiles-image-store.json) confirms the
 containerd store requires the manifest identifier. That candidate is superseded;
-0.6.0-rc.2 must be built from a new clean source and repeat qualification. No
-candidate is published or ready for production installation.
+Native0.6.0-rc.2 installation and HTTP preflight passed, but the shared
+CLI/MCP preflight rejected catalogue IDs containing dots. The
+[preflight diagnostic](diagnostics/2026-11-21-runtime-profiles-shared-preflight.json)
+records this second correction.0.6.0-rc.3 must repeat qualification. No candidate
+is published or ready for production installation.
 
 The superseded rc.1 [package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
 records its clean source, assets and isolated installer checks. The checkout's
