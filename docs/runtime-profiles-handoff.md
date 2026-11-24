@@ -71,7 +71,7 @@ missing immutable base or replace a missing input with a live installation.
 ```sh
 qualification_labs="$HOME/Documents/ChatGPT/omabit-private-docker-labs"
 qualification_inputs="$HOME/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp"
-systemd-run --user --unit=omabit-issue22-runtime07-driver \
+systemd-run --user --unit=omabit-issue22-runtime08-driver \
   --property=RuntimeMaxSec=3000 --setenv="PATH=$PATH" \
   /usr/bin/python3 -B "$PWD/scripts/qualification/runtime-profiles/run.py" \
   --case runtime \
@@ -80,19 +80,19 @@ systemd-run --user --unit=omabit-issue22-runtime07-driver \
   --candidate /tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.3 \
   --rootless "$qualification_inputs/omabit-issues-vm-tools/rootless" \
   --init "$qualification_inputs/omabit-issues-recording-vm-03/init" \
-  --output "$qualification_labs/patch-upgrade-060-runtime07" \
+  --output "$qualification_labs/patch-upgrade-060-runtime08" \
   --storage-budget-gib 48 --run
 ```
 
 The transient driver service avoids tying the long VM run to a command-session
 lifetime. Inspect only its named unit with `systemctl --user status` or
-`journalctl --user -u omabit-issue22-runtime07-driver`; the existing VM scope still
+`journalctl --user -u omabit-issue22-runtime08-driver`; the existing VM scope still
 enforces memory, CPU, network and storage limits.
 
 Choose a genuinely unused output name; the harness refuses an existing directory
 and never resumes an old VM. For the upgrade rehearsal, use `--case upgrade
 --app-workflow` and a fresh `patch-upgrade-060-upgradeNN` output with the same inputs.
-It checks the actual published0.5.0 tools, native QML service update, original
+It checks the actual published 0.5.0 tools, native QML service update, original
 identity/configuration/history/access/process preservation, schema65→66, manager
 reopen and old-writer refusal. The final `result.json` must report `passed:true`;
 partial check flags or process exit0 alone do not establish success.
@@ -102,7 +102,7 @@ VM's generated disks and boot copies:
 
 ```sh
 python3 -B scripts/qualification/runtime-profiles/retire.py \
-  --output "$qualification_labs/patch-upgrade-060-runtime07"
+  --output "$qualification_labs/patch-upgrade-060-runtime08"
 ```
 
 Review the exact list, then repeat with `--run` to write a hash/inode manifest and
@@ -112,10 +112,11 @@ the VM. A storage refusal requires classification, not raising the cap.
 
 ## Remaining review gates
 
-1. Complete the current runtime scenario and record all reached and failed checks.
-2. Repeat the0.5.0 upgrade against the same frozen rc.3 bytes.
-3. Verify matching desktop/helper activation, reviewed-profile import and the
-   remaining handoff/interface boundaries, distinguishing native and source tests.
+1. Runtime07 core scenario passed; retain its exact scope and evidence below.
+2. The matching 0.5.0→rc.3 upgrade passed; retain its support window below.
+3. Verify full isolated Omarchy shell activation with the review pins. The sealed
+   loader/QML update and reviewed-profile import passed; broader native handoff
+   and recording coverage must be stated separately from source-level tests.
 4. Supply immutable delivery pins and tested owner-operated instructions before
    recommending any update. Stable release promotion and production installation
    remain separate decisions; no direct master push or protection bypass.
@@ -126,4 +127,36 @@ Runtime06 was interrupted by host signal15 before a complete guest report. The
 [interruption record](diagnostics/2026-11-24-runtime-profiles-interruption.json)
 records the inactive scope and original log hashes. This is neither a product
 failure diagnosis nor a pass. Its generated disks were retired with a separate
-interruption receipt; the next run uses the bounded transient driver above.
+interruption receipt; subsequent runs used the bounded transient driver above.
+
+## Current result — runtime07 passed
+
+The [native core-functionality result](diagnostics/2026-11-24-runtime-profiles-native.json)
+passes all 14 checks using unchanged rc.3 artifacts and harness d332c805. It verifies
+two different image pins, manager restart, missing/corrupt-archive refusal,
+replacement, Pack, controlled process recovery, selected-profile import and the
+actual 16-container lifecycle/utility image audit. All three disposable instances
+finished stopped. The 3,369,426,944 allocated bytes of generated VM/boot files were
+retired with a manifest after preserving the complete report and serial log.
+
+## Current result — matching upgrade passed
+
+The [upgrade result](diagnostics/2026-11-24-runtime-profiles-upgrade.json) passes
+with the published 0.5.0 binaries and unchanged rc.3 target. It preserves both
+original ship configurations, all 5 original operation records, access, live
+engine/container processes and 19 app-history tables containing 38 rows.
+Schema65→66, authorization denial/retry, manager reopen, old-writer refusal,
+stopped fake import and app operations before/after the update pass. Native
+sealed-archive loading and offscreen QML update controls pass; activation
+acknowledgements are harness-driven, so full Omarchy shell activation is separate.
+
+Both VM scopes are inactive. Upgrade01's 2,416,541,696 bytes of generated files
+were retired after retaining evidence and screenshots. The final aggregate
+charge is 47,172,669,440 bytes; remeasure before any future run. No disposable VM remains running.
+
+**Next concrete work:** prepare and verify isolated shell activation and immutable
+review delivery pins/instructions for these exact artifacts. Do not rebuild them
+under the same version or turn this development evidence into a stable release
+claim. If product inputs change, freeze a new candidate and qualify those bytes.
+The older failed runs remain historical; do not repeat completed rc.3 VM tests
+without a new change, failure or unresolved concern.

@@ -9,10 +9,15 @@ handoff bodies. Existing clients that omit a runtime setting preserve the stored
 selection. The JSON-fix correction requirement prevents an incompatible stock
 downgrade; changes of runtime need a separate reviewed checkpoint/replay plan.
 
-Source fixtures now cover preservation, per-ship bindings and signed handoffs.
-These do not qualify an installed0.5.0→0.6.0-rc.1 upgrade. The actual previous
-stable writer, matching frozen artifacts, native runtime/upgrade and desktop
-activation rehearsals remain required. Do not install this development branch
+Source fixtures cover preservation, per-ship bindings and signed handoffs.
+The [frozen0.5.0→rc.3 rehearsal](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
+now passes the actual local owner-user service upgrade, schema65→66, preserved
+ship/app history, access and running processes, manager reopen and genuine0.5.0
+writer refusal. [Native core runtime checks](diagnostics/2026-11-24-runtime-profiles-native.json)
+pass separately. This review window covers that exact published0.5.0 starting
+state; earlier users first follow their documented stable upgrade chain. Remote
+updates, active recording-worker upgrades and power-loss durability are outside
+this scenario. Full shell activation and immutable review delivery remain required. Do not install this development branch
 on production until the [review guide](runtime-profiles-review.md) records those
 gates. No marker editing, state reset, re-enrollment or protected-pier testing is
 part of the procedure. Preserve runtime-profile archives alongside runner state.

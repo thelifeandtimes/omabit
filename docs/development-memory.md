@@ -14921,3 +14921,46 @@ refuse truncation/corruption; run long VMs through a bounded transient driver.
 The existing48GiB authorization, single VM,4GiB scratch and production/DEV
 exclusions remain. Full runtime, exact0.5.0→rc.3 upgrade, activation and immutable
 review delivery remain gates; no production installation or stable release.
+
+## M791 — Frozen rc.3 native core runtime scenario passes (2026-11-24)
+
+Status: supersedes the incomplete native lifecycle gate in M789/M790 for the
+explicit runtime07 scenario, not release-wide qualification. The unchanged
+747dd810 product assets with d332c805's repository harness pass all14 native
+checks. Both runtime pins boot; manager restart preserves both containers;
+missing/corrupt archives refuse; Stop/reconcile recovers expected failed Start;
+replacement, Pack and controlled process recovery retain the reviewed image.
+A stopped copy of the fresh fake refuses stock import and boots under its explicit
+reviewed profile. The16-container event audit verifies lifecycle/utility pins.
+All three disposable instances finish with both desired and observed state stopped.
+
+The [native record](diagnostics/2026-11-24-runtime-profiles-native.json) binds
+full report/serial/host hashes and the exact harness. Storage ends at50,541,416,448
+bytes below48GiB; guarded retirement reclaims3,369,426,944 allocated bytes from
+only that ended VM's generated disks and boot copies. Existing state is untouched.
+The same-artifact0.5.0 upgrade, matching review delivery and protected stable
+promotion remain separate. No decoder-regression or production-pier claim is made.
+
+## M792 — Matching0.5.0→rc.3 native upgrade passes (2026-11-24)
+
+Status: supersedes the pending same-artifact upgrade gate in M789–M791. The
+published0.5.0 binaries and frozen747dd810 target pass the actual offscreen QML
+service-update flow, including denial and retry of the same update attempt.
+Schema65→66 preserves both original ship identities/configuration,5 original
+operation records, access, live processes and all19 original app-history tables
+with38 rows. Manager reopen and the genuine0.5.0 writer's unchanged-state refusal
+pass; new app operations and stopped fake import pass after the update.
+
+The [upgrade record](diagnostics/2026-11-24-runtime-profiles-upgrade.json) binds
+complete checksummed reports, screenshots, source identities and guarded cleanup.
+Native sealed-archive loading passes, with activation acknowledgements driven by
+the guest harness; full Omarchy shell activation is not claimed. Scope is the
+local owner-user0.5.0 starting state, excluding remote updates, active recording
+workers, power-loss behavior and every live protected ship.
+
+Both VM scopes are inactive. Upgrade-generated retirement frees2,416,541,696
+allocated bytes; final full charge47,172,669,440 bytes is within48GiB. Keep all
+compact reports, sources and immutable inputs. Next prepare full isolated shell
+activation and immutable review delivery pins/instructions. Do not rebuild rc.3,
+repeat these completed scenarios without cause, bypass release protection or
+interpret this development pass as production installation authority.

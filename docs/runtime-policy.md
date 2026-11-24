@@ -6,9 +6,9 @@ A manager update never changes the meaning of an existing runtime selection.
 
 ## Review development for issue #22
 
-This branch adds a finite reviewed catalogue. **Native qualification and the
-0.5.0→review upgrade rehearsal are still pending. This source is not yet a
-production install recommendation.** Follow the [review guide](runtime-profiles-review.md)
+This branch adds a finite reviewed catalogue. **The rc.3 core runtime and
+0.5.0 upgrade rehearsals pass; full shell activation and immutable review
+delivery remain pending. This source is not yet a production install recommendation.** Follow the [review guide](runtime-profiles-review.md)
 for evidence status and the prerequisites for an eventual owner-operated import.
 
 | Profile | Contract |
@@ -89,10 +89,10 @@ An omitted field always resolves to the frozen official 4.6 artifact, even if a
 future release adds other choices. Historical receipts are not relabeled.
 
 Older runners must refuse schema66. Do not lower a schema marker, reset state or
-re-enroll ships to make an older binary run. The tested previous-stable support
-window remains [0.4.0→0.5.0](releases/0.5.0/qualification.json) until a matching
-review upgrade rehearsal is recorded. Source tests are not installed-upgrade
-qualification. See [upgrade policy](upgrade-policy.md).
+re-enroll ships to make an older binary run. The published stable support window remains [0.4.0→0.5.0](releases/0.5.0/qualification.json). The
+[0.5.0→rc.3 review rehearsal](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
+now passes for the local owner-user case; it is not a published stable support
+window. Source tests are not installed-upgrade qualification. See [upgrade policy](upgrade-policy.md).
 
 ## Existing runtime settings
 

@@ -1,0 +1,187 @@
+{
+  "format": 1,
+  "date": "2026-11-24",
+  "passed": true,
+  "scope": "Core runtime-profile functionality in one fresh offline VM; not stable publication or production installation",
+  "artifact_source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+  "harness_source_commit": "d332c805e1e88d7a6175f6d176c8c8e1e81b9965",
+  "harness_sha256": {
+    "guest.py": "c2d633790a2744c18d621d3396c52fbd17f52cdf3d94660600003dd322490bff",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "0c70774d4f4d5a6dac5bd14340bcf9e9020dcdb848e9d77869034d38c4cf6771",
+    "run.py": "c353f43634ac6a827391e5ca433fa46450b119995762cdf0294f1ef40a98d23a"
+  },
+  "checks": {
+    "missing_artifact_refuses_start_before_pier_execution": true,
+    "corrupt_archive_install_refuses_without_publication": true,
+    "exact_archive_install_idempotent_and_native_preflight": true,
+    "container_binary_checksums_and_versions": true,
+    "two_fresh_ships_different_pinned_runtimes": true,
+    "manager_restart_preserves_both_containers_and_pins": true,
+    "missing_archive_allows_stop_refuses_restart_no_fallback": true,
+    "enrolled_downgrade_refuses_preserving_configuration": true,
+    "replacement_and_omitted_profile_preserve_pin": true,
+    "pack_and_restart_preserve_pin": true,
+    "controlled_crash_recovery_preserves_pin": true,
+    "reviewed_import_refuses_stock_and_preserves_pin_through_start": true,
+    "native_utility_and_lifecycle_image_audit": true,
+    "both_test_ships_gracefully_stopped": true
+  },
+  "native_launches": [
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-b35476c93ac293d411eabcc26a4fbea1-probe",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-b35476c93ac293d411eabcc26a4fbea1-http-boot",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-http-boot",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-pack",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-41132f9a1d722b112e7b46b457b60c7b-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-41132f9a1d722b112e7b46b457b60c7b-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-b0e98d513256e4ca2d84f478cbd8cd2c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    }
+  ],
+  "final_instances": [
+    {
+      "id": "nec",
+      "ship": "~nec",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "config": {
+        "runtime_profile": "vere-4.6-jsonfix-0774857c",
+        "http_port": 18080,
+        "ames_port": 34343,
+        "loom": 34
+      }
+    },
+    {
+      "id": "profile-patched",
+      "ship": "~nec",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "config": {
+        "runtime_profile": "vere-4.6-jsonfix-0774857c",
+        "http_port": 19181,
+        "ames_port": 34343,
+        "loom": 34
+      }
+    },
+    {
+      "id": "profile-stock",
+      "ship": "~zod",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "config": {
+        "http_port": 19180,
+        "ames_port": 34343,
+        "loom": 34
+      }
+    }
+  ],
+  "operations": {
+    "succeeded": 20,
+    "failed": 2
+  },
+  "private_evidence": {
+    "host.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime07/host.json",
+      "sha256": "dce4005e1769eb6b2453db0fa39d18415a87e887187f4d9d8c5aa4feae75cb9f"
+    },
+    "result.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime07/result.json",
+      "sha256": "e1c27da986ee456302e25955256ea418a4ebb9302439ab302a67669f4623ae2e"
+    },
+    "serial.log": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime07/serial.log",
+      "sha256": "7380e5df4621f33b965a2ef0cb7814de92a3dc775e8b904a581dc54052b66a86"
+    },
+    "generated-retirement.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime07/generated-retirement.json",
+      "sha256": "f1082e341e79721524fe95f54cfeafd851270eb95b083345cbef818170f1482d"
+    }
+  },
+  "storage": {
+    "before_bytes": 47171837952,
+    "end_bytes": 50541416448,
+    "cap_bytes": 51539607552,
+    "scratch_bytes": 4294967296,
+    "retired_allocated_bytes": 3369426944
+  },
+  "limits": [
+    "Approved runtime identity is verified; decoder crash reproduction and negative controls are outside the user-requested scope.",
+    "The reviewed import uses a stopped copy of the newly created fake, never a protected or production pier.",
+    "Signed handoff and recording paths retain their source-level evidence; this VM does not add native coverage for them.",
+    "The same-artifact previous-stable upgrade and review delivery remain separate gates."
+  ]
+}

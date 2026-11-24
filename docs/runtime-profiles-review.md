@@ -1,9 +1,10 @@
 # Runtime-profile review and owner-operated migration
 
 **Status: implementation under review; do not install this branch on production
-or import a live pier yet.** The native artifact and previous-stable upgrade
-rehearsals must pass before an immutable review bundle is offered for production
-installation. No production service or ship has been changed to prepare this work.
+or import a live pier yet.** Native core runtime and matching 0.5.0 upgrade
+rehearsals now pass. Full isolated shell activation and immutable review delivery
+pins/instructions remain before a production update can be recommended. No
+production service or ship has been changed to prepare this work.
 
 ## What the candidate changes
 
@@ -25,8 +26,11 @@ containerd store requires the manifest identifier. That candidate is superseded;
 Native0.6.0-rc.2 installation and HTTP preflight passed, but the shared
 CLI/MCP preflight rejected catalogue IDs containing dots. The
 [preflight diagnostic](diagnostics/2026-11-21-runtime-profiles-shared-preflight.json)
-records this second correction.0.6.0-rc.3 must repeat qualification. No candidate
-is published or ready for production installation.
+records this second correction. The [rc.3 native core scenario](diagnostics/2026-11-24-runtime-profiles-native.json)
+now passes all 14 checks, including lifecycle, recovery, maintenance and selected-
+profile import. The [matching 0.5.0 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
+also passes. Full shell activation and immutable review delivery remain separate
+gates. No candidate is published or ready for production installation.
 
 The superseded rc.1 [package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
 records its clean source, assets and isolated installer checks. The checkout's
@@ -80,7 +84,7 @@ commit and hashes. In particular, it needs:
 - Native image loading and executable checks, missing/corrupt/wrong-platform
   refusal, and evidence that utilities never invoke the stock binary for a
   patched pier. Checkpoint transition refusal/recovery must preserve history.
-- Actual published0.5.0→candidate service upgrade with unchanged identities,
+- Actual published 0.5.0→candidate service upgrade with unchanged identities,
   piers, settings, access, original receipts and peer processes; candidate
   reopen and genuine0.5.0 reader refusal of schema66.
 - Matching desktop/helper activation, selected-runtime import and mixed-version
@@ -94,13 +98,14 @@ reproduction separately from the pending native gates. The local historical race
 managed-race shards subsequently passed in GitHub run44882786180, together with
 core, QML and the aggregate source gate.
 
-The [published0.5.0 upgrade rehearsal](diagnostics/2026-11-21-runtime-profiles-upgrade.json)
+The [published 0.5.0 upgrade rehearsal](diagnostics/2026-11-21-runtime-profiles-upgrade.json)
 passed with fresh disposable ships, including schema65→66, unchanged original
 ship configuration/history, access and running processes, manager reopen and
 genuine0.5.0 writer refusal. The host's console report was incomplete; an
 independent guarded read-only extraction recovered the complete report and
-database, verified their checksums and checked the preserved rows. This qualifies
-the upgrade scenario, not the separately pending patched-runtime scenarios.
+database, verified their checksums and checked the preserved rows. This is historical rc.1 evidence. The [rc.3 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
+now supersedes its pending successor gate, and the [rc.3 runtime case](diagnostics/2026-11-24-runtime-profiles-native.json)
+separately qualifies the stated core runtime operations.
 
 The user approved the temporary48GiB cap for#22 on2026-11-21. Full accounting
 includes shared build caches, every worktree's build outputs and the versioned
