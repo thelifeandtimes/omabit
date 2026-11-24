@@ -1,0 +1,118 @@
+{
+  "passed": true,
+  "public_downloads": true,
+  "release_id": 457381653,
+  "tag": "v0.6.0-rc.3",
+  "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+  "assets": [
+    {
+      "name": "omabit-0.6.0-rc.3-linux-amd64.tar.gz",
+      "asset_id": 789011568,
+      "bytes": 36975728,
+      "sha256": "f1676a51bede3302327917c9e80b8661bf482e47a8e40633903e60ac435037f7",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/omabit-0.6.0-rc.3-linux-amd64.tar.gz"
+    },
+    {
+      "name": "omabit-linux-amd64",
+      "asset_id": 789011586,
+      "bytes": 26869609,
+      "sha256": "355f897a80db93a7e26dd25e0c1e688ef55d4f077e83862d2327ebb633afb6a3",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/omabit-linux-amd64"
+    },
+    {
+      "name": "omabit-recommended-apps-0.6.0-rc.3.pill",
+      "asset_id": 789011579,
+      "bytes": 59351751,
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/omabit-recommended-apps-0.6.0-rc.3.pill"
+    },
+    {
+      "name": "omabit-skills-0.6.0-rc.3.tar.gz",
+      "asset_id": 789011566,
+      "bytes": 73904,
+      "sha256": "280367c2807cfe44b73b1a7c40c11dbce853005b7c4e8d3a5c77edb5229c59b6",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/omabit-skills-0.6.0-rc.3.tar.gz"
+    },
+    {
+      "name": "release.json",
+      "asset_id": 789011614,
+      "bytes": 4176,
+      "sha256": "6bfbc54dcad6c2dfdce037dee65b1400b3e91ca4d2e5a5b06cfcd2ca53e753d2",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/release.json"
+    },
+    {
+      "name": "SHA256SUMS",
+      "asset_id": 789011564,
+      "bytes": 755,
+      "sha256": "c3220d8db6e798ad06a2257c254c65031318a1281b2ac7c50efaea0a2e6660c7",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/SHA256SUMS"
+    },
+    {
+      "name": "urbit-collector-linux-amd64",
+      "asset_id": 789011639,
+      "bytes": 13229180,
+      "sha256": "0168cf02b79d247acb834704ea5dfeb7c25a94fd243ac76bfc2b1eac07bf5c58",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/urbit-collector-linux-amd64"
+    },
+    {
+      "name": "urbit-runner-linux-amd64",
+      "asset_id": 789011665,
+      "bytes": 30278816,
+      "sha256": "bfd62c7be2d3a4ce513ecb425ea16129df2eb1218d99f5474a2d41072d386ee1",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/urbit-runner-linux-amd64"
+    },
+    {
+      "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+      "asset_id": 789011695,
+      "bytes": 54750277,
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3/vere-4.6-jsonfix-0774857c.tar.gz"
+    }
+  ],
+  "distribution_commit": "664f938ad15f139dbf79e0baef3f4bda145c9d02",
+  "published_at": "2026-11-24T22:02:46Z",
+  "url": "https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3",
+  "prerelease": true,
+  "draft": false,
+  "latest_stable": "v0.5.0",
+  "tag_object": {
+    "sha": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+    "type": "commit",
+    "url": "https://api.github.com/repos/thelifeandtimes/omabit/git/commits/747dd810c10b74b4fbcdc10f617e6b15dd545a45"
+  },
+  "installed_services_changed": false,
+  "existing_desktop_state_changed": false,
+  "storage": {
+    "charged_bytes": 47398850560,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 47398850560,
+    "report": {
+      "path": "/tmp/omabit-060-final-storage.json",
+      "sha256": "8a3bcd4390081187653ad575c07968820985bd160d300dd82b36a1b2aa49623a"
+    }
+  },
+  "evidence": {
+    "native": {
+      "path": "docs/diagnostics/2026-11-24-runtime-profiles-native.json",
+      "sha256": "665f106be548ef53d72eb1b59a57444f769f2ad0a1ad5e4d52f3a1063540f5a0"
+    },
+    "upgrade": {
+      "path": "docs/diagnostics/2026-11-24-runtime-profiles-upgrade.json",
+      "sha256": "0ae8029dcdf42be26a2ed71f604eb4bf800c7228d7c88a4378abe51f81b493de"
+    },
+    "full-shell": {
+      "path": "docs/diagnostics/2026-11-24-runtime-profiles-full-shell.json",
+      "sha256": "f9f66a8eb5b77bd433fb336750b675d032af828cae6d0d502690371a4a0cb91d"
+    },
+    "draft-downloads": {
+      "path": "docs/diagnostics/2026-11-24-runtime-profiles-draft-downloads.json",
+      "sha256": "a4f4abe3671d740d52251c9ca56c9abe33d337ca9b840bef410271da10731203"
+    },
+    "manual-entry": {
+      "path": "docs/diagnostics/2026-11-24-runtime-profiles-manual-entry.json",
+      "sha256": "b9b6944db0797da8203f7a51f6ea75abb3b22a9098f77503a92b75ab3d57f86b"
+    }
+  },
+  "verification_note": "Initial public check mistakenly reused temporary untagged draft URLs and received404. Canonical URLs from published metadata passed all nine hashes; no artifact changed."
+}

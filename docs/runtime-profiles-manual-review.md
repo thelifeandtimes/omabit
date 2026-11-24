@@ -6,7 +6,8 @@ Vere archive. It preserves the official default runtime and adds an explicit
 immutable runtime choice for each ordinary managed ship.
 
 Download from [v0.6.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3).
-The release notes identify the exact **distribution checkout** to use below.
+The exact **distribution checkout** is
+`664f938ad15f139dbf79e0baef3f4bda145c9d02`.
 The product source is `747dd810c10b74b4fbcdc10f617e6b15dd545a45`; that source tag
 predates the distribution pins. Do not install the source tag as the plugin.
 Stable/latest remains0.5.0; publishing this candidate changes no installed service.
@@ -15,17 +16,17 @@ Stable/latest remains0.5.0; publishing this candidate changes no installed servi
 
 Use a new directory. Keep the archive and checksums with your review materials.
 The commands need Git, curl and Python3; they do not install or update services.
-Replace `DISTRIBUTION_REVISION` with the exact revision in the release notes.
+The commands pin that exact checkout; the branch name is only used to fetch it.
 
 ```bash
 review_dir="$HOME/Downloads/omabit-0.6.0-rc.3-review"
-mkdir -m 700 "$review_dir"
-git clone --no-checkout --single-branch --branch codex/issue-22-runtime-profiles \
-  https://github.com/thelifeandtimes/omabit.git "$review_dir/source"
-git -C "$review_dir/source" checkout --detach DISTRIBUTION_REVISION
-mkdir "$review_dir/assets"
 (
   set -eu
+  mkdir -m 700 "$review_dir"
+  git clone --no-checkout --single-branch --branch codex/issue-22-runtime-profiles \
+  https://github.com/thelifeandtimes/omabit.git "$review_dir/source"
+  git -C "$review_dir/source" checkout --detach 664f938ad15f139dbf79e0baef3f4bda145c9d02
+  mkdir "$review_dir/assets"
   cd "$review_dir/assets"
   release_url=https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3
   for asset in SHA256SUMS release.json omabit-0.6.0-rc.3-linux-amd64.tar.gz \
@@ -52,6 +53,8 @@ separately named DEV widget or upgrade a runner. Use the existing normal plugin,
 not an older/custom DEV wrapper with different state paths.
 
 ```bash
+(
+set -eu
 cd "$review_dir/source"
 python3 -B scripts/omabit-dev.py status > "$review_dir/desktop-before.json"
 python3 -B scripts/omabit-dev.py import-release \
@@ -61,13 +64,14 @@ python3 -B scripts/omabit-dev.py profile-create review060
 python3 -B scripts/omabit-dev.py select review060 \
   --release b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52
 omarchy shell thelifeandtimes.omabit.bootstrap status
+)
 ```
 
 If `review060` already exists, retain it and use a different new name in both
 commands. Activation may take a few seconds. Require `phase:"ready"`, an empty
 `error`, `loaded_version:"0.6.0-rc.3"`, source `747dd810…` and the full loaded
 release digest above. Open Omabit and confirm **PRERELEASE**, Setup and the empty
-Fleet. Inspect Add a ship/import's runtime choices without submitting an import.
+Fleet. Inspect the available Setup and Add a ship controls without submitting an import.
 Local service setup is disabled in this profile. Profiles isolate desktop data;
 they do not isolate host services or piers.
 
@@ -75,6 +79,7 @@ To restore the prior desktop selection exactly, without modifying its release
 pin or data:
 
 ```bash
+cd "$review_dir/source"
 python3 -B - "$review_dir/desktop-before.json" <<'PY'
 import json, subprocess, sys
 state = json.load(open(sys.argv[1]))
@@ -133,8 +138,13 @@ candidate did not inspect or operate those ships.
 - [Full Omarchy shell](diagnostics/2026-11-24-runtime-profiles-full-shell.json):
   cold/hot/rescan/restart with unchanged archives and preserved preferences, in a
   private headless Sway compositor. Host Hyprland integration is not covered.
-- [Draft downloads](diagnostics/2026-11-24-runtime-profiles-draft-downloads.json):
-  all nine assets match original sizes, SHA256 and GitHub digests.
+- [Draft downloads](diagnostics/2026-11-24-runtime-profiles-draft-downloads.json) and
+  [public delivery](diagnostics/2026-11-24-runtime-profiles-publication.json):
+  all nine assets match original sizes, SHA256 and GitHub digests. The public tag
+  points to the frozen product;0.5.0 remains latest.
+- [Manual entry point](diagnostics/2026-11-24-runtime-profiles-manual-entry.json):
+  pinned checkout, verified import, isolated profile and exact restoration of the
+  prior non-default profile/release pass in fresh private state.
 
 The frozen source passed core, all four managed-race shards, QML and aggregate
 source CI. The protected stable-release policy intentionally rejects this topic

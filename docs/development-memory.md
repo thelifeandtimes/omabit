@@ -14989,3 +14989,30 @@ original bytes and GitHub digests; see the [download record](diagnostics/2026-11
 No same-version artifact was rebuilt. Publish only as a non-latest prerelease with
 exact owner-review instructions; master and installed production/DEV state stay
 unchanged. Owner acceptance and stable promotion remain separate gates.
+
+## M794 — Complete rc.3 prerelease ready for owner review (2026-11-24)
+
+Status: supersedes the pending immutable delivery gate in M790–M793. Published
+[v0.6.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3)
+is explicitly a prerelease and not latest;0.5.0 remains latest stable. All nine
+authenticated draft and unauthenticated public downloads match the original
+qualified bytes, sizes and GitHub digests. The tag targets frozen747dd810; the
+distribution checkout is664f938ad15f139dbf79e0baef3f4bda145c9d02. Assets were
+not rebuilt or replaced. The first public checker reused obsolete temporary
+draft URLs; using canonical published metadata passed without an artifact change.
+
+The [publication record](diagnostics/2026-11-24-runtime-profiles-publication.json)
+and [manual entry check](diagnostics/2026-11-24-runtime-profiles-manual-entry.json)
+bind exact delivery, isolated import/profile preparation and prior non-default
+profile/release restoration. The existing0.5.0 native bootstrap/control code is
+identical apart from distribution pins. The [manual guide](runtime-profiles-manual-review.md)
+starts with a new desktop profile with host setup disabled. An owner-operated
+local0.5.0/schema65→rc.3/schema66 update is a separate explicit step; arbitrary
+custom DEV layouts, remote upgrades, active recording and protected ships remain
+outside that qualification.
+
+All private runtime/upgrade/shell scopes are inactive. Final aggregate storage
+47,398,850,560 bytes stays under48GiB. Production, installed plugins/services,
+existing manual DEV state, protected identities, tmux and temp-ur remain untouched.
+Leave PR24 draft and issue22 open for owner feedback. This ready-for-manual-review
+result is not stable promotion, production update or live import authority.

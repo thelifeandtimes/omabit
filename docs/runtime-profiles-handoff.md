@@ -4,7 +4,7 @@ The active candidate is **0.6.0-rc.3**, frozen at
 `747dd810c10b74b4fbcdc10f617e6b15dd545a45`, on
 `codex/issue-22-runtime-profiles`, in [draft PR24](https://github.com/thelifeandtimes/omabit/pull/24).
 Native bootstrap now pins the exact qualified rc.3 archive and helpers. The
-immutable review delivery is being verified; follow the
+immutable review prerelease is published and all public downloads are verified; follow the
 [manual review guide](runtime-profiles-manual-review.md) for its final published
 revision and entry point. This is a prerelease, not a stable promotion. Keep
 master protected and leave issue22 open for owner review.
@@ -119,9 +119,10 @@ the VM. A storage refusal requires classification, not raising the cap.
 2. The matching 0.5.0→rc.3 upgrade passed; retain its support window below.
 3. Full isolated Omarchy shell activation passed; see the current result below.
    Broader native handoff and recording coverage remain separate from source tests.
-4. Verify the immutable draft downloads, publish as a non-latest prerelease, and
-   supply the exact distribution checkout and owner-operated instructions.
-   Stable promotion and production installation remain separate decisions.
+4. All nine draft and public downloads pass. The non-latest prerelease and
+   distribution checkout664f938 are ready for owner review with verified import,
+   profile selection and exact prior-profile restoration. Stable promotion and
+   production installation remain separate decisions.
 
 The latest run status and any next action are recorded below as evidence is obtained.
 
@@ -181,3 +182,23 @@ new version and qualify those bytes. The older failed runs remain historical;
 do not repeat completed rc.3 scenarios without a new change, failure or unresolved
 concern. Owner acceptance, broader excluded scenarios and protected stable
 promotion remain separate from this complete prerelease review delivery.
+
+## Current result — published manual review delivery
+
+[v0.6.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3)
+is public as a prerelease, with0.5.0 still latest. All nine public downloads match
+the qualified original bytes. The [publication record](diagnostics/2026-11-24-runtime-profiles-publication.json)
+binds the tag, asset IDs/digests and exact distribution commit
+`664f938ad15f139dbf79e0baef3f4bda145c9d02`. The product tag remains747dd810.
+
+The [manual entry check](diagnostics/2026-11-24-runtime-profiles-manual-entry.json)
+uses that checkout and fresh private state to verify sealed import, new profile
+with local setup disabled, matching tools and restoration of a prior non-default
+explicit selection. The [manual guide](runtime-profiles-manual-review.md) starts
+with desktop review and makes the tested local0.5.0 service upgrade a separate
+owner-operated choice. Existing production and manual DEV installations remain
+unchanged. Final aggregate charge47,398,850,560 bytes is within48GiB.
+
+**Next action belongs to the owner:** review the candidate and report feedback.
+Keep PR24 draft and issue22 open; do not perform a live-pier import, production
+upgrade or stable promotion as an automatic continuation of this delivery.
