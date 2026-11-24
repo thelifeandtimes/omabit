@@ -14964,3 +14964,28 @@ compact reports, sources and immutable inputs. Next prepare full isolated shell
 activation and immutable review delivery pins/instructions. Do not rebuild rc.3,
 repeat these completed scenarios without cause, bypass release protection or
 interpret this development pass as production installation authority.
+
+## M793 — Full isolated Omarchy shell activates frozen rc.3 (2026-11-24)
+
+Status: supersedes M792's pending full-shell activation gate for this bounded
+scenario. The unmodified Omarchy shell, under a separate headless Sway compositor
+and networkless Bubblewrap namespace, cold-loads published0.5.0, hot-activates
+exact rc.3 with the same shell/session, preserves the visible page and selection,
+retains paired service/widget state across rescan, and cold-restarts on rc.3.
+Activation acknowledgements come from the actual native bootstrap.
+
+The [record](diagnostics/2026-11-24-runtime-profiles-full-shell.json) binds sealed
+archive hashes, full shell identity, namespace adapters and retained logs. The
+private review060 profile has no enrollments and local setup is disabled. No host
+HOME, desktop, keyring, Docker or SSH sockets are mounted. The bounded service
+finished successfully and is inactive. Host Hyprland integration, remote updates
+and wider handoff/recording scenarios are not claimed; socket/teardown warnings
+remain recorded. Repository-owned full_shell.py changes only source-root discovery
+from the tested temporary driver.
+
+Distribution pins now identify the original747dd810 rc.3 archive and all three
+matching helpers. All nine authenticated draft downloads match the qualified
+original bytes and GitHub digests; see the [download record](diagnostics/2026-11-24-runtime-profiles-draft-downloads.json).
+No same-version artifact was rebuilt. Publish only as a non-latest prerelease with
+exact owner-review instructions; master and installed production/DEV state stay
+unchanged. Owner acceptance and stable promotion remain separate gates.

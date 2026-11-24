@@ -1,10 +1,10 @@
 # Runtime-profile review and owner-operated migration
 
-**Status: implementation under review; do not install this branch on production
-or import a live pier yet.** Native core runtime and matching 0.5.0 upgrade
-rehearsals now pass. Full isolated shell activation and immutable review delivery
-pins/instructions remain before a production update can be recommended. No
-production service or ship has been changed to prepare this work.
+**Status: qualified prerelease for owner review.** Native core runtime, matching
+0.5.0 upgrade and full isolated shell activation pass. Use the exact download and
+checkout instructions in the [manual review guide](runtime-profiles-manual-review.md).
+This is not stable promotion or authorization for an automated production update
+or live-pier import. No production service or ship was changed to prepare it.
 
 ## What the candidate changes
 
@@ -29,14 +29,14 @@ CLI/MCP preflight rejected catalogue IDs containing dots. The
 records this second correction. The [rc.3 native core scenario](diagnostics/2026-11-24-runtime-profiles-native.json)
 now passes all 14 checks, including lifecycle, recovery, maintenance and selected-
 profile import. The [matching 0.5.0 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
-also passes. Full shell activation and immutable review delivery remain separate
-gates. No candidate is published or ready for production installation.
+also passes, as does [full isolated shell activation](diagnostics/2026-11-24-runtime-profiles-full-shell.json).
+The manual review guide records immutable delivery and its supported starting state.
 
 The superseded rc.1 [package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
 records its clean source, assets and isolated installer checks. The checkout's
-native bootstrap pins still select stable0.5.0 until a qualified successor is
-published and pinned; checking out this topic branch is not yet an installation
-procedure for the new helpers.
+native bootstrap pins now select the exact rc.3 bundle and helpers. The product
+source tag retains its original0.5.0 pins; use the separately identified distribution
+checkout or explicitly import the sealed release as documented in the manual guide.
 
 The [continuation handoff](runtime-profiles-handoff.md) records the current frozen
 assets, repository-owned core-functionality harness, exact input paths and remaining
@@ -71,7 +71,7 @@ and [issue #22](https://github.com/thelifeandtimes/omabit/issues/22) are the sou
 of the compatibility requirement. Stock Vere can crash replay after the corrected
 error path has committed an event. Do not substitute another “4.6” binary.
 
-## Release gates before installation
+## Qualification scope
 
 Required evidence remains separate for source fixtures, real runtime behavior,
 and installed upgrades. The final bundle must identify its clean frozen source
@@ -115,10 +115,10 @@ disks were retired with manifests after retaining compact evidence. Revalidate
 the full charge and reserve scratch before every new experiment; all existing
 ships, manual DEV state and immutable reference inputs remain preserved.
 
-## Manual update sequence once qualified
+## Owner-operated update sequence
 
-The review delivery must supply an exact checkout revision, verified download
-pins and tested installation commands. Do not use the stock updater to select a
+The [manual review guide](runtime-profiles-manual-review.md) supplies the exact
+checkout revision, verified download pins and commands. Do not use the stock updater to select a
 topic branch: it fetches remote HEAD and therefore stable master. Preserve any
 local checkout modifications before switching to a review revision.
 

@@ -6,10 +6,12 @@ A manager update never changes the meaning of an existing runtime selection.
 
 ## Review development for issue #22
 
-This branch adds a finite reviewed catalogue. **The rc.3 core runtime and
-0.5.0 upgrade rehearsals pass; full shell activation and immutable review
-delivery remain pending. This source is not yet a production install recommendation.** Follow the [review guide](runtime-profiles-review.md)
-for evidence status and the prerequisites for an eventual owner-operated import.
+This branch adds a finite reviewed catalogue. **The rc.3 core runtime, local
+0.5.0 upgrade and full isolated shell activation pass.** The
+[manual review guide](runtime-profiles-manual-review.md) identifies the complete
+prerelease delivery; it is not a stable release or an automatic production update.
+Follow the [review guide](runtime-profiles-review.md) for evidence limits and
+the prerequisites for an eventual owner-operated import.
 
 | Profile | Contract |
 | --- | --- |

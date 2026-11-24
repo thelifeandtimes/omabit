@@ -17,9 +17,10 @@ writer refusal. [Native core runtime checks](diagnostics/2026-11-24-runtime-prof
 pass separately. This review window covers that exact published0.5.0 starting
 state; earlier users first follow their documented stable upgrade chain. Remote
 updates, active recording-worker upgrades and power-loss durability are outside
-this scenario. Full shell activation and immutable review delivery remain required. Do not install this development branch
-on production until the [review guide](runtime-profiles-review.md) records those
-gates. No marker editing, state reset, re-enrollment or protected-pier testing is
+this scenario. [Full isolated shell activation](diagnostics/2026-11-24-runtime-profiles-full-shell.json)
+also passes. Use the [manual review guide](runtime-profiles-manual-review.md) for
+the exact prerelease delivery and owner-operated review path. Stable promotion
+and production deployment remain separate. No marker editing, state reset, re-enrollment or protected-pier testing is
 part of the procedure. Preserve runtime-profile archives alongside runner state.
 
 ## 0.5.0: qualified local0.4.0→0.5.0 support window

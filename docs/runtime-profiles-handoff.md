@@ -3,8 +3,11 @@
 The active candidate is **0.6.0-rc.3**, frozen at
 `747dd810c10b74b4fbcdc10f617e6b15dd545a45`, on
 `codex/issue-22-runtime-profiles`, in [draft PR24](https://github.com/thelifeandtimes/omabit/pull/24).
-It is not published or ready for a production update. Native bootstrap still pins
-stable0.5.0. Keep master protected and leave issue22 open.
+Native bootstrap now pins the exact qualified rc.3 archive and helpers. The
+immutable review delivery is being verified; follow the
+[manual review guide](runtime-profiles-manual-review.md) for its final published
+revision and entry point. This is a prerelease, not a stable promotion. Keep
+master protected and leave issue22 open for owner review.
 
 The user narrowed this continuation on2026-11-24 to **core functionality**.
 Do not resume decoder crash reproduction, malformed-input negative controls or
@@ -110,16 +113,15 @@ retire those files. Sources, reports, logs and immutable bases remain. Never del
 whole evidence directories. Admission is remeasured at every launch and throughout
 the VM. A storage refusal requires classification, not raising the cap.
 
-## Remaining review gates
+## Qualification and delivery
 
 1. Runtime07 core scenario passed; retain its exact scope and evidence below.
 2. The matching 0.5.0→rc.3 upgrade passed; retain its support window below.
-3. Verify full isolated Omarchy shell activation with the review pins. The sealed
-   loader/QML update and reviewed-profile import passed; broader native handoff
-   and recording coverage must be stated separately from source-level tests.
-4. Supply immutable delivery pins and tested owner-operated instructions before
-   recommending any update. Stable release promotion and production installation
-   remain separate decisions; no direct master push or protection bypass.
+3. Full isolated Omarchy shell activation passed; see the current result below.
+   Broader native handoff and recording coverage remain separate from source tests.
+4. Verify the immutable draft downloads, publish as a non-latest prerelease, and
+   supply the exact distribution checkout and owner-operated instructions.
+   Stable promotion and production installation remain separate decisions.
 
 The latest run status and any next action are recorded below as evidence is obtained.
 
@@ -154,9 +156,28 @@ Both VM scopes are inactive. Upgrade01's 2,416,541,696 bytes of generated files
 were retired after retaining evidence and screenshots. The final aggregate
 charge is 47,172,669,440 bytes; remeasure before any future run. No disposable VM remains running.
 
-**Next concrete work:** prepare and verify isolated shell activation and immutable
-review delivery pins/instructions for these exact artifacts. Do not rebuild them
-under the same version or turn this development evidence into a stable release
-claim. If product inputs change, freeze a new candidate and qualify those bytes.
-The older failed runs remain historical; do not repeat completed rc.3 VM tests
-without a new change, failure or unresolved concern.
+## Current result — full shell activation passed
+
+The [full-shell record](diagnostics/2026-11-24-runtime-profiles-full-shell.json)
+uses the unmodified installed Omarchy shell inside a fresh networkless Bubblewrap
+namespace and headless Sway compositor. It loads the exact sealed 0.5.0 and rc.3
+archives through the normal loader. Cold startup, hot activation in the same shell,
+visible monitor/page/selection preservation, plugin rescan and cold restart pass.
+The private profile has no enrollment and local setup is disabled. The test uses
+a distinct plugin ID and namespace adapters; host Hyprland integration is outside
+this check. Hyprland socket and QML teardown warnings are retained in its logs.
+
+[full_shell.py](../scripts/qualification/runtime-profiles/full_shell.py) retains
+the driver, with only the repository path made relative after the run. It uses the
+same known local asset and compositor inputs, refuses an existing output directory,
+shares the runtime lock, and admits 1GiB scratch under the approved48GiB cap.
+For a justified rerun, use a fresh `/tmp/omabit-060-shell-NN` output under a bounded
+user service with MemoryMax=2G, MemorySwapMax=0, CPUQuota=100%, TasksMax=256 and
+RuntimeMaxSec=300. The completed `omabit-issue22-shell01.service` is inactive and
+successful. No host desktop socket or production HOME was mounted.
+
+The candidate assets must remain unchanged. If product inputs change, freeze a
+new version and qualify those bytes. The older failed runs remain historical;
+do not repeat completed rc.3 scenarios without a new change, failure or unresolved
+concern. Owner acceptance, broader excluded scenarios and protected stable
+promotion remain separate from this complete prerelease review delivery.
