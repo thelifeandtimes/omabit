@@ -15016,3 +15016,38 @@ All private runtime/upgrade/shell scopes are inactive. Final aggregate storage
 existing manual DEV state, protected identities, tmux and temp-ur remain untouched.
 Leave PR24 draft and issue22 open for owner feedback. This ready-for-manual-review
 result is not stable promotion, production update or live import authority.
+
+## M795 — Existing review040 DEV owner update command prepared (2026-11-24)
+
+Status: clarifies M794's generic manual-entry instructions for the user's existing
+custom DEV environment. The user requested commands to run the update themselves,
+not execution by the assistant. The existing review040 manager and widget are
+confirmed on published0.5.0/schema65, under `/srv/dev/urbit-040`, profile
+`review-040`, plugin ID `thelifeandtimes.omabit.review040`, runner identity
+`runner-a9a208a18445179f05df5644ed6d245c`. The earlier normal-plugin profile commands
+do not update this custom installation. Use “DEV environment” for the complete
+setup, “namespace” for its isolation boundaries and “configuration” for settings.
+
+The private [owner adapter](../scripts/qualification/runtime-profiles/update_review040.py)
+is staged with exact rc.3 helpers and the reviewed runtime archive. `--prepare`
+only verifies and stages; `--apply` performs the owner's update. It binds old
+helper hashes, owner/service/runner identity, stage hashes and storage admission;
+backs up management state, tools and preferences; restarts only management without
+resume-running; retains container/engine identity and original fleet intent/history;
+and loads a versioned DEV widget with the same ID/profile/paths. An existing
+attempt is never blindly repeated, and failure never restores an older manager
+over migrated state. Offline WAL backup inspection uses a separate analysis copy.
+
+The [preparation evidence](diagnostics/2026-11-24-review040-update-prepared.json)
+records passing private full-shell targeted disable/activation/config restoration
+and three fault tests, including late activation failure retaining schema66/new
+helpers/original backup. The final staged plan binds the final helper digest;
+preparation-only staging superseded during guard development is retained or
+manifested separately. Exact frozen product bytes remain unchanged. Final charge
+47,801,511,936bytes plus1GiB apply scratch fits the48GiB approval.
+
+The live custom DEV update has NOT run and is not claimed as a completed upgrade.
+The existing0.5.0 environment, production and earlier DEV environment remain
+unchanged. [Owner commands](review040-update.md) use the already staged final work
+directory and report success only after a complete receipt. The owner's successful
+execution and subsequent manual feedback remain pending.

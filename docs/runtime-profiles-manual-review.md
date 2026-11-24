@@ -12,6 +12,10 @@ The product source is `747dd810c10b74b4fbcdc10f617e6b15dd545a45`; that source ta
 predates the distribution pins. Do not install the source tag as the plugin.
 Stable/latest remains0.5.0; publishing this candidate changes no installed service.
 
+For the existing `review040` DEV environment under `/srv/dev/urbit-040`, use the
+[dedicated DEV update commands](review040-update.md). The normal-plugin profile
+commands below do not update that custom environment.
+
 ## Download and verify
 
 Use a new directory. Keep the archive and checksums with your review materials.

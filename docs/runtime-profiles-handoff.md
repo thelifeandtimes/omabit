@@ -202,3 +202,8 @@ unchanged. Final aggregate charge47,398,850,560 bytes is within48GiB.
 **Next action belongs to the owner:** review the candidate and report feedback.
 Keep PR24 draft and issue22 open; do not perform a live-pier import, production
 upgrade or stable promotion as an automatic continuation of this delivery.
+
+For the user's subsequent request to update their existing review040 DEV
+environment, see [the dedicated owner commands](review040-update.md) and M795.
+That adapter is staged and privately verified; the live custom DEV update remains
+unexecuted until the owner runs it. The normal-plugin review profile is separate.
