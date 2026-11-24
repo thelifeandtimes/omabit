@@ -7,7 +7,7 @@ installation. No production service or ship has been changed to prepare this wor
 
 ## What the candidate changes
 
-The intended review line is **0.6.0-rc.2**, based on stable0.5.0. It adds per-pier
+The intended review line is **0.6.0-rc.3**, based on stable0.5.0. It adds per-pier
 immutable runtime selection, a reviewed JSON decoder backport, capability-aware
 import review, runtime identity reporting and schema66. The existing default
 remains official Vere4.6. Existing enrollments and historical rows are retained;
@@ -33,6 +33,10 @@ records its clean source, assets and isolated installer checks. The checkout's
 native bootstrap pins still select stable0.5.0 until a qualified successor is
 published and pinned; checking out this topic branch is not yet an installation
 procedure for the new helpers.
+
+The [continuation handoff](runtime-profiles-handoff.md) records the current frozen
+assets, repository-owned core-functionality harness, exact input paths and remaining
+gates. It supersedes earlier decoder-regression requirements for this review round.
 
 ## Exact reviewed artifact
 
@@ -70,8 +74,9 @@ and installed upgrades. The final bundle must identify its clean frozen source
 commit and hashes. In particular, it needs:
 
 - Two fresh disposable ships retaining different pinned artifacts; native
-  startup, stop/start, crash recovery, replacement and maintenance; a malformed-
-  JSON negative control that distinguishes the unpatched decoder.
+  startup, stop/start, controlled process recovery, replacement and maintenance.
+  The user narrowed this round to core functionality on2026-11-24; decoder crash
+  reproduction and malformed-input negative controls are outside this scope.
 - Native image loading and executable checks, missing/corrupt/wrong-platform
   refusal, and evidence that utilities never invoke the stock binary for a
   patched pier. Checkpoint transition refusal/recovery must preserve history.

@@ -1,0 +1,194 @@
+{
+  "format": 1,
+  "date": "2026-11-24",
+  "scope": "Recovered rc.3 artifact and partial core-functionality evidence; not production qualification",
+  "release": {
+    "version": "0.6.0-rc.3",
+    "prerelease": true,
+    "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+    "platform": "linux/amd64",
+    "go_version": "go version go1.27.4 linux/amd64",
+    "schema": 66,
+    "execution_model": "owner-user",
+    "default_pier_root": "/srv/urbit/piers",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "engine": "distribution-native",
+    "pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "default_url": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill",
+      "application_inventory": "not_asserted",
+      "name": "omabit-recommended-apps-0.6.0-rc.3.pill",
+      "bytes": 59351751
+    },
+    "runtime_profiles": [
+      {
+        "format": 1,
+        "id": "vere-4.6-5a7614f",
+        "kind": "official",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-5a7614f",
+        "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "manifest_digest": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "config_digest": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+        "binary_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82"
+      },
+      {
+        "format": 1,
+        "id": "vere-4.6-jsonfix-0774857c",
+        "kind": "reviewed",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-82f4558",
+        "image": "omabit/vere@sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "manifest_digest": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "config_digest": "sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58",
+        "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+        "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+        "requirement": "vere-json-array-error-1145-v1",
+        "review_url": "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
+        "archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+        "archive_bytes": 54750277
+      }
+    ],
+    "engine_policy": {
+      "id": "docker-rootless-v1",
+      "stable_minimum_inclusive": "27.2.0",
+      "stable_maximum_exclusive": "30.0.0",
+      "required_api": "1.47",
+      "native_providers": [
+        "pacman",
+        "deb"
+      ],
+      "rootless_launcher_version": "29.7.2",
+      "qualification": "exact-stack-evidence-required"
+    },
+    "backend_source_sha256": "587600a85e6aed2c6a45179e93b640b01b9265a5f3d294c152f6bbd98a5bd9ef",
+    "source_tree": "681cdf35a0a6970b0da5ad98ec0c667d8adb119e",
+    "source_epoch": 1795323958,
+    "source_inputs": "git-commit-blobs-v1",
+    "build_environment": "isolated-go-v1",
+    "assets": [
+      {
+        "name": "omabit-0.6.0-rc.3-linux-amd64.tar.gz",
+        "bytes": 36975728,
+        "sha256": "f1676a51bede3302327917c9e80b8661bf482e47a8e40633903e60ac435037f7"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26869609,
+        "sha256": "355f897a80db93a7e26dd25e0c1e688ef55d4f077e83862d2327ebb633afb6a3"
+      },
+      {
+        "name": "omabit-recommended-apps-0.6.0-rc.3.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.6.0-rc.3.tar.gz",
+        "bytes": 73904,
+        "sha256": "280367c2807cfe44b73b1a7c40c11dbce853005b7c4e8d3a5c77edb5229c59b6"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13229180,
+        "sha256": "0168cf02b79d247acb834704ea5dfeb7c25a94fd243ac76bfc2b1eac07bf5c58"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30278816,
+        "sha256": "bfd62c7be2d3a4ce513ecb425ea16129df2eb1218d99f5474a2d41072d386ee1"
+      },
+      {
+        "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+        "bytes": 54750277,
+        "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510"
+      }
+    ]
+  },
+  "package_log": {
+    "path": "/tmp/omabit-runtime-profile-build/rc3-package-test.log",
+    "bytes": 145,
+    "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+  },
+  "package_result": "PASS: asset/archive checksums, provenance, executable smoke checks, installer dependencies, fresh install, replacement and customization refusal",
+  "native_runtime05": {
+    "files": {
+      "host.json": {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime05/host.json",
+        "bytes": 85210,
+        "sha256": "d4f98a3cb6f12666de3bd955e2275f38d627415b09f322016fb186d20fb1777e"
+      },
+      "result.json": {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime05/result.json",
+        "bytes": 4094,
+        "sha256": "a4de1dfa14de40b2af937cd7f6c03e2ae1c0429e28926ad9b9e48cec0482e56e"
+      },
+      "serial.log": {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime05/serial.log",
+        "bytes": 43190,
+        "sha256": "261eff8af2c4de60457994f17742a18f4ccdaebd223734cf6c271a91a4b6eaeb"
+      },
+      "generated-retirement.json": {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime05/generated-retirement.json",
+        "bytes": 13950,
+        "sha256": "1825d2d18bc77529c23c256310c11a118cd682ed8c7213e80619425d2faa9e45"
+      }
+    },
+    "result": {
+      "format": 1,
+      "passed": false,
+      "checks": {
+        "missing_artifact_refuses_start_before_pier_execution": true,
+        "corrupt_archive_install_refuses_without_publication": true,
+        "exact_archive_install_idempotent_and_native_preflight": true,
+        "container_binary_checksums_and_versions": true,
+        "two_fresh_ships_different_pinned_runtimes": true,
+        "manager_restart_preserves_both_containers_and_pins": true,
+        "missing_archive_allows_stop_refuses_restart_no_fallback": true,
+        "enrolled_downgrade_refuses_preserving_configuration": true
+      },
+      "eval": [],
+      "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+      "shared_cli_preflight": {
+        "exit": 0,
+        "out": "{\"version\":1,\"operation\":\"runtime.profile-preflight.v1\",\"data\":{\"runner_id\":\"runner-b1c6ac55dd2ce6df6a8a49f95a14ca60\",\"profile\":{\"format\":1,\"id\":\"vere-4.6-jsonfix-0774857c\",\"kind\":\"reviewed\",\"platform\":\"linux/amd64\",\"vere_version\":\"4.6-82f4558\",\"image\":\"omabit/vere@sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d\",\"manifest_digest\":\"sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d\",\"config_digest\":\"sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58\",\"binary_sha256\":\"0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c\",\"source_base\":\"5a7614f69bbc783736b08965fdc0a2534bb42e82\",\"patch_revision\":\"fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47\",\"requirement\":\"vere-json-array-error-1145-v1\",\"review_url\":\"https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705\",\"archive_sha256\":\"c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510\",\"archive_bytes\":54750277},\"available\":true}}\n",
+        "err": ""
+      },
+      "transition_refusal": {
+        "error": {
+          "code": "runtime_incompatible",
+          "message": "pier requires vere-json-array-error-1145-v1: stock Vere can crash replay; restoring a pre-patch pier is a separate reviewed recovery, not a runtime downgrade"
+        }
+      },
+      "error": "Command failed: runuser -u review -- env HOME=/home/review XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus PATH=/usr/bin:/bin /opt/omabit-release-input/0.6.0-rc.3/urbit-collector-linux-amd64 --socket /run/user/1000/urbit-runner/runner.sock operate profile-patched start\n{\n  \"error\": {\n    \"code\": \"invalid_state\",\n    \"message\": \"inspect/reconcile or stop the existing runtime before starting\"\n  }\n}\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/opt/omabit-release-input/guest.py\", line 193, in <module>\n    try:main()\n        ~~~~^^\n  File \"/opt/omabit-release-input/guest.py\", line 123, in main\n    operation('profile-patched','start','patched-replacement-start');wait(lambda:row('profile-patched')['observed_state']=='running',600)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/omabit-release-input/guest.py\", line 34, in operation\n    col('operate',name,action,'--revision',str(row(name)['config_revision']),'--request-id',request)\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/omabit-release-input/guest.py\", line 21, in col\n    r=run([tool('urbit-collector'),'--socket',SOCK,*args],True,ok=ok)\n  File \"/opt/omabit-release-input/guest.py\", line 16, in run\n    if ok and r.returncode:raise RuntimeError('Command failed: '+' '.join(args[:15])+'\\n'+r.stderr[-1500:])\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Command failed: runuser -u review -- env HOME=/home/review XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus PATH=/usr/bin:/bin /opt/omabit-release-input/0.6.0-rc.3/urbit-collector-linux-amd64 --socket /run/user/1000/urbit-runner/runner.sock operate profile-patched start\n{\n  \"error\": {\n    \"code\": \"invalid_state\",\n    \"message\": \"inspect/reconcile or stop the existing runtime before starting\"\n  }\n}\n\n"
+    }
+  },
+  "ci": {
+    "head": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+    "run": "https://github.com/thelifeandtimes/omabit/actions/runs/44988094034",
+    "passed": [
+      "core",
+      "managed-race (0)",
+      "managed-race (1)",
+      "managed-race (2)",
+      "managed-race (3)",
+      "qml-offscreen",
+      "source"
+    ],
+    "release_policy": "Refuses unqualified prerelease topic; retain protected master gate"
+  },
+  "supersession": {
+    "prior_scope": "Malformed-input negative-control and exploit/crash reproduction are no longer acceptance work for this continuation.",
+    "authority": "User instruction in previous thread on 2026-11-24: we just need to test core functionality.",
+    "limits": "The exact approved runtime is checked by artifact identity and ordinary operations; no new claim about decoder correction behavior."
+  },
+  "remaining": [
+    "Complete native lifecycle, maintenance, recovery and reviewed-profile import",
+    "Repeat actual published 0.5.0 service upgrade using rc.3",
+    "Matching desktop activation and immutable delivery pins",
+    "Owner review; protected stable promotion separate"
+  ]
+}

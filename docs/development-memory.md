@@ -14895,3 +14895,29 @@ Freeze0.6.0-rc.3 next and repeat native qualification. The rc.1 upgrade result a
 rc.2 native image-store checks remain bounded historical evidence, not proof of
 full rc.3 qualification or permission to install it. The approved48GiB aggregate
 cap and single disposable VM restriction remain in effect.
+
+
+## M790 — Core-functionality continuation and repository handoff (2026-11-24)
+
+Status: supersedes the decoder-negative-control scope in M787 and the old review
+guide, following the user's2026-11-24 instruction to test core functionality.
+Do not resume exploit investigation or decoder crash reproduction. Validate the
+exact approved artifact and ordinary runtime operations; no new decoder claim.
+
+Recover the frozen rc.3 assets at747dd810, verify all seven hashes and record the
+matching passing core/four-race-shard/QML/source CI. Runtime05 passed eight native
+checks but stopped when the harness retried Start after an expected failed Start
+without clearing recovery state. Preserve this failed scenario; the next harness
+uses the supported Stop/reconcile sequence. Runtime06 then ended with host
+signal15 before completion; its exact scope was inactive and cause is unknown.
+Neither incomplete run qualifies rc.3. Retain compact results and guarded
+retirement receipts for both.
+
+The [handoff](runtime-profiles-handoff.md) and repository-owned runtime-profile
+qualification scripts replace the dependency on temporary driver source. Reuse
+frozen product assets, allow only this private harness/documentation to differ,
+and keep the stable release-policy gate unchanged. Checksummed console chunks
+refuse truncation/corruption; run long VMs through a bounded transient driver.
+The existing48GiB authorization, single VM,4GiB scratch and production/DEV
+exclusions remain. Full runtime, exact0.5.0→rc.3 upgrade, activation and immutable
+review delivery remain gates; no production installation or stable release.
