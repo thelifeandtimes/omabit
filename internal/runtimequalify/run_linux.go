@@ -25,6 +25,8 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	fleetObservation bool // display only; never lifecycle or effect authority
+	runtimeProfile   string
 	memoryGiB        uint8
 	cpuCores         uint8
 	loom             uint8

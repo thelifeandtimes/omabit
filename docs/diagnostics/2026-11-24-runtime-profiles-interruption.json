@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "output": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime06",
+  "command_exit": 143,
+  "signal": 15,
+  "cause": "unknown; host command terminated before framed guest completion",
+  "scope": "ActiveState=inactive\nControlGroup=\n",
+  "guest_report_available": false,
+  "retained": {
+    "host.json": "94f41e1939daefdab8702fa6e804a6f0a00650d5dcd0f8216df0759dc94756a5",
+    "serial.log": "39dcef9ea63e52206e8e41be6f1316a00fcc11442d7f66031b7ceeef91bc04f6"
+  }
+}

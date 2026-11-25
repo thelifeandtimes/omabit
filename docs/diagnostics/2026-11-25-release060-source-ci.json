@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "product_checks_passed": true,
+  "checks": [
+    {
+      "name": "release-policy",
+      "status": "failure",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705560659/job/139526510538",
+      "required": true
+    },
+    {
+      "name": "core",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705518199/job/139526355917",
+      "required": false
+    },
+    {
+      "name": "managed-race (0)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705518199/job/139526356006",
+      "required": false
+    },
+    {
+      "name": "managed-race (1)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705560133/job/139526502930",
+      "required": false
+    },
+    {
+      "name": "managed-race (2)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705560133/job/139526503366",
+      "required": false
+    },
+    {
+      "name": "managed-race (3)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705518199/job/139526356058",
+      "required": false
+    },
+    {
+      "name": "qml-offscreen",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705560133/job/139526502355",
+      "required": true
+    },
+    {
+      "name": "source",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45705560133/job/139541548517",
+      "required": true
+    }
+  ],
+  "release_policy": "Expected interim failure: final stable pins and qualification are added only after native qualification and draft download verification. Final release-policy success remains mandatory."
+}

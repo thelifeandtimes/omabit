@@ -70,7 +70,7 @@ function tree(v, extra, inventories) {
     root.children.push(runner)
     if(!r.status)return
     r.status.targets.forEach(function(s) {
-      var ship=node("ship",r.runner_id,s.target,s.ship||s.target.instance_id,s.label,effective(p,s.target),s.ready)
+      var ship=node("ship",r.runner_id,s.target,s.ship||s.target.instance_id,s.target.instance_id+(s.label && s.label!==s.target.instance_id ? " · "+s.label : ""),effective(p,s.target),s.ready)
       runner.children.push(ship)
       var names=[]
       // Observations never grant permissions. Saved scopes and draft names stay

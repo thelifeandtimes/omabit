@@ -1,0 +1,34 @@
+{
+  "version": "0.6.0",
+  "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "previous_version": "0.4.0",
+  "previous_source_commit": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "passed": true,
+  "non_destructive": true,
+  "runner_schema_before": 59,
+  "runner_schema_after": 67,
+  "service_result": {
+    "path": "docs/diagnostics/2026-11-25-release060-upgrade040.json",
+    "sha256": "4224003843d2de37cb42ce21963b21a6a99cafcc2e2985a268829bf822d81394"
+  },
+  "desktop_result": {
+    "path": "docs/diagnostics/2026-11-25-release060-full-shell040.json",
+    "sha256": "09aa3a65fe2c07139e8e369d858aee8bc9dda014423a0b5eda82cbee5a79c6cf"
+  },
+  "checks": [
+    "Exact published 0.4.0 tools create original schema59 state; exact frozen 0.6.0 tools migrate to67.",
+    "Native authorization denial preserves state; retained retry succeeds; repeated completed update is a no-op.",
+    "Original two ship identities, configurations, operations, permissions, access, runtime and running/stopped intent survive; engine and running container are not restarted.",
+    "All 13 original application table projections survive service update and manager restart.",
+    "Actual 0.4.0 writer refuses schema67 without changing it.",
+    "Stopped synthetic macOS companion import, post-upgrade desk workflow and final ordinary Stop pass.",
+    "Full native Omarchy shell passes cold/hot activation, rescan, preserved preferences and cold restart."
+  ],
+  "isolation": "Fresh offline owner-user Linux/AMD64 VM and private native compositor; no production or human-review DEV state used.",
+  "limits": [
+    "This record qualifies the direct published0.4.0/schema59 local owner-user upgrade. The direct0.5.0 path is documented in its separate rehearsal record.",
+    "Authorization denial/retry uses an exact-program fixture; human password entry, remote service upgrades, active recording-worker upgrades and power-loss durability are excluded.",
+    "Large import preview is sparse; actual import uses a newly created small disposable fake, not a user pier.",
+    "Native runtime-selection evidence and final protected PR checks/download/publication verification are separate records."
+  ]
+}

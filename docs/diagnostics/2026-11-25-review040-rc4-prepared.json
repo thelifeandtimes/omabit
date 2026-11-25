@@ -1,0 +1,120 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "status": "prepared-owner-apply-only",
+  "live_changes": false,
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "version": "0.6.0-rc.4",
+  "runner_id": "runner-a9a208a18445179f05df5644ed6d245c",
+  "work": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc4-owner",
+  "backup": "/srv/dev/urbit-040/state/upgrade-060rc4-owner",
+  "plan_sha256": "7f577a89d4ec083c2170eba38487a735a3dd613655de085655dab7e959ff32a9",
+  "updater_sha256": "cff574b97edc66b732e30865e6137d670bd0080279082c95b8851217c7303489",
+  "pins": {
+    "version": "0.6.0-rc.4",
+    "source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+    "platform": "linux/amd64",
+    "binaries": {
+      "omabit": {
+        "name": "omabit-linux-amd64",
+        "bytes": 26887155,
+        "sha256": "20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7"
+      },
+      "urbit-collector": {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13257861,
+        "sha256": "68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c"
+      },
+      "urbit-runner": {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30295412,
+        "sha256": "64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f"
+      }
+    },
+    "bundle": {
+      "name": "omabit-0.6.0-rc.4-linux-amd64.tar.gz",
+      "bytes": 37031093,
+      "sha256": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85"
+    }
+  },
+  "storage": {
+    "status": "ready",
+    "live_changes": false,
+    "charged_bytes": 47709675520,
+    "total_with_scratch": 49021444096,
+    "storage": {
+      "breakdown": {
+        "management_backup": 558682112,
+        "sqlite_analysis_copy": 4960256,
+        "runtime_profiles_backup": 54763520,
+        "desktop_backups": 28672,
+        "old_binaries_backup": 70381568,
+        "candidate_binaries_staging": 70447104,
+        "runtime_archive_and_image_reserve": 417622036,
+        "growth_and_metadata_reserve": 134217728
+      },
+      "required_scratch_bytes": 1311768576,
+      "aggregate_cap_bytes": 51539607552
+    }
+  },
+  "isolated_wrapper": {
+    "passed": true,
+    "host_access": false,
+    "checks": {
+      "previous_wrapper_loads": true,
+      "targeted_disable_unloads": true,
+      "candidate_versioned_wrapper_loads": true,
+      "profile_and_local_setup_boundary_preserved": true,
+      "shell_config_restored_exactly": true,
+      "no_shell_restart": true
+    },
+    "before": {
+      "version": "0.6.0-rc.3",
+      "profile": "review-040",
+      "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc3/bin/urbit-collector",
+      "local_setup": false
+    },
+    "after": {
+      "version": "0.6.0-rc.4",
+      "profile": "review-040",
+      "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4/bin/urbit-collector",
+      "local_setup": false
+    }
+  },
+  "evidence": {
+    "ui_output": "/tmp/omabit-060-shell-devrc4-01",
+    "ui_files": {
+      "host.json": "58c7a1d570ce91a0106e962a2ac6ea54d9b9a8a50035d9cb544aed97c30f8c5e",
+      "result.json": "486f7260065ea87674e903ee80eb40c8b0d8b238cf5a7ad87b33c47c43f5d9da",
+      "dev-driver.py": "662e002c4a9641bda1649d8b66c13795d9d0eb6107c1065b97dbc141eda551a0",
+      "shell.log": "34876ea2568a914b0ae217031addce6fbcdd4961158b07be5b6f0d3b1600acc0"
+    },
+    "check_log_sha256": "9021b2d554145389bc0618de9e3acf3ee6f7826a2bebcd186d9e42bba39eb1a9"
+  },
+  "fault_tests": {
+    "command": "python3 -B scripts/qualification/runtime-profiles/test_review040_rc4_update.py",
+    "passed": true,
+    "tests": 4
+  },
+  "final_readiness_check": {
+    "status": "ready",
+    "live_changes": false,
+    "charged_bytes": 48153157632,
+    "total_with_scratch": 49464926208,
+    "storage": {
+      "breakdown": {
+        "management_backup": 558682112,
+        "sqlite_analysis_copy": 4960256,
+        "runtime_profiles_backup": 54763520,
+        "desktop_backups": 28672,
+        "old_binaries_backup": 70381568,
+        "candidate_binaries_staging": 70447104,
+        "runtime_archive_and_image_reserve": 417622036,
+        "growth_and_metadata_reserve": 134217728
+      },
+      "required_scratch_bytes": 1311768576,
+      "aggregate_cap_bytes": 51539607552
+    }
+  },
+  "final_readiness_log_sha256": "f79e40dafca0bf131f43833cede01f9dab418c7465ca932a68f1bc6a8546259b"
+}

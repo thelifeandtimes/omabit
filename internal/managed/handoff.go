@@ -19,6 +19,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/bootpill"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
@@ -133,6 +134,10 @@ func (r *Server) prepareHandoff(w http.ResponseWriter, req *http.Request, actor,
 		return
 	}
 	settings := v.Public.Config.HandoffRuntimeSettings()
+	if settings.RuntimeProfile != "" && !body.DestinationRuntimeProfiles {
+		r.respondError(w, conflict("runtime_profiles_required", "verify the exact runtime artifact on the capable destination before fencing this source"))
+		return
+	}
 	if protocol.NondefaultContainerResources(settings.MemoryGiB, settings.CPUCores) && !body.DestinationContainerResources {
 		r.respondError(w, conflict("container_resources_required", "update the collector and destination for container-resources-v1 before moving this ship"))
 		return
@@ -251,7 +256,16 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	settings := protocol.RuntimeSettings{Loom: protocol.DefaultLoom}
 	if h.RuntimeSettings != nil {
 		settings = *h.RuntimeSettings
-		if !protocol.ValidRecordedLoom(settings.Loom) || !protocol.ValidContainerResources(settings.MemoryGiB, settings.CPUCores) {
+		profile, err := runtimeprofile.Resolve(settings.RuntimeProfile)
+		if err != nil || settings.RuntimeRequirement != profile.Requirement {
+			r.respondError(w, bad("handoff runtime profile or compatibility requirement mismatch"))
+			return
+		}
+		if err = r.verifyRuntimeProfile(req.Context(), settings.RuntimeProfile); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		if !protocol.ValidProfileLoom(settings.RuntimeProfile, settings.Loom, true) || !protocol.ValidContainerResources(settings.MemoryGiB, settings.CPUCores) {
 			r.respondError(w, bad("invalid handoff runtime settings"))
 			return
 		}
@@ -332,7 +346,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	h.Direction = "in"
 	h.State = "reserved"
 	h.Message = "Destination reserved; waiting for stopped pier data."
-	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
+	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, RuntimeProfile: settings.RuntimeProfile, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, RuntimeProfile: settings.RuntimeProfile, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
 	if h.Mode == "fake" {
 		v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: h.Ship}
 	} else {

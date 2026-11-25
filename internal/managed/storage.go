@@ -160,6 +160,10 @@ func (r *Server) servePiers(w http.ResponseWriter, req *http.Request, actor, rol
 		}
 		return
 	}
+	if err := r.verifyRuntimeProfile(req.Context(), body.RuntimeProfile); err != nil {
+		r.respondError(w, err)
+		return
+	}
 	catalogue := r.pierCatalogue(req.Context())
 	if catalogue == nil || catalogue.Error != "" {
 		r.respondError(w, conflict("pier_unavailable", "pier discovery unavailable"))
@@ -198,6 +202,9 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 }
 
 func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, source pierstore.Candidate, fingerprint string, external *pierstore.ExternalSource, identify ...bool) (protocol.Operation, error) {
+	if err := validateRuntimeProfile(req.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	if err := s.checkStorage(req.Path); err != nil {
 		return protocol.Operation{}, err
 	}
@@ -211,6 +218,9 @@ func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, s
 		v, err = loadInstance(tx, req.ID)
 		if err != nil {
 			return protocol.Operation{}, err
+		}
+		if req.RuntimeProfile != "" && req.RuntimeProfile != v.Public.Config.RuntimeProfile {
+			return protocol.Operation{}, bad("relink cannot change the pier runtime profile")
 		}
 		if v.Public.ConfigRevision != req.ExpectedRevision || v.Public.ActiveOperationID != "" || v.Public.DesiredState != "stopped" || v.Runtime.Storage == nil || !v.Runtime.Storage.Identity.SameObject(source.Identity) || v.Public.Ship != req.Ship {
 			return protocol.Operation{}, conflict("relink_conflict", "stop the same registered pier before reconnecting its moved directory")
@@ -238,7 +248,7 @@ func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, s
 		if source.Kind != "fake" && s.mode != DevelopmentMode {
 			return protocol.Operation{}, conflict("comet_mode_required", "livenet imports require development-managed mode")
 		}
-		base := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, RequestID: req.RequestID, Config: protocol.Configuration{HTTPPort: req.HTTPPort, AmesPort: 34343, Loom: 31}}
+		base := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, RequestID: req.RequestID, Config: protocol.Configuration{RuntimeProfile: req.RuntimeProfile, HTTPPort: req.HTTPPort, AmesPort: 34343, Loom: 31}}
 		if _, err := registrationFingerprint(&base, nil); err != nil {
 			return protocol.Operation{}, err
 		}
@@ -259,7 +269,7 @@ func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, s
 		if err != nil {
 			return protocol.Operation{}, err
 		}
-		v = storedInstance{Public: protocol.Instance{ID: req.ID, Label: base.Label, Ship: req.Ship, Mode: source.Kind, Config: base.Config, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "enrolling", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.HTTPPort, Adoption: &runtimequalify.ManagedAdoption{Fingerprint: req.Fingerprint, Uncertain: true}}}
+		v = storedInstance{Public: protocol.Instance{ID: req.ID, Label: base.Label, Ship: req.Ship, Mode: source.Kind, Config: base.Config, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "enrolling", Health: "unknown"}, Runtime: runtimequalify.ManagedState{RuntimeProfile: req.RuntimeProfile, ID: id, Port: req.HTTPPort, Adoption: &runtimequalify.ManagedAdoption{Fingerprint: req.Fingerprint, Uncertain: true}}}
 		if source.Kind != "fake" {
 			ames, err := s.choosePort(tx, req.ID, "udp", 0)
 			if err != nil {

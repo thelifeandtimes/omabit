@@ -38,6 +38,30 @@ BUILD = False
 
 
 class SourceTests(unittest.TestCase):
+    def test_reviewed_runtime_archive_requires_compiled_content_and_safe_name(self):
+        with tempfile.TemporaryDirectory(prefix="runtime-archive-", dir=self.root) as temporary:
+            root = Path(temporary)
+            source, assets = root / "fixture.tar.gz", root / "assets"
+            source.write_bytes(b"synthetic archive fixture; no executable")
+            assets.mkdir()
+            profile = {"kind": "reviewed", "id": "vere-fixture",
+                       "archive_sha256": packager.sha256(source), "archive_bytes": source.stat().st_size}
+            for profiles in ([], [dict(profile, kind="official")],
+                             [dict(profile, archive_sha256="0" * 64)],
+                             [dict(profile, archive_bytes=1)], [dict(profile, id="../escape")]):
+                with self.assertRaises(ValueError):
+                    packager.package_runtime_archive(source, profiles, assets)
+                self.assertEqual(list(assets.iterdir()), [])
+            linked = root / "linked"
+            linked.symlink_to(source)
+            with self.assertRaises(ValueError):
+                packager.package_runtime_archive(linked, [profile], assets)
+            packager.package_runtime_archive(source, [profile], assets)
+            target = assets / "vere-fixture.tar.gz"
+            self.assertEqual(target.read_bytes(), source.read_bytes())
+            with self.assertRaises(ValueError):
+                packager.package_runtime_archive(source, [profile], assets)
+
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="omabit-release-source-")

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
@@ -83,6 +84,9 @@ func sameLogContainer(s runtimequalify.ManagedState, id string) bool {
 func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 	s := v.Runtime
 	d := &protocol.RuntimeStatus{Stage: s.Runtime.Stage, Initialized: s.Initialized, DefaultSnapshotMinutes: runtimequalify.DefaultSnapshotMinutes}
+	if profile, err := runtimeprofile.Resolve(v.Public.Config.RuntimeProfile); err == nil {
+		d.RequestedRuntime = &profile
+	}
 	d.ImportRestoreAvailable = v.Public.DesiredState == "stopped" && v.Public.ActiveOperationID == "" && s.ImportRestoreEligible()
 	d.ImportRecoveryAvailable = v.Public.DesiredState == "stopped" && v.Public.ActiveOperationID == "" && s.ImportRecoveryEligible()
 	if s.ExternalImport != nil {
@@ -109,6 +113,9 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 		}
 		d.ContainerID = c.ID
 		d.ContainerKind = c.Kind
+		if profile, err := runtimeprofile.Resolve(c.RuntimeProfile); err == nil {
+			d.LaunchRuntime = &profile
+		}
 		loom := protocol.EffectiveLoom(c.Loom)
 		d.LaunchLoom, d.LaunchNativeControl = &loom, &c.NativeControl
 		memory, cpu := protocol.EffectiveMemoryGiB(c.MemoryGiB), protocol.EffectiveCPUCores(c.CPUCores)
@@ -123,6 +130,7 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 		if c.LastState != nil {
 			st := c.LastState
 			d.LaunchError = st.LaunchError
+			d.ObservedImageID = st.ImageID
 			d.Running = &st.Running
 			d.ExitCode = &st.ExitCode
 			d.OOMKilled = &st.OOMKilled

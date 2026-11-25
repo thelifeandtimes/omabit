@@ -120,6 +120,18 @@ func (e *projectAnchorEngine) listIDs(ctx context.Context) ([]string, error) {
 	return ids, nil
 }
 func (e *projectAnchorEngine) inventory(ctx context.Context) ([]projectnetwork.NetworkContainer, error) {
+	var values []projectnetwork.NetworkContainer
+	var err error
+	for attempt := 0; attempt < 3; attempt++ {
+		values, err = e.inventoryOnce(ctx)
+		if err == nil || !e.base.q.d.fleetObservation || ctx.Err() != nil {
+			return values, err
+		}
+	}
+	return nil, err
+}
+
+func (e *projectAnchorEngine) inventoryOnce(ctx context.Context) ([]projectnetwork.NetworkContainer, error) {
 	ids, err := e.listIDs(ctx)
 	if err != nil {
 		return nil, err

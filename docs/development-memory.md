@@ -14700,3 +14700,652 @@ Complete corrected storage charge47,976,513,536bytes stays below48GiB.
 Final trusted release-policy/source/QML checks and review, protected merge-commit
 publication, public downloads and private cold native startup remain required.
 No production deployment or issue-wide completion is claimed.
+
+## M782 — Issue audit and per-ship runtime profile source review (2026-11-20)
+
+The owner requested an issue audit against published0.5.0, issue#22, newcomer
+documentation and a later safe manual production review update. No permission
+was given to install this candidate or operate on live ships. Work starts from
+origin/master ca5f788 on topic codex/issue-22-runtime-profiles; master is unchanged.
+Use the0.6.0 minor line for the coordinated runner/collector/schema change.
+
+Close#16 using the bounded native Stop/recovery/receipt/same-pier Start evidence.
+Leave#17–20 open for their broader acceptance. Reopen#21 after correcting its
+initial overbroad closure: copied pending-Grubbery recovery and a fresh Gall
+sample do not establish its fresh Grubbery bootstrap requirement. Keep#22 open.
+See [the issue audit](issues-0.5.0-audit.md).
+
+The candidate retains finite immutable per-ship runtime profiles through ordinary
+managed imports, starts, recovery, maintenance, recording helpers and signed
+handoffs. Omitted legacy metadata remains the exact historical official runtime.
+The reviewed#1145 backport is separately staged and verified; no mutable image,
+arbitrary command or default fallback is accepted. Schema66 adds an older-reader
+fence without rewriting existing ship rows. A change to an already enrolled
+ship's runtime is explicitly refused pending a separately qualified transition.
+
+Package the exact approved native binary as a deterministic Docker/OCI archive
+without executing it or contacting Docker. Rebuilding from verified cached base
+blobs reproduces archive SHA256
+c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510.
+The [source evidence](diagnostics/2026-11-20-runtime-profiles-source-review.json)
+records source, focused race, preflight boundary, UI and packaging fixtures.
+The broad historical race matrix timed out after8minutes; its ordinary test run
+passed. Neither result is native runtime or service-upgrade qualification.
+
+The [review guide](runtime-profiles-review.md) records exact provenance and the
+owner-operated update/import prerequisites, including preserved state, stopped
+native ownership, loom34, independent resource/network settings and replay
+hazards. README now explains Urbit, the components, default Agent Help, CLI/MCP,
+shipped skills and development entry points. No review installation is offered
+as production-ready until real disposable runtime and published0.5.0 upgrade
+gates pass. Protected ships, tmux, production services and manual DEV are untouched.
+
+The existing experiment charge was45,098,889,216bytes before this task's build
+outputs. The normal limit is40GiB; the earlier48GiB exception covers issues16–21
+only. An extension for#22 has been requested but is not yet approved. Do not run
+dependent runtime qualification or treat elapsed time as approval. Preserve all
+existing manual DEV and retained ship state. Source builds and inert fixtures
+are not a substitute for this pending native evidence.
+
+## M783 — Frozen0.6.0-rc.1 package and corrected qualification admission (2026-11-20)
+
+Commit94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4 freezes the issue#22 source review.
+Build the coordinated seven-asset review set into
+`/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.1`, including the reviewed
+runtime archive. Exact-source build stamps, checksums, offline helper smoke,
+isolated installer replacement and customization refusal pass. Retire only this
+task's3,548,065,792-byte regenerable Go build cache with a manifest. No candidate
+installation, runtime execution, Docker load or ship access occurs. Native pins
+remain stable0.5.0; the topic checkout is not a working production update route.
+The [frozen package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
+identifies the exact local outputs and remaining qualification gates.
+
+Correct M782's storage subtotal: full accounting also charges shared Go caches
+and build outputs in older T3 worktrees. Add the documented versioned manual DEV
+plugin directory explicitly. Total48,533,643,264bytes (about45.2GiB) means a4GiB
+upgrade rehearsal requires at least1,289,003,008bytes reclaimed even under48GiB.
+Inventory247 files in the two prior-goal build directories with hashes; no files
+there are removed. These include generated source/logs as well as binaries, so
+never delete the directories wholesale. Preserve source, compact evidence,
+required immutable inputs and manual-review state. Approval to extend the
+previous48GiB exception to#22 remains pending; no native qualification is admitted.
+
+## M784 — Issue22 budget authorized; complete source CI passed (2026-11-21)
+
+The user explicitly answers the pending request: “Allow 48 GiB for issue #22”. This
+supersedes the pending-authorization statements in M782/M783. Keep one disposable
+runtime experiment active; remeasure the complete charge, declare scratch, and
+preserve all existing ships and manual DEV state. Reclaim only verified redundant
+generated outputs with a manifest; never remove the older build directories
+wholesale because they also contain source and compact evidence.
+
+PR#24 at f4cd2ee passes core, all four managed-race shards, QML and the aggregate
+source gate in GitHub run44882786180. This supplies the full source/race result
+that the earlier locally time-limited historical run could not establish.
+The protected release-policy check correctly refuses this unqualified rc topic;
+do not bypass it. Native runtime and published0.5.0 service-upgrade evidence,
+matching distribution pins and owner-operated installation guidance remain gates.
+
+## M785 — Redundant build outputs retired; upgrade scratch admitted (2026-11-21)
+
+Revalidate hashes, regular-file ownership and exact paths before unlinking97
+classified obsolete Go executables, compressed executables, one superseded
+candidate package and byte-identical published-release download duplicates.
+Preserve all directories, scripts, source, logs and manifests, final0.5.0
+candidate02/helper02, the separately frozen PID1, immutable OS/runtime/pill
+inputs, public0.5.0 and frozen0.6.0-rc.1 assets, and all ship/manual DEV state.
+The [complete retirement and admission record](diagnostics/2026-11-21-runtime-profiles-build-retirement.json)
+binds every removed path and retained duplicate. No runtime process is touched.
+
+The corrected full charge is47,162,642,432bytes; reserving4GiB produces
+51,457,609,728bytes under the approved51,539,607,552-byte cap. Remeasure at launch
+and throughout the guest; the earlier incomplete enumerator must additionally
+charge the versioned manual DEV plugin. Use one fresh isolated guest and retain
+compact evidence before retiring only its newly generated outputs. Admission
+does not qualify an artifact or authorize a live installation.
+
+## M786 — Published0.5.0 upgrade passed; console-report failure recovered (2026-11-21)
+
+The frozen candidate completes the native QML service-upgrade rehearsal in one
+fresh offline VM. Schema65→66 preserves original ship identities, configuration,
+pier paths, operation history, access, engine/container processes and original
+app history (19tables,38rows). Manager reopen preserves runtime; the genuine
+published0.5.0 writer refuses schema66 without changing state. The guest then
+performs app work and stopped disposable-pier import and gracefully stops its
+remaining fake. No production, protected ship or manual DEV is inspected.
+
+The VM exits0, but the host's long JSON console line is incomplete and parsing
+fails. Preserve this harness failure rather than reporting the launcher passed.
+A separately frozen guarded reader mounts the ended VM and input disks read-only,
+exports the full report, commands and SQLite database, and verifies unchanged
+source/base hashes. Independent database checks confirm schema66, all5original
+operation records, both original ship identities/configuration/paths,19table
+schemas and all3disposable instances stopped. See the
+[upgrade evidence](diagnostics/2026-11-21-runtime-profiles-upgrade.json).
+
+After verifying both transient scopes inactive, retain all compact evidence and
+retire77 newly generated VM disk/boot-copy files with checksum/inode guards and
+`/tmp/omabit-runtime-profile-build/upgrade-generated-retirement.json`.
+Retired allocation is2,398,052,352bytes; complete charge is47,167,893,504bytes,
+leaving declared4GiB scratch within the approved48GiB ceiling. Immutable bases,
+inputs, originals and all existing ships remain untouched. This supersedes only
+the pending upgrade gate in M784, not the pending native patched-runtime gate.
+
+## M787 — Native review exposes Docker image-store lookup defect (2026-11-21)
+
+Frozen0.6.0-rc.1 is not installable for the reviewed custom profile: Docker29's
+containerd image store loads the exact archive but cannot inspect it by its config
+digest. An independent fresh diagnostic VM confirms both stock and patched image
+lookups succeed by manifest digest and fail by config digest. Both container
+binary checksums and banners match. Missing archive Start and corrupt archive
+installation refuse before runtime execution. See the
+[bounded diagnostic](diagnostics/2026-11-21-runtime-profiles-image-store.json).
+
+The first private harness incorrectly required missing-artifact registration to
+fail; registering a stopped, uninitialized selection is allowed. Correct that
+assertion to require Start refusal and no container/pier execution. Preserve the
+failed harness record. Diagnostic eval probes are not decoder evidence: Ivory
+lacks the de:json gate, and the guest's default virtual-memory policy refuses a
+16GiB mapping. Process exit0 on a Hoon %exit is not success.
+
+Fix lookup to try only the exact reviewed manifest and config IDs, preserving
+archive, returned identity, platform and executable verification. Do not retry
+successful inspection with mismatched metadata. Add distinct-store and
+cancellation regressions. The product change supersedes M783's rc.1 source freeze;
+prepare0.6.0-rc.2 from a new clean source and repeat native runtime and upgrade
+qualification. The earlier upgrade evidence remains historical, not evidence for
+an unbuilt successor. All protected ships and installed services remain untouched.
+
+## M788 — Image-store correction passes source and race checks (2026-11-21)
+
+The full runtimequalify package passes (70.795seconds), including exact-archive
+profile routing/staging, after correcting the fixture's private directories and
+using a short temporary root for Unix-domain socket tests. Focused runtime-profile
+race checks pass (1.615seconds). Native bootstrap9tests and packaging-provenance
+7tests pass;2full-rebuild fixtures remain deliberately skipped because the actual
+candidate build and smoke are separate gates. Preserve the earlier sandbox and
+fixture failures; they are not product qualification results.
+
+Prepare0.6.0-rc.2 with the native image-store correction, matching UI/component
+version and current bundle installation documentation. Only exact selected
+manifest/config identifiers are tried. Successful malformed image metadata never
+falls through to another lookup, and cancellation stops further inspection.
+Existing official references and all archive/platform/binary checks are retained.
+Native lifecycle and previous-stable upgrade checks must use the new frozen bytes.
+
+## M789 — Native artifact checks pass; shared preflight validation corrected (2026-11-21)
+
+Status: supersedes M788's rc.2 candidate readiness; no published or installed review.
+The exact rc.2 native archive installation, idempotent repeat and runner HTTP
+preflight passed in fresh offline runtime04. Missing and corrupt archives refused
+before pier execution. The shared CLI operation then refused its own catalogue
+ID because `RuntimeProfileInput.Validate` used the generic identifier validator,
+which excludes dots. Neither stock nor reviewed runtime IDs could pass it.
+
+Validation now requires a nonempty exact member of the finite runtime catalogue;
+runner target validation remains unchanged. A shared dispatch regression covers
+both catalogue IDs and rejects empty, unknown and path-like inputs before any
+registry access. The service, MCP server and CLI packages pass, as does the
+focused race check. Native evidence is in
+[the diagnostic](diagnostics/2026-11-21-runtime-profiles-shared-preflight.json).
+The ended VM's generated disks/boot copies were retired with checksum receipts;
+all compact evidence, sources and existing ships/manual DEV state remain intact.
+
+Freeze0.6.0-rc.3 next and repeat native qualification. The rc.1 upgrade result and
+rc.2 native image-store checks remain bounded historical evidence, not proof of
+full rc.3 qualification or permission to install it. The approved48GiB aggregate
+cap and single disposable VM restriction remain in effect.
+
+
+## M790 — Core-functionality continuation and repository handoff (2026-11-24)
+
+Status: supersedes the decoder-negative-control scope in M787 and the old review
+guide, following the user's2026-11-24 instruction to test core functionality.
+Do not resume exploit investigation or decoder crash reproduction. Validate the
+exact approved artifact and ordinary runtime operations; no new decoder claim.
+
+Recover the frozen rc.3 assets at747dd810, verify all seven hashes and record the
+matching passing core/four-race-shard/QML/source CI. Runtime05 passed eight native
+checks but stopped when the harness retried Start after an expected failed Start
+without clearing recovery state. Preserve this failed scenario; the next harness
+uses the supported Stop/reconcile sequence. Runtime06 then ended with host
+signal15 before completion; its exact scope was inactive and cause is unknown.
+Neither incomplete run qualifies rc.3. Retain compact results and guarded
+retirement receipts for both.
+
+The [handoff](runtime-profiles-handoff.md) and repository-owned runtime-profile
+qualification scripts replace the dependency on temporary driver source. Reuse
+frozen product assets, allow only this private harness/documentation to differ,
+and keep the stable release-policy gate unchanged. Checksummed console chunks
+refuse truncation/corruption; run long VMs through a bounded transient driver.
+The existing48GiB authorization, single VM,4GiB scratch and production/DEV
+exclusions remain. Full runtime, exact0.5.0→rc.3 upgrade, activation and immutable
+review delivery remain gates; no production installation or stable release.
+
+## M791 — Frozen rc.3 native core runtime scenario passes (2026-11-24)
+
+Status: supersedes the incomplete native lifecycle gate in M789/M790 for the
+explicit runtime07 scenario, not release-wide qualification. The unchanged
+747dd810 product assets with d332c805's repository harness pass all14 native
+checks. Both runtime pins boot; manager restart preserves both containers;
+missing/corrupt archives refuse; Stop/reconcile recovers expected failed Start;
+replacement, Pack and controlled process recovery retain the reviewed image.
+A stopped copy of the fresh fake refuses stock import and boots under its explicit
+reviewed profile. The16-container event audit verifies lifecycle/utility pins.
+All three disposable instances finish with both desired and observed state stopped.
+
+The [native record](diagnostics/2026-11-24-runtime-profiles-native.json) binds
+full report/serial/host hashes and the exact harness. Storage ends at50,541,416,448
+bytes below48GiB; guarded retirement reclaims3,369,426,944 allocated bytes from
+only that ended VM's generated disks and boot copies. Existing state is untouched.
+The same-artifact0.5.0 upgrade, matching review delivery and protected stable
+promotion remain separate. No decoder-regression or production-pier claim is made.
+
+## M792 — Matching0.5.0→rc.3 native upgrade passes (2026-11-24)
+
+Status: supersedes the pending same-artifact upgrade gate in M789–M791. The
+published0.5.0 binaries and frozen747dd810 target pass the actual offscreen QML
+service-update flow, including denial and retry of the same update attempt.
+Schema65→66 preserves both original ship identities/configuration,5 original
+operation records, access, live processes and all19 original app-history tables
+with38 rows. Manager reopen and the genuine0.5.0 writer's unchanged-state refusal
+pass; new app operations and stopped fake import pass after the update.
+
+The [upgrade record](diagnostics/2026-11-24-runtime-profiles-upgrade.json) binds
+complete checksummed reports, screenshots, source identities and guarded cleanup.
+Native sealed-archive loading passes, with activation acknowledgements driven by
+the guest harness; full Omarchy shell activation is not claimed. Scope is the
+local owner-user0.5.0 starting state, excluding remote updates, active recording
+workers, power-loss behavior and every live protected ship.
+
+Both VM scopes are inactive. Upgrade-generated retirement frees2,416,541,696
+allocated bytes; final full charge47,172,669,440 bytes is within48GiB. Keep all
+compact reports, sources and immutable inputs. Next prepare full isolated shell
+activation and immutable review delivery pins/instructions. Do not rebuild rc.3,
+repeat these completed scenarios without cause, bypass release protection or
+interpret this development pass as production installation authority.
+
+## M793 — Full isolated Omarchy shell activates frozen rc.3 (2026-11-24)
+
+Status: supersedes M792's pending full-shell activation gate for this bounded
+scenario. The unmodified Omarchy shell, under a separate headless Sway compositor
+and networkless Bubblewrap namespace, cold-loads published0.5.0, hot-activates
+exact rc.3 with the same shell/session, preserves the visible page and selection,
+retains paired service/widget state across rescan, and cold-restarts on rc.3.
+Activation acknowledgements come from the actual native bootstrap.
+
+The [record](diagnostics/2026-11-24-runtime-profiles-full-shell.json) binds sealed
+archive hashes, full shell identity, namespace adapters and retained logs. The
+private review060 profile has no enrollments and local setup is disabled. No host
+HOME, desktop, keyring, Docker or SSH sockets are mounted. The bounded service
+finished successfully and is inactive. Host Hyprland integration, remote updates
+and wider handoff/recording scenarios are not claimed; socket/teardown warnings
+remain recorded. Repository-owned full_shell.py changes only source-root discovery
+from the tested temporary driver.
+
+Distribution pins now identify the original747dd810 rc.3 archive and all three
+matching helpers. All nine authenticated draft downloads match the qualified
+original bytes and GitHub digests; see the [download record](diagnostics/2026-11-24-runtime-profiles-draft-downloads.json).
+No same-version artifact was rebuilt. Publish only as a non-latest prerelease with
+exact owner-review instructions; master and installed production/DEV state stay
+unchanged. Owner acceptance and stable promotion remain separate gates.
+
+## M794 — Complete rc.3 prerelease ready for owner review (2026-11-24)
+
+Status: supersedes the pending immutable delivery gate in M790–M793. Published
+[v0.6.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3)
+is explicitly a prerelease and not latest;0.5.0 remains latest stable. All nine
+authenticated draft and unauthenticated public downloads match the original
+qualified bytes, sizes and GitHub digests. The tag targets frozen747dd810; the
+distribution checkout is664f938ad15f139dbf79e0baef3f4bda145c9d02. Assets were
+not rebuilt or replaced. The first public checker reused obsolete temporary
+draft URLs; using canonical published metadata passed without an artifact change.
+
+The [publication record](diagnostics/2026-11-24-runtime-profiles-publication.json)
+and [manual entry check](diagnostics/2026-11-24-runtime-profiles-manual-entry.json)
+bind exact delivery, isolated import/profile preparation and prior non-default
+profile/release restoration. The existing0.5.0 native bootstrap/control code is
+identical apart from distribution pins. The [manual guide](runtime-profiles-manual-review.md)
+starts with a new desktop profile with host setup disabled. An owner-operated
+local0.5.0/schema65→rc.3/schema66 update is a separate explicit step; arbitrary
+custom DEV layouts, remote upgrades, active recording and protected ships remain
+outside that qualification.
+
+All private runtime/upgrade/shell scopes are inactive. Final aggregate storage
+47,398,850,560 bytes stays under48GiB. Production, installed plugins/services,
+existing manual DEV state, protected identities, tmux and temp-ur remain untouched.
+Leave PR24 draft and issue22 open for owner feedback. This ready-for-manual-review
+result is not stable promotion, production update or live import authority.
+
+## M795 — Existing review040 DEV owner update command prepared (2026-11-24)
+
+Status: clarifies M794's generic manual-entry instructions for the user's existing
+custom DEV environment. The user requested commands to run the update themselves,
+not execution by the assistant. The existing review040 manager and widget are
+confirmed on published0.5.0/schema65, under `/srv/dev/urbit-040`, profile
+`review-040`, plugin ID `thelifeandtimes.omabit.review040`, runner identity
+`runner-a9a208a18445179f05df5644ed6d245c`. The earlier normal-plugin profile commands
+do not update this custom installation. Use “DEV environment” for the complete
+setup, “namespace” for its isolation boundaries and “configuration” for settings.
+
+The private [owner adapter](../scripts/qualification/runtime-profiles/update_review040.py)
+is staged with exact rc.3 helpers and the reviewed runtime archive. `--prepare`
+only verifies and stages; `--apply` performs the owner's update. It binds old
+helper hashes, owner/service/runner identity, stage hashes and storage admission;
+backs up management state, tools and preferences; restarts only management without
+resume-running; retains container/engine identity and original fleet intent/history;
+and loads a versioned DEV widget with the same ID/profile/paths. An existing
+attempt is never blindly repeated, and failure never restores an older manager
+over migrated state. Offline WAL backup inspection uses a separate analysis copy.
+
+The [preparation evidence](diagnostics/2026-11-24-review040-update-prepared.json)
+records passing private full-shell targeted disable/activation/config restoration
+and three fault tests, including late activation failure retaining schema66/new
+helpers/original backup. The final staged plan binds the final helper digest;
+preparation-only staging superseded during guard development is retained or
+manifested separately. Exact frozen product bytes remain unchanged. Final charge
+47,801,511,936bytes plus1GiB apply scratch fits the48GiB approval.
+
+The live custom DEV update has NOT run and is not claimed as a completed upgrade.
+The existing0.5.0 environment, production and earlier DEV environment remain
+unchanged. [Owner commands](review040-update.md) use the already staged final work
+directory and report success only after a complete receipt. The owner's successful
+execution and subsequent manual feedback remain pending.
+
+## M796 — DEV backup-size refusal corrected before any update (2026-11-24)
+
+Status: supersedes M795's readiness claim for its original fixed256MiB management
+backup threshold. The owner ran the command and received “management backup
+exceeds declared scratch”. The management tree includes two legitimate217,421,172
+byte boot pills, making the observed total439,735,368 apparent bytes. No backup,
+apply marker, service stop or widget change occurred; DEV remains0.5.0/schema65.
+The pasted command was clarified as error output, not permission for the assistant
+to perform the live update.
+
+Replace arbitrary per-directory limits with measured management/SQLite-analysis/
+desktop/tool backup allocation plus explicit runtime-image and growth reservations.
+Preparation and apply use the same estimate and unchanged48GiB aggregate cap.
+Add read-only `--check` and an explicit `--refresh-plan` that retains the original
+plan and refuses any started attempt, backup, changed identity or altered staged
+bytes. The final unstarted plan was refreshed and checks ready with1,137,704,960
+bytes of scratch: total48,939,261,952bytes remains below51,539,607,552bytes.
+Both boot pills and all other data remain included in the backup; nothing is pruned.
+
+Four fault/measurement tests pass, including large sparse boot pills, aggregate
+budget refusal before mutation, symlink refusal, blocked refresh after apply starts,
+and late failure preserving migrated state/new tools/original WAL backup. The
+[correction evidence](diagnostics/2026-11-24-review040-storage-correction.json)
+binds the final script and refreshed plan, retaining the old plan. No release
+artifact or installed file changed. The owner can now rerun the same `--apply`
+command; live update and manual review remain pending.
+
+## M797 — Owner completed the preserved DEV update; manual review next (2026-11-24)
+
+Status: supersedes M795/M796's pending live update. The owner reran the corrected
+command. Its complete receipt exists with no failure receipt; read-only live IPC
+confirms0.6.0-rc.3, profile review-040, the versioned candidate helper paths, loaded
+true and local setup false. The update receipt reports preserved engine/containers
+and original fleet configuration, intent and operation history. The original
+plugin and management/tool/preference backups remain retained. See the
+[completion record](diagnostics/2026-11-24-review040-update-completed.json).
+
+The assistant did not run the live apply. Existing review-zod remains in its
+pre-update unknown/recovery state; release050-app-zod remains stopped. Neither is
+automatically repaired or used as a destructive fixture. The owner now asks what
+to test manually. Start with UI/fleet preservation, import runtime selection and
+a fresh disposable fake for ordinary lifecycle/Pack. New-fake UI creation keeps
+the official default; the reviewed selector currently appears in guided import.
+A full reviewed-runtime import needs a stopped disposable fixture already bound
+to that runtime, not a protected or currently running user's pier. Owner feedback
+and stable promotion remain separate; no production operation is authorized.
+
+
+## M798 — Manual DEV feedback expands runtime selection and identifies recovery/UI faults (2026-11-24)
+
+Status: active implementation and qualification. Supersedes M782/M797's finite
+bundled catalogue and import-only selector scope. The owner explicitly requests
+runtime selection for import, fresh boot and stopped enrolled ships, plus
+arbitrary owner-built Vere executables through the CLI, including future larger
+loom builds. UI channel names may be live/edge/dev, but enrolled selections must
+remain immutable. Existing production exclusions and the48GiB issue22 budget
+remain. Do not apply a new DEV update automatically; prepare the owner command.
+
+Read-only evidence identifies review-zod's removed-container endpoint retained
+on its exact owned Docker bridge. Stop previously reported success without
+reconciling that endpoint; the next observation returned unknown/recovery.
+Explicit Stop now reconciles only a matching journaled removed endpoint after
+checking bridge ownership and container ID/name absence. Observation never
+repairs anything. No live recovery has been performed.
+
+The unrelated release050-app-zod orange status is explained by the project
+observer bracketing the entire engine inventory while another ship's Pack
+container appears/disappears. Instance IDs and runtime resources are distinct;
+no same-@p collision was found. Read-only display now compares the selected
+namespace across full validated inventories; mutation admission stays strict.
+Stopped expanded project members retain their permission scope. Permission cards
+show instance IDs, and lifecycle buttons retain pending state through receipt and
+polling gaps. DEV setup remains disabled; its screen now explains the separate
+environment and offers Add a ship instead of an indefinitely checking installer.
+
+The new candidate is0.6.0-rc.4/schema67, not yet frozen or natively qualified.
+Local manifests bind binary/image/archive/provenance/loom/compatibility fields to
+an immutable ID, installed only by the Unix owner. Explicit stopped transitions
+preserve pier identity and journal both artifacts; Start is separate. Correction
+requirements still prevent an incompatible downgrade. Owner compatibility
+assertions are not qualification evidence. Project factories retain their
+separate official-runtime contract. Upstream live/edge/dev latest endpoints
+returned HTTP403 during research, so latest upstream artifacts and actual64-bit
+execution remain unverified. See the current section in runtime-policy.md;
+rc.3 evidence continues to qualify only unchanged rc.3 bytes.
+
+## M799 — Freeze rc.4 feedback candidate and preserve qualification storage (2026-11-25)
+
+Status: product frozen; native qualification in progress. Supersedes only M798's
+not-yet-frozen status. Product source is27aac5001c43a7a1148df47dc9904bdeb1a4a536,
+version0.6.0-rc.4/schema67. Full Go/source tests, targeted race tests, actual
+QML lifecycle bindings and installer/provenance smoke checks pass. The reviewed
+JSON-fix archive reproduces its existing hash; a separate local manifest/archive
+wraps that known executable for testing fresh boot, import and explicit stopped
+transitions. Actual latest upstream channels and64-bit execution remain untested.
+
+[The build record](diagnostics/2026-11-25-runtime-feedback-build.json) binds exact
+artifacts and logs. The48GiB aggregate cap remains unchanged. Manifested retirement
+removed regenerable build-cache objects and byte-identical superseded artifact
+copies; two inactive old qualification disks were compressed losslessly with full
+round-trip hashes and original report hashes retained. Original migration fixtures,
+canonical release inputs and manual DEV state remain intact. Historical paths
+with retirement receipts are evidence, not reusable launch inputs.
+
+Only private qualification/delivery adapters and distribution documentation may
+change after the freeze. The new owner updater has separate rc.4 work/backup/plugin
+paths, exact rc.3 starting hashes, schema66→67 checks and a retained runtime-profile
+backup. Its fault tests pass. It has not been prepared or applied at this checkpoint;
+first qualify the exact artifacts and wrapper, then prepare the owner command.
+
+## M800 — Qualify rc.4 and prepare the preserved DEV update (2026-11-25)
+
+Status: qualified review candidate, owner application pending. Supersedes M798/M799's
+qualification-pending status; product source remains27aac5001c43a7a1148df47dc9904bdeb1a4a536.
+[Manual review](runtime-profiles-manual-review.md#evidence) links passing source, all
+race shards, QML, reproduction/package checks, bundled runtime14-check/16-launch
+and local-build5-check/8-launch scenarios, both0.5.0/schema65 and rc.3/schema66
+upgrades to schema67, full Omarchy shell activation and exact DEV wrapper activation.
+Both native upgrades preserve original application history, identity/access and
+running processes and refuse older writers without state changes. The rc.3 case
+also preserves a selected reviewed profile and its installed archive.
+
+The first expanded runtime run stopped at an optional-empty JSON comparison; the
+first split local case stopped at a helper-scope error; the first copied shell
+driver derived its source path incorrectly. Each was a private harness issue,
+recorded and corrected without changing product artifacts. Completed re-runs pass.
+All temporary runtime VMs ended; generated disks were retired with manifests while
+logs, results, screenshots and immutable inputs remain. The48GiB cap is unchanged.
+
+[The owner update](review040-update.md) is staged in build/review040-update-060rc4-owner
+with exact source/tools/archive/plan hashes. Its readiness check passes with1,311,768,576
+bytes of declared backup/scratch. It retains managed state, runtime archives and
+desktop settings; refuses reuse, changed inputs or a partial-attempt retry; and
+never rolls a migrated database back to old binaries. The live environment remains
+rc.3. No live Stop/recovery or DEV apply was performed. The owner should apply the
+new rc.4 command, then explicitly Stop review-zod and perform the focused review.
+
+Publication is a review prerelease only; no stable/master promotion or production
+upgrade is implied. Latest upstream live/edge/dev endpoints returned HTTP403, and
+actual64-bit execution remains unqualified. Owner-provided compatibility/loom
+declarations are assertions, not proof for arbitrary binaries. Project factories
+retain their separate runtime contract. Keep issue22 and draft PR24 open for review.
+
+## M801 — Publish immutable rc.4 review delivery (2026-11-25)
+
+Status: published prerelease; owner DEV apply still pending. Extends M800 with
+[verified publication](diagnostics/2026-11-25-runtime-feedback-publication.json).
+All nine draft downloads and all nine unauthenticated public downloads match
+the qualified source27aac50 artifacts byte-for-byte. Stable/latest remains0.5.0.
+Distribution pins/instructions are incadeb8930373ba41db5dc8eff9a8a01e6d71ba23; the source
+tag predates those pins and is not the native-plugin install revision. No installed
+DEV or production service changed. The prepared rc.4 owner command and focused
+manual checklist are current; keep the completed rc.3 attempt and its backups.
+
+## M802 — Group Vere selection with runtime settings (2026-11-25)
+
+Status: source UI change verified; not packaged or installed. The owner reports
+rc.4 is looking good and asks to move the ship-page Vere dropdown into Runtime
+Settings. RuntimeSelectionPane now sits inside ShipPortsPane's expandable editor,
+above the HTTP port, resource and loom controls. Its confirmation and stopped-ship
+requirements are unchanged. The existing fixture includes the relocated component
+dependencies and sizes its window to the expanded content.
+
+The settings model suite and real isolated QML pane check pass, including wide
+and narrow rendering, saving resource limits, and running/old-runner restrictions.
+Evidence is retained in `/tmp/omabit-runtime-settings-layout-01`. The first sandboxed
+attempt could not inspect the host PID used for storage admission; the host-visible
+retry passed admission and ran the UI with inert callbacks in a private namespace.
+No live plugin, service or ship changed. Published rc.4 remains immutable; this
+layout change requires a new candidate before distribution. M801's pending-owner
+status is historical; this task did not inspect the current installed version.
+
+## M803 — Prepare a separate RC4 local UI preview (2026-11-25)
+
+Status: prepared and checked, owner apply pending. The owner asked for commands to
+update DEV with M802's layout. The completed rc.4 receipt and read-only preflight
+now verify live rc.4/schema67, superseding M801's pending-owner status. Instead of
+replacing a published artifact, the UI preview has its own version
+`0.6.0-rc.4+dev.ui.1`, plugin directory and explicit DEV-UI provenance. It reuses
+byte-identical rc.4 tools, preserves the base BUILD metadata and overrides only
+the two layout files, displayed UI version, manifest and wrapper title.
+
+The [prepared update record](diagnostics/2026-11-25-review040-ui1-prepared.json)
+binds the candidate, adapter and passing isolated full-shell activation. The first
+rehearsal correctly stopped at a config guard: Omarchy removes a third-party widget's
+bar placement rather than adding it to disabledPlugins. The corrected guard permits
+only that exact placement removal, and the second rehearsal passes all seven checks.
+The unstarted owner plan was renewed with its original retained. Exact original
+shell bytes and old plugin are preserved; the shell process stays running.
+
+The adapter never stops or modifies a manager/engine, accesses piers, changes
+runtime profiles or migrates state. Apply is owner-run, single-use and retains
+checkpoints on failure. Final read-only readiness passes under the existing48GiB
+cap. Neither the UI preview nor any live ship operation was applied by the assistant.
+This supersedes M802 only for local DEV delivery; a public release still needs
+a new immutable candidate and its release qualification.
+
+## M804 — Recover UI1 after Omarchy fills an omitted tray section (2026-11-25)
+
+Status: recovery verified, owner execution pending. Supersedes M803's complete
+activation-coverage claim for the owner's older shell configuration. The owner's
+apply stopped in disable-dev-widget because Omarchy's ensureConfigShape inserted
+an absent empty bar.layout.tray alongside the intended widget removal. The earlier
+private fixture already included tray and missed this case. Inspection confirms
+the original and candidate trees match the saved plan, neither rename happened,
+and live shell settings match shell-disabled.json exactly. The DEV widget is
+disabled; runner/runtime binaries and ships were not changed by the updater.
+
+The corrected guard permits only PluginRegistry's known section normalization and
+target placement removal. --check-recovery and --recover-disabled accept only the
+known old updater hash/failure phase, unchanged widgets, matching paths and exact
+saved shell state; original failed/start/plan files remain intact. Separate recovery
+markers prevent repeat or partial recovery. A reachable shell and absent widget IPC
+target are verified independently. Any unrelated config change is refused.
+
+Six private guard tests pass. The full private shell reproduces the owner failure,
+then executes the actual recovery and verifies exact settings restoration, retained
+old plugin/failure evidence, new version/helper paths, no shell restart and repeated
+recovery refusal. Runner preflight/budget are inert only inside that private test;
+the real read-only recovery check separately passes. An initial test-launch attempt
+hit an argument-name collision before starting a shell; that fixture-only error was
+corrected and its directory retained. See [recovery evidence](diagnostics/2026-11-25-review040-ui1-recovery.json).
+No live recovery was applied by the assistant. Preserve the owner's original attempt
+and use the dedicated recovery commands, without resetting or renewing its plan.
+
+## M805 — Recreate the delivery lock after reboot (2026-11-25)
+
+Status: fixed and checked; owner UI recovery remains pending. The owner reported a
+machine crash/reboot, then both recovery commands failed before entering recovery:
+the adapter opened /tmp/omabit-issues-vm-runtime.lock read-only and assumed it already
+existed. /tmp is tmpfs, so that coordination file did not survive reboot. Boot
+records show the new boot at13:18 on2026-11-25. This was an updater bug, not evidence
+that a recovery checkpoint had disappeared.
+
+The lock now uses create-if-missing, no-follow, nontruncating open; it validates a
+regular owner-owned file and holds the existing exclusive flock. It refuses
+concurrent holders and unsafe file types, closes on all exits and never unlinks a
+lock. Four tests cover reboot recreation/reuse, contention, symlink refusal and
+nonblocking FIFO refusal; all ten recovery/lock tests pass. The real post-reboot
+check recreated the lock and returned ready-to-recover with48,080,400,384 charged
+bytes under the unchanged48GiB cap. Original/staged widget trees and shell settings
+still match the retained failed checkpoint. No recovery-started marker exists.
+
+[The reboot record](diagnostics/2026-11-25-review040-ui1-reboot.json) binds the fix,
+checks and retained checkpoint. No live widget recovery, ship operation or service
+restart was performed by the assistant. Previous /tmp rehearsal artifacts were
+volatile; their embedded results in repository diagnostics remain historical evidence.
+
+Read-only crash triage found NVIDIA Xid56 at12:45:12 and display flip timeouts at
+13:16:14/17 before the new boot. The inspected12:00–shutdown kernel interval contains
+no OOM-kill/panic/lockup evidence and no recorded pre-reboot user-space coredump.
+Those observations do not establish the cause of the reported machine crash.
+No GPU/system configuration changes or speculative crash fix were applied.
+
+## M806 — Authorize stable0.6.0 release preparation (2026-11-25)
+
+Status: preparing; no stable publication or production deployment yet. The owner
+requested a release and will update production personally. The UI1 complete receipt
+now confirms successful owner recovery and unchanged runner/engine identity,
+superseding M805's pending-owner status. Work proceeds on release/0.6.0 through
+the protected stable policy, including exact-artifact local0.5.0→0.6.0 upgrade
+qualification. RC evidence remains historical; the final source includes the
+requested Runtime Settings placement. See [preparation](releases/0.6.0/preparation.md).
+
+## M807 — Qualify exact stable0.6.0 artifacts (2026-11-25)
+
+Status: qualified stable candidate; protected merge and publication remain separate.
+M806's owner authorization is carried by release/0.6.0 and PR25. Product source
+fcf269ca8aa20aa9e43a70d7e282a91f12659cf9 is frozen; its backend digest matches
+reviewed RC4. Only final version metadata and the approved Runtime Settings layout
+change product behavior relative to that reviewed candidate. Source/race/QML CI,
+package/provenance, full native shell, direct0.4.0/schema59 and0.5.0/schema65 upgrades to0.6.0/schema67,
+bundled runtimes (14 checks/16 launches) and local-build workflows (5 checks/8
+launches) pass on the stable artifacts. The0.5.0 upgrade preserves both original ship
+identities, operations, access, runtime processes and19 application table
+projections; manager restart and genuine old-writer refusal pass.
+
+Evidence: [qualification](releases/0.6.0/qualification.json),
+[rehearsal](releases/0.6.0/rehearsal.json), and their exact diagnostic hashes.
+This supersedes rc.4-only qualification for stable promotion, not its historical
+records. Local execution uses the known reviewed executable in a separately
+packaged immutable local profile. Latest upstream channels, actual64-bit execution,
+remote/active-worker upgrades and power-loss durability remain unqualified.
+Keep immutable runtime registry metadata/archives with management state. Production
+and human-review DEV are unchanged by qualification; production update remains
+the owner's action after publication. The installed canonical stable plugin still pins0.4.0; that read-only version
+observation motivated the additional direct upgrade rehearsal. Keep protected merge, checks and download
+verification gates; no direct master push, reset or marker editing is authorized.
+
+All ten draft downloads match the exact qualified files; the distribution commit
+pins those bytes without rebuilding. [Draft verification](diagnostics/2026-11-25-release060-draft-downloads.json)
+and [storage/evidence preservation](diagnostics/2026-11-25-release060-storage-and-evidence.json)
+record the final preparation. Two serial report transfers were damaged; independent
+read-only extraction of each stopped guest's saved report matches its original
+complete-report checksum. Their original failure logs remain. No incomplete report
+is counted as a pass. Full artifacts, inputs, reader sources and detailed retirement
+manifests are retained under build/release060-stable across reboots.

@@ -49,4 +49,9 @@ package managed
 // actor, revision, runtime and created container. Opening dispatches nothing.
 // Schema65 fences canonical retention policy and incident-pin audit history;
 // older managers must refuse rather than ignore recording storage controls.
-const StateSchemaVersion = 65
+// Schema66 fences per-ship immutable runtimes from older managers. Historical
+// rows and signed receipts retain their original bytes; omitted profile fields
+// continue to mean the fixed official Vere 4.6 artifact.
+// Schema67 fences older writers from local runtime manifests and explicit
+// stopped-ship runtime transition history. Existing rows remain unchanged.
+const StateSchemaVersion = 67

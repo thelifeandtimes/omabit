@@ -83,8 +83,16 @@ func (j ManagedRecordingJob) Validate() error {
 	}
 	// These values have a finite, credential-free source contract. A copied
 	// saved URL or arbitrary diagnostic must not become a new control payload.
-	q := &qualifier{d: dependencies{boot: state.Boot, bootstrap: state.Bootstrap}}
-	if state.Runtime.Image != candidate.Image || state.Runtime.RepoDigest != candidate.Image && state.Runtime.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/") || !acceptedImageID(state.Runtime.ImageID) || state.Runtime.VereVersion != candidate.VereVersion || state.Runtime.PillURL != q.pillSource() {
+	if _, err := candidate.Resolve(state.RuntimeProfile); err != nil || state.Runtime.RuntimeProfile != state.RuntimeProfile {
+		return ErrRecordingJob
+	}
+	q := &qualifier{d: dependencies{runtimeProfile: state.RuntimeProfile, boot: state.Boot, bootstrap: state.Bootstrap}}
+	for _, c := range state.Runtime.Containers {
+		if c.RuntimeProfile != state.RuntimeProfile {
+			return ErrRecordingJob
+		}
+	}
+	if state.Runtime.Image != q.runtimeProfile().Image || state.Runtime.RepoDigest != q.runtimeProfile().Image && state.Runtime.RepoDigest != strings.TrimPrefix(q.runtimeProfile().Image, "docker.io/") || !q.runtimeProfile().AcceptsImageID(state.Runtime.ImageID) || state.Runtime.VereVersion != q.runtimeProfile().VereVersion || state.Runtime.PillURL != q.pillSource() {
 		return ErrRecordingJob
 	}
 	if j.Limits.MaxSessionBytes < 1<<20 || j.Limits.MaxSessionBytes > 1<<30 || j.Limits.MaxSegmentBytes < 4096 || j.Limits.MaxSegmentBytes > j.Limits.MaxSessionBytes || j.Limits.ReserveFreeBytes == 0 {
@@ -179,13 +187,13 @@ func recordingJobHex(raw string, size int) bool {
 
 func recordingLaunchState(s ManagedState) ManagedState {
 	r := s.Runtime
-	selected := Result{Profile: r.Profile, RunID: r.RunID, Directory: r.Directory, Image: r.Image, ImageID: r.ImageID, RepoDigest: r.RepoDigest, Platform: r.Platform, EngineVersion: r.EngineVersion, VereVersion: r.VereVersion, PillURL: r.PillURL, PillSHA256: r.PillSHA256, PillBytes: r.PillBytes, PillPath: r.PillPath}
+	selected := Result{RuntimeProfile: r.RuntimeProfile, Profile: r.Profile, RunID: r.RunID, Directory: r.Directory, Image: r.Image, ImageID: r.ImageID, RepoDigest: r.RepoDigest, Platform: r.Platform, EngineVersion: r.EngineVersion, VereVersion: r.VereVersion, PillURL: r.PillURL, PillSHA256: r.PillSHA256, PillBytes: r.PillBytes, PillPath: r.PillPath}
 	for _, c := range r.Containers {
-		selected.Containers = append(selected.Containers, ContainerRecord{MemoryGiB: c.MemoryGiB, CPUCores: c.CPUCores, EngineVersion: c.EngineVersion, Loom: c.Loom, NativeControl: c.NativeControl, Name: c.Name, ID: c.ID, Kind: c.Kind, SnapshotMinutes: c.SnapshotMinutes, Removed: c.Removed, CreateDispatched: c.CreateDispatched, CreateUncertain: c.CreateUncertain})
+		selected.Containers = append(selected.Containers, ContainerRecord{RuntimeProfile: c.RuntimeProfile, MemoryGiB: c.MemoryGiB, CPUCores: c.CPUCores, EngineVersion: c.EngineVersion, Loom: c.Loom, NativeControl: c.NativeControl, Name: c.Name, ID: c.ID, Kind: c.Kind, SnapshotMinutes: c.SnapshotMinutes, Removed: c.Removed, CreateDispatched: c.CreateDispatched, CreateUncertain: c.CreateUncertain})
 	}
 	if r.Network != nil {
 		n := *r.Network
 		selected.Network = &n
 	}
-	return ManagedState{MemoryGiB: s.MemoryGiB, CPUCores: s.CPUCores, Loom: s.Loom, NativeControl: s.NativeControl, Bootstrap: s.Bootstrap, ID: s.ID, Port: s.Port, Prepared: s.Prepared, Initialized: s.Initialized, Runtime: selected, Comet: s.Comet, Fake: s.Fake, Storage: s.Storage, NativeShip: s.NativeShip, NativeKeyDigest: s.NativeKeyDigest, Boot: s.Boot, AmesPort: s.AmesPort}
+	return ManagedState{RuntimeProfile: s.RuntimeProfile, MemoryGiB: s.MemoryGiB, CPUCores: s.CPUCores, Loom: s.Loom, NativeControl: s.NativeControl, Bootstrap: s.Bootstrap, ID: s.ID, Port: s.Port, Prepared: s.Prepared, Initialized: s.Initialized, Runtime: selected, Comet: s.Comet, Fake: s.Fake, Storage: s.Storage, NativeShip: s.NativeShip, NativeKeyDigest: s.NativeKeyDigest, Boot: s.Boot, AmesPort: s.AmesPort}
 }

@@ -1,253 +1,205 @@
 # Omabit
 
-**0.4.0 candidate:** fleet URLs, Agent Help, app development permissions and
-RAM/CPU controls are in release qualification. See the
-[candidate notes and review scope](docs/release-0.4.0.md). Stable remains0.3.7
-until the reviewed release is published.
+**Run your own Urbit ships from Omarchy, and build multiplayer apps on top of them.**
 
-**New in 0.3.7** — Set up an Arch/Omarchy host with missing native prerequisites
-in one authorized step. The desktop also supports key-file selection on the
-panel and verified recovery from a mistyped first-boot identity.
-See the [0.3.7 release notes and upgrade steps](docs/release-0.3.7.md).
+Omabit brings self-hosted Urbit to the Omarchy desktop: set up a host, connect
+local or remote ships, start and stop them, inspect their health, and manage
+maintenance from a fleet panel. When you need help, **Agent Help opens your
+default Omarchy coding agent with the relevant Omabit instructions and context**.
 
-**New in 0.3.6:** local import and restoration previews now consistently accept
-up to 8 TiB of logical contents. This fixes the misleading “identity, bounds or
-destination changed” rejection above 100 GB. Cross-host transfers stay at 100 GB.
-See the [release notes and upgrade steps](docs/release-0.3.6.md).
+The current stable release is [0.6.0](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0).
+See its [features, upgrade path and tested limits](docs/releases/0.6.0/notes.md).
+Choose an installed Vere runtime for a fresh ship, a stopped-pier import, or an
+explicit stopped-ship runtime change. The CLI also packages owner-provided local
+builds. Runtime pins stay fixed until you explicitly change them; see
+[runtime policy](docs/runtime-policy.md) for installation and compatibility.
 
-The [0.3.5 performance improvements](docs/release-0.3.5.md) remain included,
-with [measurement details](docs/diagnostics/2026-11-01-idle-performance.md).
+## What is Urbit?
 
-**Included from 0.3.0:** isolated fakeship project networks, independent application
-connections, simpler ship onboarding and lifecycle recovery improvements. Theme
-and DMs share the same native sign-in conventions. The verified bundle includes
-[CLI references](docs/cli/README.md), an [operator skill](skills/omabit-operator/SKILL.md)
-and a [plugin-development skill](skills/omabit-plugin-developer/SKILL.md).
+[Urbit](https://urbit.org/) is an open-source personal server and peer-to-peer
+network. Your running server is called a **ship**. It has an identity, runs apps,
+and keeps their state in a directory called a **pier**. **Vere** is the program
+that runs it; **Arvo** is the operating system inside it. You can run Vere on a
+Linux computer while using ordinary desktop or web interfaces to your apps.
 
-A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
-them from the desktop, and manage maintenance without keeping terminal sessions open.
+Urbit combines persistent application state with a cryptographic identity and
+[encrypted ship-to-ship messaging](https://docs.urbit.org/urbit-os/kernel/ames).
+A durable Urbit ID is controlled through your keys, giving applications a
+self-sovereign identity layer that can move with you between hosts. Keeping your
+keys and pier backups safe is part of self-hosting. A **comet** is a free,
+ephemeral identity for trying the network; a **fake ship** is for isolated local
+development and cannot participate in the public network.
 
-The [platform roadmap](docs/platform-roadmap.md) sequences reliability, project
-networks, shared application connections and app installation into small validation
-steps. Its product anchor is **“Multiplayer apps without a subscription.”**
-
-This repository is the ship-running and orchestration project at
-[thelifeandtimes/omabit](https://github.com/thelifeandtimes/omabit).
-[Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
-has its own repository, CLI, and release lifecycle.
-
-**Stable release:** [**0.3.7**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.7), a Linux/AMD64 release
-using the existing pier-owning Unix user for the runner and its rootless engine.
-See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.3.7.md),
-[0.2.0/0.3.0 upgrade guidance](docs/guided-service-upgrades.md),
-and [Recommended Apps pill provenance](docs/pill-release.md).
-
-**Channels:** `master` is protected, PR-only and reserved for qualified stable
-releases. `edge` is opt-in bleeding-edge work, explicitly not stable. `develop` has
-no stability guarantee. See the [development/versioning policy](docs/development-policy.md)
-and [contributor guide](CONTRIBUTING.md), including explicit edge installation/update
-commands. Patch releases are allowed; each stable release must work as a native
-plugin and include a tested upgrade path from the previous stable version.
-
-## Historical release milestones
-
-The notes below describe earlier milestones; the 0.3.7, 0.3.6, 0.3.5, 0.3.4, 0.3.3, 0.3.2, 0.3.1 and 0.3.0 release notes
-define current behavior and limits.
-
-**RC.15** fixes first-time host setup on stock Omarchy by reusing existing
-OS-assigned user-namespace IDs without requiring a prior Omabit installation.
-The guided checklist and OS authorization flow remain the setup path; technical
-host diagnostics are under **View details**.
-
-**RC.14** adds a retained bootstrap for stock Omarchy, verified immutable UI/tool
-bundles, automatic desktop activation/recovery and isolated development profiles.
-Existing default-profile enrollment and preferences are retained. See
-[how desktop releases and profiles work](docs/desktop-development.md).
-
-RC.12 includes the [adversarial-review fixes](docs/reviews/2026-10-18-rc11-remediation.md),
-with the same desktop layout and component split. Its frozen artifacts passed
-[power-cut, live runtime/upgrade, authenticated Ames and desktop qualification](docs/diagnostics/2026-10-18-rc12-release-qualification.md).
-RC.12 uses schema20; existing RC.10/RC.11 owner-user hosts use the documented
-[one-time offline management upgrade](docs/management-offline-upgrade.md).
-
-**RC.13:** [distribution-native host compatibility](docs/host-compatibility.md)
-adds Pacman and Debian/Ubuntu package authentication, shared engine/API checks,
-headless/fleet reports and safe startup-guard migration. It uses schema21 and retains
-the existing component boundaries and desktop workflow. Fresh-install testing on
-two Omarchy versions and full runtime qualification of new engine/distro profiles
-remain pending; see the [publication and verification record](docs/diagnostics/2026-10-19-rc13-publication.md).
-
-RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
-user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations
-use ordinary user permissions. See the [owner-user runtime](docs/owner-user-runtime.md).
-RC.2 storage/import/deletion and bounded reboot-resume behavior continue.
-RC.4 adds a first-run welcome and laptop/always-on choice, host-checked port
-suggestions, confirmed automatic first boot, healthy-only access buttons and
-corrected monitor-window activation.
-RC.5 adds explicit software/source information, stable inline progress, public comet
-names in runtime output and the user-supplied Recommended Apps pill. Application
-Connections is marked Coming Soon.
-RC.6 corrects the effective pill default when the shell supplies only explicit
-widget settings; this is verified in the running sourcebox shell.
-RC.7 adds persistent log following, bounded reconnect backoff and reader lifecycle
-cleanup to remove per-refresh SSH/PAM/logind sessions.
-RC.8 simplifies initial setup and derives import identity, destination and port
-from the source/location selection, with progress receipts and ship-named piers.
-RC.9 adds Ames publication for new live enrollments, universal pre-move epoch
-checks and explicit retained-enrollment recovery, with a stable-upgrade release gate.
-RC.10 adds configurable loom and default-off native control, preserves settings
-across older-client edits and signed host moves, and verifies an in-place RC.9 upgrade.
-RC.11 simplifies boot forms with collapsed Advanced settings, loom30–34 choices
-(default31), default storage and CLI-only native control, plus Urbit ID guidance.
-RC.12 hardens interruption recovery, identity/replay and credential contracts,
-adds transactional management upgrades and explicitly migrates legacy Ames
-publication without changing the desktop layout.
-Prior dedicated-account installations were
-[retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
+For an Omarchy user, this means a desktop plugin can have a persistent backend
+on your own ship and exchange messages with other people's ships. Think shared
+reminders, chat, collaborative tools or multiplayer games: local interfaces,
+user-owned state, and peers identified by their ship names. You can build the
+frontend with familiar tools and use Urbit for identity, storage and messaging.
+Omabit supplies hosting and development workflows; each app still defines its
+own behavior and permissions.
 
 ## Get started
 
-In a terminal inside your Omarchy desktop:
+Omabit's published hosting builds target **Linux x86-64** with systemd and
+cgroup v2. The guided setup checks host dependencies and prepares a separate
+rootless Docker engine under the pier-owning user. A desktop managing only a
+remote runner does not need a local Docker engine.
 
-```bash
+On an Omarchy desktop with native plugin support:
+
+```sh
 omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
-This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
-and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
-directory is required. See [native plugin distribution](docs/native-plugin.md).
+The plugin verifies and downloads its pinned prebuilt tools. You do not need a
+Go compiler. Open **~+ → Setup → Set up this computer** and follow the checklist.
+Host installation requests OS authorization. Once ready, choose **Add a ship →
+Boot Ephemeral Identity** to try a comet. Use the owned-identity flow if you
+already have an Urbit ID, or the stopped-pier import flow for an existing ship.
+**Never run two copies of the same live ship.** Importing an existing pier and
+booting a new identity are different operations.
 
-For an existing stable installation, use
-`omarchy plugin update thelifeandtimes.omabit`. Edge/develop use the explicit
-[channel updater](docs/development-policy.md#edgedevelop-installation-and-updates).
-The bootstrap prepares the
-selected release and activates it when ready; see [updates](docs/native-plugin.md#updates)
-for diagnostics, explicit version pins and legacy recovery.
+For another host, choose **Setup → Manage runners → Connect another runner**.
+Use your existing SSH alias or host; setup provisions a separate restricted
+management key. Connecting an existing runner preserves its ships and services.
+See [installation](docs/install.md), [remote setup](docs/remote-runner-setup.md),
+and [storage and imports](docs/storage-management.md).
 
-Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
-prepares private desktop access, asks for OS authorization, installs the background
-services and connects your desktop automatically. Choose **Add a ship → Boot Ephemeral Identity**
-when it reports ready.
+For an existing stable installation:
 
-To manage an existing remote runner, use **Setup → Manage runners → Connect another
-runner** with its existing SSH alias or host. The guided terminal authenticates your
-ordinary login once and provisions a dedicated restricted management key. Remote-only desktop use needs no local
-Docker engine. Local host setup and remote enrollment are separate operations.
-
-For development from a source checkout:
-
-```bash
-bash scripts/install.sh
-go build -o ./build/ ./cmd/... ./backend/cmd/...
-./build/omabit --format text setup
+```sh
+omarchy plugin update thelifeandtimes.omabit
 ```
 
-See the [fresh installation guide](docs/install.md) for prerequisites, reruns and
-troubleshooting, or [binary bundle installation](docs/release-install.md) for the
-published release assets. Source builds need Go 1.26+. Hosting targets Linux x86-64
-and systemd/cgroup v2. Published RC.12 requires Docker 29.7.2; RC.13
-accepts stable Docker 27.2.0–29.x subject to API 1.47 and the documented
-[host compatibility and package-authentication checks](docs/host-compatibility.md).
+Let the verified desktop bundle load, then review any separate **service update
+in Setup**. Updating the desktop alone does not update a local or remote runner.
+The tested direct 0.6.0 upgrades are from 0.4.0 or 0.5.0 on Linux/AMD64; older installations
+follow their documented intermediate upgrades. Existing enrollments, piers,
+settings, history and running/stopped intent must be preserved. Do not reset or
+re-create ships to perform an update. See [upgrade guidance](docs/guided-service-upgrades.md)
+and the [0.6.0 qualification record](docs/releases/0.6.0/qualification.json).
 
-## What works
+## Ask your agent for help
 
-The generic, non-Omarchy runner and collector entry points are in
-[`backend/`](backend/README.md). The desktop-specific Go helper is `cmd/omabit`;
-shared implementation remains under `internal/` in one Go module.
+Use **Agent Help** in the monitor, or **Setup → Agent Help and skills**. Omabit
+launches the default agent you selected in **Omarchy → Setup → Defaults → Agent**
+through Omarchy's agent commands. This is your usual `$AGENT` workflow: ask it to
+explain a failure, inspect the selected runner, or help build an app. Omabit sends
+the matching skill path and bounded context; your agent retains its own sign-in
+and execution controls. A help request does not itself authorize a repair.
 
-- A separate owner-user rootless Docker engine and the pinned official Vere release.
-- New comets and development fakes, with durable start/stop/resume operations.
-- Owned-key bootstrap, including a live-tested moon, and stopped in-tree pier enrollment.
-- Permanent per-instance mount directories with named pier children; first boot creates the child in place and keeps running.
-- Management and restricted SSH services, including verified clean and unclean host-reboot resume.
-- A compact fleet menu and monitoring window with container RAM, tasks and health.
-- Per-ship lifecycle/error/exit diagnostics and bounded read-only runtime logs.
-- Pack, meld, roll, epoch inspection, confirmed prefix pruning and UTC schedules.
-- Identity-pinned collector connections, operator/observer grants and Eyre sessions.
-- Local first-run setup with visible progress and automatic collector enrollment.
-- Stopped cross-host handoff with verified contents and permanent source fencing.
-- [Advanced loom settings and CLI-only native access](docs/development-runtime.md) for every ship class, with separate requested/recorded settings. RC.10 fake/comet native execution and repeated in-place management upgrades passed; see [qualification](docs/diagnostics/2026-10-18-rc10-qualification.md).
-- New-ship selection between bare bootstrap and a supplied Recommended Apps pill.
+For example: “Explain why this ship is stopped and show me the supported recovery
+steps,” or “Help me build a shared reminders app using a fresh fake project.”
+No global skill installation is needed for the button to work. Setup also offers
+explicit skill installation while preserving custom or edited copies.
 
-Owned-pier import is implemented as explicit enrollment of a fully transferred,
-stopped pier in the [storage convention](docs/pier-storage.md); broader live import
-and network qualification remain. Loom-internal telemetry and custom runtime builds
-are out of scope; the UI reports container resources as container resources.
+The release includes three complete skill directories, each with a `SKILL.md`
+and supporting references:
 
-## Components
-
-| Component | Responsibility |
+| Skill | Use it for |
 | --- | --- |
-| `urbit-runner` | Host lifecycle, resource observations, maintenance, storage and durable operations |
-| `urbit-collector` | Per-user runner connections, credentials and generic Eyre transport |
-| `omabit` and the Omarchy plugin | Local onboarding, fleet/setup/monitoring UI and desktop/application policy |
+| [omabit-operator](skills/omabit-operator/SKILL.md) | Hosting, fleet diagnosis, lifecycle, imports and maintenance |
+| [omabit-app-developer](skills/omabit-app-developer/SKILL.md) | Urbit application backends using Gall or Grubbery |
+| [omabit-plugin-developer](skills/omabit-plugin-developer/SKILL.md) | Omarchy interfaces and connections to a ship |
 
-This source monorepo is authoritative. Optional peer, gateway, social and agent
-features follow a reliable core ship-running experience.
+They are also available in the verified `omabit-skills-VERSION.tar.gz` release
+asset. Keep each skill's references with it, and use guidance matching your
+installed tools. See [Agent Help and skill distribution](docs/agent-skills.md).
 
-See [repository ownership and publishing](docs/repository.md) for the Tend split,
-Git remotes, and the current Go module identity.
+## How the pieces fit together
 
-## Development
+| Component | What it does |
+| --- | --- |
+| **Omabit** | The Omarchy panel, setup and monitoring UI, plus the `omabit` command and agent-facing interfaces |
+| **urbit-collector** | Your desktop's connections to runners, identity checks, credentials and access to ships |
+| **urbit-runner** | The service on each hosting machine that owns durable ship operations, storage, runtime containers and maintenance |
+| **Vere / Urbit** | The per-ship runtime and operating system that actually run your apps and retain their state in the pier |
 
-RC.14 provides a retained bootstrap, immutable UI/tool releases and isolated
-test profiles for stock Omarchy. See [desktop development and upgrade testing](docs/desktop-development.md)
-for candidate builds, version selection, fresh profiles and guarded VM scenarios.
+The desktop asks the collector to contact a selected runner. The runner manages
+its ships even after the panel or terminal closes. A runner can be on your
+Omarchy machine or another Linux host. The three Omabit components share this
+repository and ship as matching artifacts.
 
-Prepared multi-plugin collections also have a [read-only runtime compatibility check](docs/collection-runtime-preflight.md); it does not activate or install plugins.
-Retained runtime history has a separate [read-only authority inspector](docs/retained-authority-inspection.md), including after compositor exit.
+Applications can authenticate to a ship through
+[Application Connections](docs/application-connections.md), then communicate
+with its HTTP interface, **Eyre**, directly. Omabit manages hosting and access;
+ordinary application traffic does not have to pass through its management service.
+See the [architecture](docs/architecture.md) and [backend entry points](backend/README.md).
 
-```bash
-go test ./...
-go vet ./...
-go build -o ./build/ ./cmd/... ./backend/cmd/...
-node scripts/test-panel-model.js
-python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
-python3 -B scripts/test-panel.py --windows
-python3 -B scripts/test-log-watch.py
-python3 -B scripts/test-import-recovery.py
+## CLI and MCP
+
+The desktop is one interface. The `omabit`, `urbit-collector` and `urbit-runner`
+commands also have [offline help and CLI references](docs/cli/README.md).
+`omabit operations` lists the shared typed operation catalog, including explicit
+exclusions. `omabit call` and the MCP server use the same handlers for supported
+fleet, project, recovery and application operations.
+
+For an already enrolled runner, a local MCP client can launch:
+
+```sh
+omabit --config-dir /absolute/path/to/your/registry mcp serve --transport stdio \
+  --allow-runner NAME:RUNNER_ID
 ```
 
-RC.7 source includes a [persistent runtime-log watcher](docs/protocol.md#persistent-collector-log-watch-rc7)
-to eliminate per-refresh SSH/PAM sessions. The updated collector and plugin ship
-together. See the [RC.7 release notes](docs/release-rc7.md) and
-[D-Bus incident follow-up](docs/diagnostics/2026-10-16-dbus-log-watch.md).
+Replace the path, enrollment name and expected runner ID with your selected
+profile's values. The default exposes read tools; mutations require an explicit
+server option and still respect runner role and saved application permissions.
+See [the shared CLI/MCP contract](docs/core-interfaces.md) and
+[client connection recipes](docs/mcp-clients.md). The tested 0.5.0 support is the
+CLI and pinned-SDK stdio contract; named-client recipes and local HTTP remain
+experimental. The catalog is not yet a replacement for every legacy CLI command.
 
-Existing ships and unrelated Docker installations are preserved during setup.
-Live operations on the user's hosts follow the [protected-ship policy](docs/protected-ships.md).
-Host changes use explicit OS authorization; desktop clients do not receive Docker
-group access. RC formats remain developmental; stable 0.1.0 is gated on the
-[tested, non-destructive upgrade contract](docs/upgrade-policy.md).
+## Build your own apps
 
-RC.9 integrates the [Ames and import-recovery contributions](docs/diagnostics/pr2-pr3-integration.md)
-from PRs #2/#3, adapted to the guided/named-pier flows. It preserves existing
-enrollment records and adds explicit recovery rather than requiring a fresh install.
+Start with the [application developer skill](skills/omabit-app-developer/SKILL.md).
+**Gall** is Urbit's application framework, normally using Hoon agents.
+**Grubbery** is an alternative application framework with its own source and
+runtime workflow. Choose from the code you are building; an Omarchy frontend is
+optional for either backend.
 
-## Documentation
+1. Select a development runner and run `omabit app-preflight` for the intended
+   framework. This checks the actual runner's capabilities and permissions before
+   creating an application test project.
+2. Use a fresh isolated fake project. Follow the maintained
+   [Gall sample and workflow](skills/omabit-app-developer/references/gall.md) or
+   [versioned Grubbery workflow](skills/omabit-app-developer/references/grubbery.md).
+3. Approve only the needed creation/commit permissions in Setup. Stage a bounded
+   source tree, review it, commit and verify compilation and application behavior.
+4. Test updates and restart with saved state, then add a desktop frontend using
+   the plugin developer skill and Application Connections.
 
-- [Complete CLI reference](docs/cli/README.md) (generated and tested offline for all three binaries)
-- [App development permissions](docs/app-development-policy.md) (0.4.0 development; Setup controls and read-only agent status)
-- [Agent skill distribution](docs/agent-skills.md) (source directories and verified archive convention)
-- [Agent operator skill](skills/omabit-operator/SKILL.md) (source development; fleet observation, operations and imports)
-- [Plugin developer skill](skills/omabit-plugin-developer/SKILL.md) (source guidance; standalone apps, optional authentication, backend readiness and isolation)
-- [Fresh installation and first ship](docs/install.md)
-- [Sourcebox fresh native installation](docs/sourcebox-clean-install.md)
-- [Owner-user runtime and desk editing](docs/owner-user-runtime.md)
-- [Storage locations, import and deletion](docs/storage-management.md)
-- [Services, shutdown and reboot behavior](docs/services.md)
-- [Official-runtime policy](docs/runtime-policy.md)
-- [Release pill composition and provisioning](docs/pill-release.md)
-- [Current status and remaining release work](docs/project-status.md)
-- [Architecture](docs/architecture.md)
-- [Implementation plan](docs/implementation-plan.md)
-- [Runner protocol](docs/protocol.md)
-- [Ship sessions and credential storage](docs/ship-sessions.md)
-- [Runtime qualification evidence](docs/runtime-qualification.md)
+0.5.0 qualifies bounded Gall and Grubbery source/recovery/restart workflows.
+Fresh Grubbery framework bootstrap remains tracked in
+[#21](https://github.com/thelifeandtimes/omabit/issues/21). Grubbery peer discovery,
+permits, routes, served assets and broader failure cases also remain separate work.
+The [preflight guide](docs/app-development-preflight.md) explains capability and
+policy refusals. Testing uses disposable ships, never an existing live identity.
 
-Historical development walkthroughs are under `docs/checkpoints/`; new installations
-should use the installation guide above.
+## Explore the ecosystem
 
-Released [Application Connections](docs/application-connections.md) provides
-explicit plugin approval and recovery while each plugin talks directly to its ship.
-The dated development checkpoints record earlier experiments and their limits.
+| Project | Why look at it |
+| --- | --- |
+| [Urbit documentation](https://docs.urbit.org/) | Learn the system, self-hosting and application development |
+| [urbit/urbit](https://github.com/urbit/urbit) | Urbit OS and Hoon source |
+| [urbit/vere](https://github.com/urbit/vere) | The runtime that executes a ship |
+| [nisfeb/grubbery](https://github.com/nisfeb/grubbery) | Grubbery's application framework |
+| [nisfeb/talon](https://github.com/nisfeb/talon) | A native Urbit chat client |
+| [tloncorp/tlon-apps](https://github.com/tloncorp/tlon-apps) | Tlon Messenger's clients and server, from Tlon Corporation |
+| [thelifeandtimes/omabit](https://github.com/thelifeandtimes/omabit) | Hosting, desktop integration and development workflows in this repository |
+| [thelifeandtimes/tend](https://github.com/thelifeandtimes/tend) | An Urbit reminders application with its own CLI and release lifecycle |
+
+## Contribute and find details
+
+Use [CONTRIBUTING.md](CONTRIBUTING.md) for source builds and checks. `master` is
+the protected stable-release branch; `edge` is an explicit prerelease choice;
+`develop` is unqualified development. Follow the
+[channel update instructions](docs/development-policy.md#edgedevelop-installation-and-updates)
+for edge/develop: the stock Omarchy updater fetches the default branch.
+
+Further reading: [release installation](docs/release-install.md),
+[services and reboot behavior](docs/services.md), [runtime policy](docs/runtime-policy.md),
+[recordings and their limits](docs/runtime-recordings.md),
+[development profiles](docs/desktop-development.md), and
+[non-destructive upgrades](docs/upgrade-policy.md). Historical milestone notes
+remain under `docs/`; the current release's qualification record defines its
+actual support window.

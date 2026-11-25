@@ -1,0 +1,52 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "version": "0.6.0-rc.4",
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "distribution_commit": "cadeb8930373ba41db5dc8eff9a8a01e6d71ba23",
+  "release": "https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.4",
+  "is_draft": false,
+  "is_prerelease": true,
+  "stable_latest": "v0.5.0",
+  "public_downloads": "/tmp/omabit-rc4-public-downloads",
+  "assets": {
+    "SHA256SUMS": {
+      "sha256": "e42a08bd3c2307251f8965c00e50e27637028ed4e1bf4974f173b61f3b9662d2",
+      "bytes": 755
+    },
+    "omabit-0.6.0-rc.4-linux-amd64.tar.gz": {
+      "sha256": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85",
+      "bytes": 37031093
+    },
+    "omabit-linux-amd64": {
+      "sha256": "20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7",
+      "bytes": 26887155
+    },
+    "omabit-recommended-apps-0.6.0-rc.4.pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "bytes": 59351751
+    },
+    "omabit-skills-0.6.0-rc.4.tar.gz": {
+      "sha256": "8f47fdf2e8dbd188c497cdc149a313663595d65c68087193cc764edcee78e39b",
+      "bytes": 73906
+    },
+    "release.json": {
+      "sha256": "1651f6301f558b3499b252200b1c53b8afd1ac8fac4049ebf7a690168dbbd111",
+      "bytes": 4176
+    },
+    "urbit-collector-linux-amd64": {
+      "sha256": "68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c",
+      "bytes": 13257861
+    },
+    "urbit-runner-linux-amd64": {
+      "sha256": "64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f",
+      "bytes": 30295412
+    },
+    "vere-4.6-jsonfix-0774857c.tar.gz": {
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "bytes": 54750277
+    }
+  },
+  "live_dev_apply": false
+}

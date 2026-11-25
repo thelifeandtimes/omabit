@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "distribution_commit": "664f938ad15f139dbf79e0baef3f4bda145c9d02",
+  "release_digest": "b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52",
+  "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+  "checks": {
+    "exact_pins": true,
+    "sealed_candidate_import": true,
+    "new_profile_with_local_setup_disabled": true,
+    "matching_tools_prepared": true,
+    "prior_nondefault_explicit_selection_restored": true,
+    "review_profile_retained": true
+  },
+  "host_state_access": false,
+  "shell_activation": "separate full-shell evidence",
+  "services_changed": false
+}

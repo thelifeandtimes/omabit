@@ -1,0 +1,159 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "scope": "Bundled official/reviewed runtime lifecycle and maintenance in a new offline VM; core functionality only.",
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "harness_source_commit": "b96b0c9976f813fba93246cc46d517eba1d90dc6",
+  "harness_sha256": {
+    "guest.py": "c5d0a289452d44568ce0f23753571bbfff12e37af579730968c7a7128777e8ee",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "0c70774d4f4d5a6dac5bd14340bcf9e9020dcdb848e9d77869034d38c4cf6771",
+    "run.py": "0bfb68073493700d629e53a77d01ed8ad4767734a261dba33d2908994a206b05"
+  },
+  "checks": {
+    "missing_artifact_refuses_start_before_pier_execution": true,
+    "corrupt_archive_install_refuses_without_publication": true,
+    "exact_archive_install_idempotent_and_native_preflight": true,
+    "container_binary_checksums_and_versions": true,
+    "two_fresh_ships_different_pinned_runtimes": true,
+    "manager_restart_preserves_both_containers_and_pins": true,
+    "missing_archive_allows_stop_refuses_restart_no_fallback": true,
+    "enrolled_downgrade_refuses_preserving_configuration": true,
+    "replacement_and_omitted_profile_preserve_pin": true,
+    "pack_and_restart_preserve_pin": true,
+    "controlled_crash_recovery_preserves_pin": true,
+    "reviewed_import_refuses_stock_and_preserves_pin_through_start": true,
+    "native_utility_and_lifecycle_image_audit": true,
+    "both_test_ships_gracefully_stopped": true
+  },
+  "native_launches": [
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-6657c8b8e490cb888fba135eb8af367d-probe",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-6657c8b8e490cb888fba135eb8af367d-http-boot",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-http-boot",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-pack",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-c7b8035be63622706f6bdeb6ab1e5316-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-c7b8035be63622706f6bdeb6ab1e5316-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-90c80a6ab3b07cbc3e26871faecfa224-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    }
+  ],
+  "evidence": {
+    "output": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime11",
+    "files": {
+      "host.json": "0739974c9f89f2b05a6783e035bce367d66be29aba48a5792f79061e3e086603",
+      "result.json": "d70087f0390425b6d99c5326bda50ae47f5052298c2d9ceead0938cd7387362e",
+      "serial.log": "95f293884b47c7251221bf370c9694e08113bbbeca3742de36ce5dcaac0d5a21"
+    }
+  },
+  "superseded_harness_failures": [
+    {
+      "output": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime08",
+      "passed": false,
+      "checks": {
+        "missing_artifact_refuses_start_before_pier_execution": true,
+        "corrupt_archive_install_refuses_without_publication": true,
+        "exact_archive_install_idempotent_and_native_preflight": true,
+        "container_binary_checksums_and_versions": true,
+        "two_fresh_ships_different_pinned_runtimes": true,
+        "manager_restart_preserves_both_containers_and_pins": true,
+        "missing_archive_allows_stop_refuses_restart_no_fallback": true,
+        "enrolled_downgrade_refuses_preserving_configuration": true,
+        "replacement_and_omitted_profile_preserve_pin": true,
+        "pack_and_restart_preserve_pin": true,
+        "controlled_crash_recovery_preserves_pin": true,
+        "reviewed_import_refuses_stock_and_preserves_pin_through_start": true
+      },
+      "error": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/opt/omabit-release-input/guest.py\", line 224, in <module>\n    try:main()\n        ~~~~^^\n  File \"/opt/omabit-release-input/guest.py\", line 170, in main\n    code,value=endpoint('/v1/runtime-profiles/'+local_id);assert code==200 and value['profile']==local\n                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "result_sha256": "efe6ec82531869cf6427ff453e3175968177d9cab27e2e8f525b547b85ee058b",
+      "generated_disks_retired_with_manifest": true
+    },
+    {
+      "output": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-runtime09",
+      "passed": false,
+      "checks": {
+        "local_manifest_install_and_fresh_boot": true,
+        "explicit_stopped_stock_to_local_transition_preserves_pier": true
+      },
+      "error": "cannot access local variable 'storage' where it is not associated with a value",
+      "traceback": "Traceback (most recent call last):\n  File \"/opt/omabit-release-input/guest.py\", line 231, in <module>\n    try:main()\n        ~~~~^^\n  File \"/opt/omabit-release-input/guest.py\", line 193, in main\n    plan=json.loads(storage('preview-pier','--source',local_source,'--storage-root','default','--runtime-profile',local_id).stdout)\n                    ^^^^^^^\nUnboundLocalError: cannot access local variable 'storage' where it is not associated with a value\n",
+      "result_sha256": "957fa76f6bf10017b5083b3439486a2d2bd2bb675eb0c7c2eff6c270be9ff1e2",
+      "generated_disks_retired_with_manifest": true
+    }
+  ]
+}

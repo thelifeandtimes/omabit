@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.5.0"
+  readonly property string applicationVersion: "0.6.0"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
@@ -134,6 +134,9 @@ Item {
   function showToast(text,tone) { toastText=String(text).slice(0,360)+(String(text).length>360 ? "…" : "");toastTone=tone || "accent";toastExpiry.interval=toastTone==="bad" ? 8000 : 4500;toastExpiry.restart() }
   property var runtimeActionErrors: ({})
   property var pendingRuntimeAction: null
+  property var lifecycleRequests: ({})
+  function lifecycleKind(connection, instance) { return Model.lifecycleKind(lifecycleRequests, connection, instance) }
+  function reconcileLifecycle() { lifecycleRequests=Model.reconcileLifecycle(lifecycleRequests,connections) }
   property string finishingAction: ""
   function runtimeActionError(connection,instance) { return runtimeActionErrors[Model.runtimeActionKey(connection,instance)] || "" }
   function dismissRuntimeActionError(connection,instance) { var next=Object.assign({},runtimeActionErrors);delete next[Model.runtimeActionKey(connection,instance)];runtimeActionErrors=next }
@@ -226,7 +229,7 @@ Item {
 
   function checkLocalSetup(manual) {
     if (transportStopping) return
-    if (!localSetupAllowed) { localSetupError="Local host setup is disabled in test profile “"+profileName+"”. Enable it explicitly only on the intended test host.";return }
+    if (!localSetupAllowed) { localSetupError="";return }
     if (checkingSetup || settingUp || busy) return
     if (manual===true) setupCheckRequested=true
     localStatusOutput = ""; localSetupError = ""
@@ -386,6 +389,8 @@ Item {
   function submit(args, name, input, useThemeHelper) {
     if (busy) return false
     pendingRuntimeAction=Model.runtimeActionTarget(args)
+    var lifecycle=Model.lifecycleTarget(args)
+    if(lifecycle) { var requests=Object.assign({},lifecycleRequests);requests[lifecycle.key]=lifecycle;lifecycleRequests=requests }
     if (name !== "epoch-preview") clearEpochPreview()
     generation++
     currentAction = name
@@ -421,7 +426,7 @@ Item {
   }
 
   function operate(connection, instance, kind) {
-    if (busy || !observing || !Model.canOperate(connection, instance, kind, now)) return false
+    if (busy || lifecycleKind(connection,instance) || !observing || !Model.canOperate(connection, instance, kind, now)) return false
     if (kind === "inspect-epochs" && Model.inspectionPending(inspections[Model.inspectionKey(connection,instance)])) return false
     var selected = connections.some(function(c) {
       return c.name === connection.name && c.runner_id === connection.runner_id
@@ -434,6 +439,14 @@ Item {
     if(instance.project_id){var p=(connection.project_inventory.projects||[]).filter(function(p){return p.id===instance.project_id})[0];if(!p)return false;return submit(Model.selection(connection).concat(["project-operate",p.id,"member-"+kind,"--member",instance.id,"--container-id",instance.resources.container_id,"--revision",String(p.revision),"--review-digest",p.review_digest,"--request-id",requestIdentity,"--confirm-action"]),"project-action")}
     if (kind === "inspect-epochs") rememberInspection({connection:connection.name,runner:connection.runner_id,instance:instance.id,revision:instance.config_revision,request:requestIdentity,status:"submitting",message:"Requesting an inspection of the stopped pier…"})
     return submit(Model.operate(connection, instance, kind, requestIdentity), kind)
+  }
+
+  function selectRuntime(connection,instance,profile) {
+    if(busy || !observing || !connection || !instance || instance.project_id || !Model.hasFeature(connection,"runtime-transition-v1"))return false
+    var c=connections.filter(function(c){return c.runner_id===connection.runner_id && c.name===connection.name})[0]
+    var i=c && c.snapshot && c.snapshot.instances.filter(function(i){return i.id===instance.id && i.config_revision===instance.config_revision})[0]
+    if(!i || c.access_role!=="operator" || !Model.available(c,now) || lifecycleKind(c,i) || i.desired_state!=="stopped" || ["stopped","uninitialized"].indexOf(i.observed_state)<0 || i.recovery_required || i.active_operation_id || !Model.fresh(i.observed_at,now,30000))return false
+    return submit(Model.selection(c).concat(["configure",i.id,"--revision",String(i.config_revision),"--http-port",String(i.config.http_port),"--ames-port",String(i.config.ames_port),"--loom",String(i.config.loom),"--runtime-profile",profile,"--confirm-runtime-change"]),"runtime-change")
   }
 
   function rememberInspection(target) {
@@ -450,7 +463,7 @@ Item {
   }
 
   function clearEpochPreview() { epochPreview = null; previewTarget = null; pendingPreviewTarget = null }
-  function canMaintain(target) { return observing && !busy && Model.currentMaintenanceTarget(connections, target, now) }
+  function canMaintain(target) { return !!target && observing && !busy && !lifecycleRequests[target.runner+"/"+target.instance] && Model.currentMaintenanceTarget(connections, target, now) }
   function canSaveRoutine(target) { return observing && !busy && Model.currentRoutineTarget(connections,target,now) }
   function saveRoutine(target,config) {
     if (!canSaveRoutine(target)) return false
@@ -471,7 +484,7 @@ Item {
     var target = previewTarget || pendingPreviewTarget
     if (target && (!observing || !Model.currentEpochTarget(connections, target, now))) clearEpochPreview()
   }
-  onConnectionsChanged: { invalidateEpochPreview(); invalidateImportCatalogue(); reconcileInspection(); reconcileImports() }
+  onConnectionsChanged: { invalidateEpochPreview(); invalidateImportCatalogue(); reconcileInspection(); reconcileImports(); reconcileLifecycle() }
   onNowChanged: invalidateEpochPreview()
   onObservingChanged: invalidateEpochPreview()
 
@@ -550,18 +563,18 @@ Item {
     return true
   }
 
-  function registerFake(connection, name, port, fakeShip, pierName, bootstrap, pillSource, loom, memory, cpus) {
-    return registerInstance(connection,name,port,"fake",true,fakeShip,pierName,bootstrap,pillSource,loom,memory,cpus)
+  function registerFake(connection, name, port, fakeShip, pierName, bootstrap, pillSource, loom, memory, cpus, runtimeProfile) {
+    return registerInstance(connection,name,port,"fake",true,fakeShip,pierName,bootstrap,pillSource,loom,memory,cpus,runtimeProfile)
   }
 
   function canRegisterComet(connection) {
     return observing && !busy && !!connection && connection.mode === "development-managed"
       && connection.access_role === "operator" && Model.hasFeature(connection,"create-comet") && Model.available(connection,now)
   }
-  function registerComet(connection,name,port,confirmed,pierPath,bootstrap,pillSource,loom,memory,cpus) {
-    return registerInstance(connection,name,port,"comet",confirmed,undefined,pierPath,bootstrap,pillSource,loom,memory,cpus)
+  function registerComet(connection,name,port,confirmed,pierPath,bootstrap,pillSource,loom,memory, cpus, runtimeProfile) {
+    return registerInstance(connection,name,port,"comet",confirmed,undefined,pierPath,bootstrap,pillSource,loom,memory,cpus,runtimeProfile)
   }
-  function registerInstance(connection,name,port,kind,confirmed,fakeShip,pierName,bootstrap,pillSource,loom,memory,cpus) {
+  function registerInstance(connection,name,port,kind,confirmed,fakeShip,pierName,bootstrap,pillSource,loom,memory, cpus, runtimeProfile) {
     if (busy || !observing || !connection || !confirmed) return false
     var current=connections.filter(function(c){return c.name===connection.name && c.runner_id===connection.runner_id})[0]
     var problem=Model.registrationProblem(current,name,port,kind,now)
@@ -577,10 +590,11 @@ Item {
     requestIdentity = Model.requestId()
     var args=Model.selection(current).concat([kind === "comet" ? "create-comet" : "create-fake",name,"--http-port",String(port),"--request-id",requestIdentity])
     args=args.concat(Model.bootstrapArgs(bootstrap,pillSource),runtimeArgs)
+    if(runtimeProfile)args=args.concat(["--runtime-profile",runtimeProfile])
     if (kind === "comet") args.push("--confirm-network")
     if (options) {pierName=Model.pierPath("fake",name,fakeShip,pierName);args=args.concat(["--ship",Model.fakeIdentity(fakeShip),"--pier-name",pierName.split("/").slice(-2,-1)[0]])}
     if (pierName !== undefined) args=args.concat(["--pier-path",pierName])
-    registrationOutcome={runner:current.runner_id,connection:current.name,instance:name,port:Number(port),kind:kind,bootstrap:bootstrap,pillSource:pillSource,loom:loom,memoryGiB:memory===undefined ? 4 : Number(memory),cpuCores:cpus===undefined ? 2 : Number(cpus),nativeControl:false,ship:options ? Model.fakeIdentity(fakeShip) : "",pier:options ? pierName : "",request:requestIdentity,status:"submitting",message:"Registering “"+name+"”…"}
+    registrationOutcome={runner:current.runner_id,connection:current.name,instance:name,port:Number(port),kind:kind,runtimeProfile:runtimeProfile || "",bootstrap:bootstrap,pillSource:pillSource,loom:loom,memoryGiB:memory===undefined ? 4 : Number(memory),cpuCores:cpus===undefined ? 2 : Number(cpus),nativeControl:false,ship:options ? Model.fakeIdentity(fakeShip) : "",pier:options ? pierName : "",request:requestIdentity,status:"submitting",message:"Registering “"+name+"”…"}
     return submit(args,kind === "comet" ? "register-comet" : "register")
   }
   function suggestPort(connection, token) {
@@ -641,26 +655,32 @@ Item {
     storageOutcome={runner:c.runner_id,instance:"",path:path,request:requestIdentity,kind:"storage-root",status:"submitting",message:"Adding storage location…"}
     return submit(Model.selection(c).concat(["storage-root-add",name,"--path",path,"--request-id",requestIdentity]),"storage-root-add")
   }
-  function previewExternalPier(connection,path,storageRoot) {
+  function previewExternalPier(connection,path,storageRoot,runtimeProfile) {
     if (busy) return false
     var c=storageConnection(connection,"guided-pier-import")
     storageRoot=storageRoot===undefined ? "default" : storageRoot
     if (!c || !Model.hostPath(path) || !Model.storageRoots(c).some(function(r){return r.id===storageRoot})) {lastError="Enter the absolute existing pier directory and choose a storage location on the selected runner host.";return false}
     externalImportPreview=null
-    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot}
-    return submit(Model.selection(c).concat(["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]),"preview-pier")
+    runtimeProfile=runtimeProfile || ""
+    if (runtimeProfile && !Model.hasFeature(c,"runtime-profiles-v1")) {lastError="Update this runner before selecting a reviewed runtime.";return false}
+    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot,runtimeProfile:runtimeProfile}
+    var args=["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]
+    if (runtimeProfile) args.push("--runtime-profile",runtimeProfile)
+    return submit(Model.selection(c).concat(args),"preview-pier")
   }
   function importExternalPier(connection,review,confirmed) {
     if (busy) return false
     var c=storageConnection(connection,"guided-pier-import")
     if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !review.plan) {lastError="Inspect the source and confirm the reviewed import.";return false}
     var plan=review.plan
-    try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root) } catch(e) {lastError=e.message;return false}
+    try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root,review.runtimeProfile) } catch(e) {lastError=e.message;return false}
     if (Object.keys(importOutcomes).some(function(key){var o=importOutcomes[key];return o.runner===c.runner_id && o.source===review.source.path && Model.importProgress(connections,o,now).active})) {lastError="This source already has an unresolved import request. Wait for its receipt.";return false}
     requestIdentity=Model.requestId()
     var target=Object.freeze({runner:c.runner_id,connection:c.name,instance:plan.instance_id,source:review.source.path,path:plan.destination,ship:plan.ship,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"})
     storageOutcome=target
-    if (!submit(Model.selection(c).concat(["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]),"import-pier")) return false
+    var args=["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]
+    if (plan.runtime_profile) args.push("--runtime-profile",plan.runtime_profile)
+    if (!submit(Model.selection(c).concat(args),"import-pier")) return false
     rememberImport(target)
     return target
   }
@@ -701,7 +721,7 @@ Item {
     hostMoveOutcome={runner:target.runner,instance:target.instance,destination:destination.runner,name:name,status:"moving",message:"Moving the stopped pier. Both hosts retain durable phase receipts."}
     return submit(Model.hostMoveArgs(target,destination,name,httpPort,amesPort,requestIdentity),"move-host")
   }
-  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath,loom,pastedKey,memory,cpus) {
+  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath,loom,pastedKey,memory,cpus,runtimeProfile) {
     bootstrap=bootstrap || (pill ? "recommended" : "bare")
     var bootProblem=Model.bootstrapProblem(bootstrap,pill || "")
     if (bootProblem) {lastError=bootProblem;return false}
@@ -715,8 +735,9 @@ Item {
     var runtimeArgs=[]
     try {runtimeArgs=Model.runtimeSettingsArgs(connection,loom).concat(Model.creationResourceArgs(connection,memory,cpus))} catch(e) {lastError=e.message;return false}
     requestIdentity=Model.requestId()
-    registrationOutcome={runner:connection.runner_id,connection:connection.name,instance:name,kind:"owned",ship:ship,pier:path,loom:loom,memoryGiB:memory===undefined ? 4 : Number(memory),cpuCores:cpus===undefined ? 2 : Number(cpus),nativeControl:false,request:requestIdentity,status:"submitting",message:"Preparing boot files and registering the ship…"}
+    registrationOutcome={runner:connection.runner_id,connection:connection.name,instance:name,kind:"owned",runtimeProfile:runtimeProfile || "",ship:ship,pier:path,loom:loom,memoryGiB:memory===undefined ? 4 : Number(memory),cpuCores:cpus===undefined ? 2 : Number(cpus),nativeControl:false,request:requestIdentity,status:"submitting",message:"Preparing boot files and registering the ship…"}
     var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--request-id",requestIdentity,"--confirm-network"]).concat(pastedKey ? ["--key-stdin"] : ["--key-file",keyFile,"--secure-key-file"])
+    if(runtimeProfile)args=args.concat(["--runtime-profile",runtimeProfile])
     if (String(httpPort).trim()) args=args.concat(["--http-port",String(httpPort)])
     if (String(amesPort).trim()) args=args.concat(["--ames-port",String(amesPort)])
     if (customPath || storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
@@ -766,8 +787,8 @@ Item {
           var preview=pendingExternalPreview
           pendingExternalPreview=null
           if (!preview) throw new Error("Missing import selection")
-          Model.validatePierImportPreview(result,preview.runner,preview.path,preview.storageRoot)
-          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result.source,plan:result,loadedAt:now}
+          Model.validatePierImportPreview(result,preview.runner,preview.path,preview.storageRoot,preview.runtimeProfile)
+          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result.source,plan:result,runtimeProfile:preview.runtimeProfile,loadedAt:now}
         }
         if (hostMove) {
           if (result.source_runner!==hostMove.runner || result.source_instance!==hostMove.instance || result.destination_runner!==hostMove.destination || result.destination_instance!==hostMove.name || result.state!=="complete" || result.direction!=="in") throw new Error("Unverified host move receipt")
@@ -850,8 +871,18 @@ Item {
       rememberInspection(Object.assign({},inspecting,{operation:inspectionOperation,status:inspectionAccepted ? "queued" : rejected ? "failed" : "uncertain",message:inspectionAccepted ? "Inspection accepted. Waiting for the runner's inventory…" : rejected ? lastError+" Review the current stopped ship and inspect again." : "Inspection acknowledgement unavailable. Checking the journal; do not resubmit blindly."}))
       reconcileInspection()
     }
+    var lifecycleRejected=!!lastError && Model.inspectionRejected(code,errors || output,outputFailed)
     output = ""; errors = ""
     if(runtimeTarget) {root.rememberRuntimeActionError(runtimeTarget,lastError);root.pendingRuntimeAction=null}
+    // A receipt is acceptance, not completion. Keep the button pending until
+    // inventory contains this exact request's terminal operation. Only a known
+    // pre-dispatch refusal can release it without that observation.
+    if(lifecycleRejected) {
+      var requests=Object.assign({},lifecycleRequests)
+      Object.keys(requests).forEach(function(key){if(requests[key].request===requestIdentity)delete requests[key]})
+      lifecycleRequests=requests
+    }
+    reconcileLifecycle()
     if (kind==="suggest-port") {portError=lastError;lastError="";lastResult=""}
     if (kind==="remote-setup-start") {remoteSetupError=lastError;lastError="";lastResult="";Qt.callLater(checkRemoteSetup)}
     if (kind === "epoch-preview" && lastError) clearEpochPreview()

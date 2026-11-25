@@ -3,10 +3,10 @@
 from pathlib import Path
 import argparse,hashlib,importlib.util,json,shutil,subprocess
 ROOT=Path(__file__).resolve().parents[1]
-spec=importlib.util.spec_from_file_location('storage',ROOT/'scripts/qualification/app-development/storage.py');storage=importlib.util.module_from_spec(spec);spec.loader.exec_module(storage);storage.admit(8*1024**2)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);out=p.parse_args().output.resolve();out.mkdir(mode=0o700)
+spec=importlib.util.spec_from_file_location('storage',ROOT/'scripts/qualification/app-development/storage.py');storage=importlib.util.module_from_spec(spec);spec.loader.exec_module(storage)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);args=p.parse_args();storage.admit(8*1024**2,budget_bytes=args.storage_budget_gib*1024**3);out=args.output.resolve();out.mkdir(mode=0o700)
 plugin=out/'Plugin';plugin.mkdir()
-for name in ('ShipPortsPane.qml','ContainerResourceFields.qml','RuntimeSettingsFields.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','Hint.qml','Model.js'):
+for name in ('ShipPortsPane.qml','RuntimeSelectionPane.qml','RuntimeProfileChoice.qml','CheckField.qml','ContainerResourceFields.qml','RuntimeSettingsFields.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','Hint.qml','Model.js'):
  shutil.copy2(ROOT/'plugins/omabit'/name,plugin/name)
 (plugin/'qmldir').write_text('singleton Design 1.0 Design.qml\n')
 commons=out/'qs/Commons';commons.mkdir(parents=True)
@@ -16,11 +16,12 @@ commons=out/'qs/Commons';commons.mkdir(parents=True)
 (out/'main.qml').write_text('''import QtQuick
 import "Plugin" as P
 Window {
- id:w;width:640;height:680;visible:true;color:P.Design.background
+ id:w;width:640;height:content.implicitHeight+48;visible:true;color:P.Design.background
  property var connection: ({name:"fixture",runner_id:"runner-fixture",features:["runtime-settings","container-resources-v1"]})
  property var ship: ({id:"zod",mode:"fake",config_revision:3,desired_state:"stopped",observed_state:"stopped",config:{http_port:18080,ames_port:34343,loom:31}})
  property bool captured:false
  Column {
+  id:content
   anchors.fill:parent;anchors.margins:24;spacing:18
   P.Label {text:"~zod · Runtime settings";font.pixelSize:22}
   P.Label {text:"Stopped · Isolated UI fixture";secondary:true}

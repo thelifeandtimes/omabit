@@ -24,8 +24,12 @@ func (realBackend) ImportDestinationAvailable(path, source string) (bool, error)
 	return runtimequalify.ImportDestinationAvailable(path, source)
 }
 
-func (r *Server) previewImport(ctx context.Context, b storageActionsBackend, source pierstore.ExternalSource, rootID string) (protocol.PierImportPreview, error) {
+func (r *Server) previewImport(ctx context.Context, b storageActionsBackend, source pierstore.ExternalSource, rootID string, profiles ...string) (protocol.PierImportPreview, error) {
 	var out protocol.PierImportPreview
+	profile := ""
+	if len(profiles) != 0 {
+		profile = profiles[0]
+	}
 	g, ok := r.b.(guidedImportBackend)
 	if !ok {
 		return out, bad("update the runner for automatic pier identification")
@@ -43,7 +47,7 @@ func (r *Server) previewImport(ctx context.Context, b storageActionsBackend, sou
 	if root == "" {
 		return out, bad("choose a configured storage location")
 	}
-	identity, err := g.InspectPierIdentity(ctx, source.Path)
+	identity, err := r.inspectIdentityForProfile(ctx, source.Path, profile)
 	if err != nil {
 		return out, conflict("identity_unavailable", err.Error())
 	}
@@ -51,7 +55,7 @@ func (r *Server) previewImport(ctx context.Context, b storageActionsBackend, sou
 		return out, bad("pier identity/network metadata is unsupported")
 	}
 	// Bind the identification to the same filesystem review, not a name guess.
-	again, err := b.InspectExternalPier(ctx, source.Path)
+	again, err := r.inspectExternalForProfile(ctx, b, source.Path, profile)
 	if err != nil || again != source {
 		return out, conflict("source_changed", "source changed during identification; inspect again")
 	}
@@ -106,7 +110,7 @@ func (r *Server) previewImport(ctx context.Context, b storageActionsBackend, sou
 		if err != nil {
 			return out, err
 		}
-		return protocol.PierImportPreview{RunnerID: r.s.runnerID, Source: source, PierIdentity: identity, StorageRoot: rootID, InstanceID: name, Destination: destination, HTTPPort: port, InPlace: source.Path == filepath.Join(root, pierstore.Relative(destination))}, nil
+		return protocol.PierImportPreview{RuntimeProfile: profile, RunnerID: r.s.runnerID, Source: source, PierIdentity: identity, StorageRoot: rootID, InstanceID: name, Destination: destination, HTTPPort: port, InPlace: source.Path == filepath.Join(root, pierstore.Relative(destination))}, nil
 	}
 	return out, conflict("destination_unavailable", "no unused instance directory is available")
 }

@@ -22,10 +22,11 @@ Column {
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: !!root.target
+    RuntimeSelectionPane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: !!root.instance && !root.instance.project_id }
     Label { text: "Host HTTP port"; secondary: true; caption: true }
     Field { id: httpPort; objectName: "ship-http-port"; width: parent.width; validator: IntValidator {bottom:1024;top:65535} }
     ContainerResourceFields { id: resources; width: parent.width; supported: !!root.target && root.target.containerResources; stopped: !!root.target && root.target.resourcesEditable }
-    RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: !!root.target && root.target.runtimeSettings }
+    RuntimeSettingsFields { id: runtimeSettings; preservedLoom:root.target ? root.target.loom : 31; width: parent.width; supported: !!root.target && root.target.runtimeSettings }
     Label { width: parent.width; text: "Changes apply on the next explicit stop/start. The current revision is checked before saving."; secondary: true; caption: true }
     RowLayout {
       ActionButton { objectName: "save-ship-http-port"; text: "Save runtime settings"; primary: true; enabled: root.target && root.service.canConfigure(root.target) && httpPort.acceptableInput && runtimeSettings.problem === "" && resources.problem === ""; onClicked: {if(root.service.configure(root.target,httpPort.text,runtimeSettings.selectedLoom,resources.memoryGiB,resources.cpuCores)){root.target=null;root.notice="Change submitted. The configuration above and ship activity show the result."}else root.notice=root.service.lastError || "Ship state changed; reload the configuration."} }

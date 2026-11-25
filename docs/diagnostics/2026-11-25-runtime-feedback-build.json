@@ -1,0 +1,3604 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "version": "0.6.0-rc.4",
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "state_schema": 67,
+  "scope": "Frozen review artifacts; native runtime and upgrades are separate gates, still in progress at this checkpoint. No live DEV changes.",
+  "release": {
+    "version": "0.6.0-rc.4",
+    "prerelease": true,
+    "source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+    "platform": "linux/amd64",
+    "go_version": "go version go1.27.4 linux/amd64",
+    "schema": 67,
+    "execution_model": "owner-user",
+    "default_pier_root": "/srv/urbit/piers",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "engine": "distribution-native",
+    "pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "default_url": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill",
+      "application_inventory": "not_asserted",
+      "name": "omabit-recommended-apps-0.6.0-rc.4.pill",
+      "bytes": 59351751
+    },
+    "runtime_profiles": [
+      {
+        "format": 1,
+        "id": "vere-4.6-5a7614f",
+        "kind": "official",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-5a7614f",
+        "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "manifest_digest": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "config_digest": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+        "binary_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82"
+      },
+      {
+        "format": 1,
+        "id": "vere-4.6-jsonfix-0774857c",
+        "kind": "reviewed",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-82f4558",
+        "image": "omabit/vere@sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "manifest_digest": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "config_digest": "sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58",
+        "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+        "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+        "requirement": "vere-json-array-error-1145-v1",
+        "review_url": "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
+        "archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+        "archive_bytes": 54750277
+      }
+    ],
+    "engine_policy": {
+      "id": "docker-rootless-v1",
+      "stable_minimum_inclusive": "27.2.0",
+      "stable_maximum_exclusive": "30.0.0",
+      "required_api": "1.47",
+      "native_providers": [
+        "pacman",
+        "deb"
+      ],
+      "rootless_launcher_version": "29.7.2",
+      "qualification": "exact-stack-evidence-required"
+    },
+    "backend_source_sha256": "b48109f66bde93202c124b06de1571492dee5be4cf6873580a32fd120f4cd2a5",
+    "source_tree": "deee75c74775e3ac9c31d42cb0ea811361eca657",
+    "source_epoch": 1795591258,
+    "source_inputs": "git-commit-blobs-v1",
+    "build_environment": "isolated-go-v1",
+    "assets": [
+      {
+        "name": "omabit-0.6.0-rc.4-linux-amd64.tar.gz",
+        "bytes": 37031093,
+        "sha256": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26887155,
+        "sha256": "20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7"
+      },
+      {
+        "name": "omabit-recommended-apps-0.6.0-rc.4.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.6.0-rc.4.tar.gz",
+        "bytes": 73906,
+        "sha256": "8f47fdf2e8dbd188c497cdc149a313663595d65c68087193cc764edcee78e39b"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13257861,
+        "sha256": "68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30295412,
+        "sha256": "64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f"
+      },
+      {
+        "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+        "bytes": 54750277,
+        "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510"
+      }
+    ]
+  },
+  "asset_hashes": {
+    "SHA256SUMS": "e42a08bd3c2307251f8965c00e50e27637028ed4e1bf4974f173b61f3b9662d2",
+    "release.json": "1651f6301f558b3499b252200b1c53b8afd1ac8fac4049ebf7a690168dbbd111",
+    "omabit-skills-0.6.0-rc.4.tar.gz": "8f47fdf2e8dbd188c497cdc149a313663595d65c68087193cc764edcee78e39b",
+    "omabit-recommended-apps-0.6.0-rc.4.pill": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+    "urbit-runner-linux-amd64": "64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f",
+    "urbit-collector-linux-amd64": "68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c",
+    "omabit-linux-amd64": "20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7",
+    "omabit-0.6.0-rc.4-linux-amd64.tar.gz": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85",
+    "vere-4.6-jsonfix-0774857c.tar.gz": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510"
+  },
+  "package_verification": {
+    "passed": true,
+    "log": "/tmp/omabit-feedback-rc4-package-check.log",
+    "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+  },
+  "build_log_sha256": "822aa9622f10dedf849dcc0d8d7fb951e27bb3d8fcd6ecf5601c081964a8694d",
+  "storage_admission": {
+    "measurements": [
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs",
+        "allocated_bytes": 18402414592,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence",
+        "allocated_bytes": 14626746368,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/srv/dev/urbit",
+        "allocated_bytes": 8449060864,
+        "unmeasured_reserve": 0,
+        "measurement_source": "existing-rootless-user-namespace",
+        "namespace": "user:[4026534692]"
+      },
+      {
+        "path": "/srv/dev/urbit-040",
+        "allocated_bytes": 2915328000,
+        "unmeasured_reserve": 0,
+        "measurement_source": "existing-rootless-user-namespace",
+        "namespace": "user:[4026536049]"
+      },
+      {
+        "path": "/home/thelifeandtimes/.local/share/omabit-review-040-retired-20261112",
+        "allocated_bytes": 146948096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-037-postpublic-desktop",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-037-preview-desktop",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-037-public-downloads",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-037-wayland-tools",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-agent-help-snapshot",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-desktop-qualification-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-desktop-qualification-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-desktop-qualification-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-draft-downloads",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-gocache",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-manual-build",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-policy-impl.L56XjfB5",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-policy-tree-artifacts",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-publication",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-release-qualification",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-040-wayland-tools",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-build-tmp",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-cache-retirement02.json",
+        "allocated_bytes": 1560576,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-desktop-qualification-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-desktop-qualification-02",
+        "allocated_bytes": 4648960,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-dev-app",
+        "allocated_bytes": 4227072,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-dev-client-build.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-dev-client-tmp",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-draft-downloads",
+        "allocated_bytes": 208896,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-help02.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-helper02-managed-test.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-helper02-pressure-reader-init.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-helper02-project-managed-test.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-helpers02.json",
+        "allocated_bytes": 163840,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-interfaces02.json",
+        "allocated_bytes": 163840,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-interfaces02.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-native-clients02.json",
+        "allocated_bytes": 155648,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-native-clients02.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-package02.json",
+        "allocated_bytes": 155648,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-package02.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-readers02.json",
+        "allocated_bytes": 151552,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-recording-reader02.json",
+        "allocated_bytes": 151552,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-ui02-agent-legacy.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-ui02-agent.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-ui02-desktop.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-ui02-recordings.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-final-ui02.json",
+        "allocated_bytes": 155648,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-grubbery-retirement06-charge.json",
+        "allocated_bytes": 73728,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-handoff",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-evidence-06",
+        "allocated_bytes": 10588160,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-pressure-retirement06-charge.json",
+        "allocated_bytes": 73728,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-public-desktop",
+        "allocated_bytes": 4648960,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-public-downloads",
+        "allocated_bytes": 166764544,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-recording-retirement08-charge.json",
+        "allocated_bytes": 77824,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-restored-cow-inputs02.json",
+        "allocated_bytes": 159744,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-restored-recording07.json",
+        "allocated_bytes": 163840,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-retired-cow-inputs02.json",
+        "allocated_bytes": 86016,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-retired-recording07.json",
+        "allocated_bytes": 86016,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-05",
+        "allocated_bytes": 14114816,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-stop-retirement05-charge.json",
+        "allocated_bytes": 73728,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-trusted-policy",
+        "allocated_bytes": 16384,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-upgrade-evidence-01",
+        "allocated_bytes": 6287360,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-upgrade-evidence-02",
+        "allocated_bytes": 9396224,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-050-upgrade-evidence-03",
+        "allocated_bytes": 9388032,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-dev-ui-check.py",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-draft-id.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-draft-metadata.json",
+        "allocated_bytes": 20480,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-draft-verified.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-existing-releases.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-final-storage.json",
+        "allocated_bytes": 81920,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-full-shell.py",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-go-tmp",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-latest-stable.json",
+        "allocated_bytes": 24576,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-manual-entry-check.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-manual-entry-check.py",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-public-verified.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-published-metadata.json",
+        "allocated_bytes": 20480,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-published-tag.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-qualification-driver",
+        "allocated_bytes": 921600,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-review-release-notes.md",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-shell-01",
+        "allocated_bytes": 11620352,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-shell-dev01",
+        "allocated_bytes": 9310208,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-upgrade-evidence-01",
+        "allocated_bytes": 4460544,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-060-verify-delivery.py",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-snapshot-check-9pnt33l9",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-final050",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-final050-02",
+        "allocated_bytes": 6197248,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-final050-02-legacy",
+        "allocated_bytes": 5996544,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-final050-legacy",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-issues18-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-issues18-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-issues18-legacy-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-lifetime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-lifetime-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-lifetime-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-native-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-native-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-agent-ui-release040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-app-runtime-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-app-runtime-upgrade-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-app-ui-reconnect-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-app-ui-standing-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-application-ship-approval-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-cli-current-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-collection-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-managed-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-managed-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-managed-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-managed-regression-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-adoption-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-application-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-canonical-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-canonical-runtime-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-commit-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-commit-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-commit-dispatch-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-commit-dispatch-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-commit-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-deployment-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-deployment-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-deployment-store-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-deployment-store-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-discovery-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-discovery-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-discovery-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-api-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-api-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-client-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-eyre-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-http-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-http-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-regression-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-schema-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-session-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-session-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-frontend-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-api-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-managed-race-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-migration-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-migration-tail-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-runtime-race-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-runtime-race-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-store-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-tests-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-tests-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-private-tests-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-08",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-09",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-10",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-11",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-12",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-13",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-14",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-15",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-16",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-17",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-18",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-19",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-20",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-21",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-22",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-23",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-24",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-25",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-26",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-27",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-28",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-29",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-30",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-31",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-32",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-33",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-34",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-35",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-36",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-37",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-38",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-39",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-40",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-41",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-42",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-43",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-44",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-45",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-46",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-47",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-48",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-49",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-gall-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-app-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-app-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-app-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-layout-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-managed-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-managed-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-managed-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-issues18-grubbery-public-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-release040-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-probe-release040-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-api-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-cli-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-client-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-regression-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-runtime-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-schema-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-receiver-upgrade-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-release-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-release-collection-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-release-managed-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-release-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-store-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-store-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-store-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-store-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-settings-store-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-api-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-auth-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-auth-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-original-migration-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-source-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-api-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-api-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-api-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-client-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-collection-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desk-stage-collection-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-desktop-install-vts6ldhp",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dev-loop-validation",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-08",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-09",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-10",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-dms-retirement-11",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-docket-source-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-builder-help.txt",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-cache-retirement01.json",
+        "allocated_bytes": 16384,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-cache-retirement02.json",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-compact.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-compress-evidence.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-compress-evidence.py",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-compress-runtime-evidence.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-compress-runtime-evidence.py",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-fleet.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-generated-retirement03.json",
+        "allocated_bytes": 4407296,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-go-final.log",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-go.log",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-lifecycle-qml.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-limits-schema.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-local-build01",
+        "allocated_bytes": 54759424,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-local-build01.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-local-input",
+        "allocated_bytes": 24059904,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-local-roundtrip.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-migrations.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-model-final.log",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-model.log",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-native-plugin.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-race-final-small.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-race-final.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-race.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-resources-qml.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-resources-ui01",
+        "allocated_bytes": 5152768,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-retire-generated.py",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-reviewed-rebuild01",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-reviewed-rebuild01.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-settings-model-final.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-source-results.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-storage-after-source.json",
+        "allocated_bytes": 90112,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-storage-current.json",
+        "allocated_bytes": 81920,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-storage.json",
+        "allocated_bytes": 81920,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-targeted.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-agent-help.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-bootstrap-observation.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-channels.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-container-resources-ui.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-desktop-bootstrap.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-desktop-qualification.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-native-plugin.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-panel-install.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-release-policy.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-release-source.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-test-skill-package.py.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-0.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-1.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-2.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-3.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-4.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-5.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-ui-results.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-feedback-vet.log",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-reconnect-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-reconnect-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-access-ui-reconnect-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-approval-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-approval-core-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-attempt-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-attempt-upgrade-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-collection-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-connect-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-connect-health-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-connect-replacement-cli-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-connect-replacement-cli-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-connect-replacement-cli-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-core-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-discovery-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-discovery-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-discovery-collection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-fleet-attempt-core-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-fleet-attempt-core-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-fleet-engine-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-fleet-engine-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-engine-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-engine-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-engine-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-route-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-health-route-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-local-network-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-managed-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-managed-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-native-creation-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-native-creation-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-native-creation-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-native-roots-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-receiver-replacement-capability-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-receiver-replacement-capability-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-reconnect-health-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-auth-full-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-auth-full-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-collection-full-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-collection-full-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-disconnect-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-engine-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-engine-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-eyre-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-journal-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-replacement-journal-regression-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-cli",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-client",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-managed",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-managed-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-protocol",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-runtime",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-runtime-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-resources-runtime-initial",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-route-code-api-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-route-code-api-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-route-code-client-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-route-code-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-route-selection-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-runtime-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-serve-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-fleet-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-g700",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-gall-upstream-35f70d7",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-groundseg-start-urbit",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-groundseg-urbit.go",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-groundseg-version.go",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-grubbery-adapter-source-7f7701d",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-grubbery-framework-7f7701d",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-grubbery-schema61-original60",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-import-ui-runtime-feedback01",
+        "allocated_bytes": 643072,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-import-ui-runtime-profiles-01",
+        "allocated_bytes": 602112,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-import-ui-runtime-profiles-02",
+        "allocated_bytes": 618496,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-import-ui-runtime-profiles-03",
+        "allocated_bytes": 684032,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-cow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-vm-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-vm-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-vm-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-vm-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-app-vm-05",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm02-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm03-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm04-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm05-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm05-input-evidence",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-appvm05-input-evidence-refused-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-cow01-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-cow01-input-evidence",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-app02-interruption",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-upgrade-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-upgrade-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-upgrade-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-grubbery-upgrade-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-historical-interrupted-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-historical-interrupted-split-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-historical-interrupted-split-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-05",
+        "allocated_bytes": 5455872,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-supervisor-3cd785648e0349f290399405a43513e0.json",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-supervisor-3cd785648e0349f290399405a43513e0.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-derived04-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-derived04-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-derived05-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-derived05-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-export03-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-export03-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output06-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output06-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output07-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output07-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output08-analysis-01",
+        "allocated_bytes": 1400832,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output08-evidence-01",
+        "allocated_bytes": 9076736,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-06",
+        "allocated_bytes": 5484544,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-supervisor-831642a9e27949e48fefeed18f127006.json",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-supervisor-831642a9e27949e48fefeed18f127006.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-08",
+        "allocated_bytes": 5443584,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-supervisor-6d1e02453ac1431898b8ac19630f911a.json",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-supervisor-6d1e02453ac1431898b8ac19630f911a.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage01-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage01-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage02-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage02-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm-07",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm01-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm03-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm03-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm04-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm05-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm06-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-vm06-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-05",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-06",
+        "allocated_bytes": 5496832,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-supervisor-a1f891b7497343cc8b18bc2a66475ea4.json",
+        "allocated_bytes": 12288,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow-supervisor-a1f891b7497343cc8b18bc2a66475ea4.log",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow01-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow02-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow03-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow03-evidence-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow04-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow04-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow05-analysis-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow05-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-runtime-cow06-evidence-01",
+        "allocated_bytes": 14315520,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-source-gates-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-03-repack",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-04-recompression",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-inspect-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-runtime.lock",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-tools",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm03-evidence-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm03-evidence-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-landscape-source-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-native-review-040-build",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-network-repair-20261103",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-preview-manual-check",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-preview-manual-checked",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-preview-manual-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-install-candidate",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-panel-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-panel-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-panel-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-agent-header",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-first",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-geometry",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-navigation-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-release",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-release040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-source-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-workflow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom-reload-before",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom-reload-fixed",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-test-zoom05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-zoom-install",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-tree-zoom-reload-install",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-discovery-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-discovery-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-discovery-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-first",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-release040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-runtime-feedback01",
+        "allocated_bytes": 5341184,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-second",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-source-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-source-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-style-dark",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-style-dark2",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-style-narrow",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-styled-dark-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-styled-light-final",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-tree-narrow",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-tree-wide",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-verified",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-workflow-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-workflow-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-workflow-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-workflow-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-workflow-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-zoom-narrow",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-policy-ui-zoom-reload-narrow",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-real-reconnect-release040-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-receiver-reconnect-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-bootstrap-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-claim-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-control-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-notify-service-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-probe-issues20-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-probe-issues20-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-probe-issues20-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-probe-issues20-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-segments-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-store-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recording-upgrade-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-final050",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-final050-02",
+        "allocated_bytes": 4984832,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-source-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-source-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-source-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-usage-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-usage-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-usage-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recordings-ui-usage-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-recovery-20261115",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release-fixture-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release-fixture-041",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release040-candidate-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release040-candidate-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release040-candidate-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-cli-reference",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-candidate-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-install-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-native-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-native-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-preview-test-release040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-ui-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-ui-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-resources-upgrade-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-review040-feedback-policy.json",
+        "allocated_bytes": 4096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-review040-feedback-snapshot.json",
+        "allocated_bytes": 20480,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-review040-unapplied-staging-retirement.json",
+        "allocated_bytes": 45056,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-runtime-api-built-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-runtime-cow-init-check-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-runtime-profile-build",
+        "allocated_bytes": 75591680,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-runtime-profiles-review-assets",
+        "allocated_bytes": 221581312,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-schema49-fixture-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-schema49-writer",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-service-drain-fleet-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-service-drain-fleet-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-setup-98edb30f6156285fdde09b9aeab8cd3d",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-consent.AQ9H3R",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-route-core-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-route-core-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-route-core-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-fleet-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-fleet-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-ship-routes-ui-release040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-stop-recovery-schema60-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-stop-recovery-schema60-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-t",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-04",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-05",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-06",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-07",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-08",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-09",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-10",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-11",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-12",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-13",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-theme-handoff-14",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-urgit-build-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-urgit-native-01",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-urgit-native-02",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-urgit-native-03",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-urgit-source-040",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-vere-king.c",
+        "allocated_bytes": 40960,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.cache/go-build",
+        "allocated_bytes": 8192,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/go/pkg/mod",
+        "allocated_bytes": 1433534464,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/repos/omabit/build",
+        "allocated_bytes": 127381504,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.t3/worktrees/omabit/codex-issues-16-21-recovery-appdev/build",
+        "allocated_bytes": 176128,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build",
+        "allocated_bytes": 91267072,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc3",
+        "allocated_bytes": 71532544,
+        "unmeasured_reserve": 0
+      }
+    ],
+    "charged_bytes": 46982696960,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 3221225472,
+    "total_with_reserves": 50203922432
+  },
+  "retirement_and_lossless_archival_receipts": [
+    {
+      "path": "/tmp/omabit-feedback-cache-retirement01.json",
+      "sha256": "0e04fbd39891ee65cddc972005140ed414a29c78210990ba99bfee04931f2c49"
+    },
+    {
+      "path": "/tmp/omabit-feedback-cache-retirement02.json",
+      "sha256": "3265a4080f03ca91c9d54f10dd7ab050f186bcc25b4fc6acebc7830249852aae"
+    },
+    {
+      "path": "/tmp/omabit-feedback-generated-retirement03.json",
+      "sha256": "63675362cdf17d56d9665c5df684512be89ee1a24c400f4b059a08557a65dd07"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-app-vm-05/root.qcow2.ARCHIVED.json",
+      "sha256": "a2ae9f39dd6029e621119cc36e493db38592e45fcddb6ab320e3d43914c10867"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-runtime-cow-05/root.qcow2.ARCHIVED.json",
+      "sha256": "56e1d825890f459087ba4f68a8987fe2e1a63c529939a41e68898510d51ab720"
+    }
+  ]
+}

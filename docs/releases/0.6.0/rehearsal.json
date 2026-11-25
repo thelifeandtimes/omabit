@@ -1,0 +1,34 @@
+{
+  "version": "0.6.0",
+  "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "previous_version": "0.5.0",
+  "previous_source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "passed": true,
+  "non_destructive": true,
+  "runner_schema_before": 65,
+  "runner_schema_after": 67,
+  "service_result": {
+    "path": "docs/diagnostics/2026-11-25-release060-upgrade.json",
+    "sha256": "f1c68a9d932126d15312330542bd6c0b15cd8bf414ffb3d719d7f4135a722d16"
+  },
+  "desktop_result": {
+    "path": "docs/diagnostics/2026-11-25-release060-full-shell.json",
+    "sha256": "d574764dda65f98b980a1dbdcb39de77e1c73ff6c4d36579ccd5835781c7dc6b"
+  },
+  "checks": [
+    "Exact published 0.5.0 tools create original schema65 state; exact frozen 0.6.0 tools migrate to67.",
+    "Native authorization denial preserves state; retained retry succeeds; repeated completed update is a no-op.",
+    "Original two ship identities, configurations, operations, permissions, access, runtime and running/stopped intent survive; engine and running container are not restarted.",
+    "All 19 original application table projections survive service update and manager restart.",
+    "Actual 0.5.0 writer refuses schema67 without changing it.",
+    "Stopped synthetic macOS companion import, post-upgrade desk workflow and final ordinary Stop pass.",
+    "Full native Omarchy shell passes cold/hot activation, rescan, preserved preferences and cold restart."
+  ],
+  "isolation": "Fresh offline owner-user Linux/AMD64 VM and private native compositor; no production or human-review DEV state used.",
+  "limits": [
+    "This record qualifies the direct published0.5.0/schema65 local owner-user upgrade. The direct0.4.0 path is documented in its separate rehearsal record.",
+    "Authorization denial/retry uses an exact-program fixture; human password entry, remote service upgrades, active recording-worker upgrades and power-loss durability are excluded.",
+    "Large import preview is sparse; actual import uses a newly created small disposable fake, not a user pier.",
+    "Native runtime-selection evidence and final protected PR checks/download/publication verification are separate records."
+  ]
+}

@@ -33,6 +33,7 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 		req.ID, args = args[0], args[1:]
 	}
 	if command == "preview-pier" || command == "import-pier" {
+		f.StringVar(&req.RuntimeProfile, "runtime-profile", "", "immutable runtime profile bound to preview and import")
 		f.StringVar(&req.Source, "source", "", "absolute existing pier path on the selected runner host")
 	}
 	if command != "preview-pier" && command != "preview-import-restore" {
@@ -143,9 +144,9 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 		result, err = c.AddStorageRoot(ctx, protocol.StorageRootRequest{ID: req.ID, Path: req.Path, RequestID: req.RequestID})
 	case "preview-pier":
 		if storageRoot != "" {
-			result, err = c.PreviewGuidedPierImport(ctx, expected, req.Source, storageRoot)
+			result, err = c.PreviewGuidedPierImport(ctx, expected, req.Source, storageRoot, req.RuntimeProfile)
 		} else {
-			result, err = c.PreviewPierImport(ctx, req.Source)
+			result, err = c.PreviewPierImport(ctx, req.Source, req.RuntimeProfile)
 		}
 	case "import-pier":
 		result, err = c.ImportPier(ctx, req)

@@ -17,7 +17,7 @@ Column {
   function applyRecommended() {
     if (!useRecommended || !connection) return
     if (registered) { service.editRegistration(); httpPort.text="" }
-    bootstrap.reset(); storageLocation.reset(); advanced=false; runtimeSettings.selectedLoom=31; containerResources.memoryGiB=4; containerResources.cpuCores=2
+    bootstrap.reset(); storageLocation.reset(); runtimeChoice.selectedProfile=""; advanced=false; runtimeSettings.selectedLoom=31; containerResources.memoryGiB=4; containerResources.cpuCores=2
     instanceName.text=Model.suggestInstance(connection,"comet")
     if (!httpPort.text) suggestion.restart()
   }
@@ -39,7 +39,7 @@ Column {
     var o=service ? service.registrationOutcome : null
     return o && connection && o.runner === connection.runner_id && o.instance === instanceName.text.trim()
       && o.kind === kind && o.port === Number(httpPort.text) && o.bootstrap === bootstrap.kind && o.pillSource === bootstrap.source
-      && o.loom === runtimeSettings.selectedLoom && (o.memoryGiB || 4) === containerResources.memoryGiB && (o.cpuCores || 2) === containerResources.cpuCores
+      && (o.runtimeProfile || "")===runtimeChoice.selectedProfile && o.loom === runtimeSettings.selectedLoom && (o.memoryGiB || 4) === containerResources.memoryGiB && (o.cpuCores || 2) === containerResources.cpuCores
       && (kind !== "fake" || o.ship === Model.fakeIdentity(fakeShip.text) && o.pier === pier) ? o : null
   }
   readonly property bool registered: !!outcome && outcome.status === "succeeded"
@@ -55,7 +55,7 @@ Column {
     portToken=Model.requestId();consent.checked=false
     service.suggestPort(connection,portToken)
   }
-  function resetRuntime() { if(runtimeSettings) runtimeSettings.selectedLoom=31; if(containerResources){containerResources.memoryGiB=4;containerResources.cpuCores=2} if(consent) consent.checked=false }
+  function resetRuntime() { if(runtimeChoice) runtimeChoice.selectedProfile=""; if(runtimeSettings) runtimeSettings.selectedLoom=31; if(containerResources){containerResources.memoryGiB=4;containerResources.cpuCores=2} if(consent) consent.checked=false }
   readonly property string registrationSelection: selection+"/"+kind+"/"+instanceName.text+"/"+(kind==="fake" ? fakeShip.text : "")
   onRegistrationSelectionChanged: resetRuntime()
   onSelectionChanged: { projectChoice.currentIndex=0;Qt.callLater(applyRecommended);resetRuntime();advanced=false;portToken="";httpPort.text="";suggestion.restart() }
@@ -92,6 +92,7 @@ Column {
   ActionButton { objectName: "registration-advanced-toggle"; visible: !root.projectMode; text: root.advanced ? "Advanced settings −" : "Advanced settings +"; quiet: true; onClicked: root.advanced=!root.advanced }
   Column {
     objectName: "registration-advanced"; width: parent.width; spacing: Style.space(9); visible: root.advanced && !root.projectMode
+    RuntimeProfileChoice { id:runtimeChoice;width:parent.width;connection:root.connection;visible:!root.projectMode;enabled:!!root.service&&!root.service.busy&&!root.registered;onEdited:{consent.checked=false;root.service.editRegistration();root.submitError=""} }
     RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: Model.hasFeature(root.connection,"runtime-settings"); enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration();root.submitError=""} }
     ContainerResourceFields { id: containerResources; width: parent.width; initialBoot: true; stopped: true; supported: Model.hasFeature(root.connection,"container-resources-v1"); enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration();root.submitError=""} }
     StorageLocationSelector { id: storageLocation; visible: !root.useRecommended; allowCustom: true; width: parent.width; connection: root.connection; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration()} }
@@ -130,7 +131,7 @@ Column {
           if(!ok) root.submitError="The selection changed; review the project settings again."
           return
         }
-        var accepted=root.kind === "fake" ? root.service.registerFake(root.connection,instanceName.text.trim(),httpPort.text,fakeShip.text,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,containerResources.memoryGiB,containerResources.cpuCores) : root.service.registerComet(root.connection,instanceName.text.trim(),httpPort.text,root.useRecommended || consent.checked,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,containerResources.memoryGiB,containerResources.cpuCores)
+        var accepted=root.kind === "fake" ? root.service.registerFake(root.connection,instanceName.text.trim(),httpPort.text,fakeShip.text,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,containerResources.memoryGiB,containerResources.cpuCores,runtimeChoice.selectedProfile) : root.service.registerComet(root.connection,instanceName.text.trim(),httpPort.text,root.useRecommended || consent.checked,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,containerResources.memoryGiB,containerResources.cpuCores,runtimeChoice.selectedProfile)
         if (!accepted) root.submitError=root.service.lastError || "The selection changed; review a fresh runner observation."
       }
     }

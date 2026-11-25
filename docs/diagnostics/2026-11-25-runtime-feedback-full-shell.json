@@ -1,0 +1,125 @@
+{
+  "passed": true,
+  "full_omarchy_shell": true,
+  "host_desktop_access": false,
+  "network": false,
+  "service_upgrade": false,
+  "checks": {
+    "cold_previous_full_shell": true,
+    "hot_update_same_shell_preferences_and_pin": true,
+    "rescan_preserves_paired_generation": true,
+    "cold_restart_retains_candidate_and_preferences": true
+  },
+  "before": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.5.0",
+      "loaded_version": "0.5.0",
+      "requested_release": "efd24c5004855f7a04acb680a108a4de8d66800500e245eb96266f1411708bca",
+      "loaded_release": "efd24c5004855f7a04acb680a108a4de8d66800500e245eb96266f1411708bca",
+      "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "ae35f1b6ffa14be091a1d22d9fb78f9d",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": true,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "after": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.6.0-rc.4",
+      "loaded_version": "0.6.0-rc.4",
+      "requested_release": "5f086ad09b9c61127195b1cf388a74e9242d835cb021c2651e43cbf92753339b",
+      "loaded_release": "5f086ad09b9c61127195b1cf388a74e9242d835cb021c2651e43cbf92753339b",
+      "source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "ae35f1b6ffa14be091a1d22d9fb78f9d",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": true,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "restarted": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.6.0-rc.4",
+      "loaded_version": "0.6.0-rc.4",
+      "requested_release": "5f086ad09b9c61127195b1cf388a74e9242d835cb021c2651e43cbf92753339b",
+      "loaded_release": "5f086ad09b9c61127195b1cf388a74e9242d835cb021c2651e43cbf92753339b",
+      "source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "d8050ac354404d4b8f930f29a6defe1a",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": false,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "artifact_sources": {
+    "previous": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+    "candidate": "27aac5001c43a7a1148df47dc9904bdeb1a4a536"
+  },
+  "package_hashes": {
+    "previous": "0851b3f830a297ab8073bc31fd27503811195e4d45c5268ff4a021f08ada548e",
+    "candidate": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85"
+  },
+  "namespace_adapters": {
+    "ReviewService.qml": "3512a1e3321be0583535f99eecb61ae124f6e095daa6ec62ac60dc881ff684ee",
+    "ReviewPanel.qml": "4ab0798ee9e5a2f975461c9b8965b36a1023f30e1404064eec716dc7e0c9e53e"
+  },
+  "shell_sha256": "d6d99af10ca020ca2c578bc7f67bf674d954efc206012a71af6769c662c37c37",
+  "shell_version": "Quickshell 0.3.2 (revision 2b4501a282689792b62e94f3fb30d8f512324fe6, distributed by Omarchy)",
+  "date": "2026-11-25",
+  "scope": "Exact rc.4 bundle in an unmodified full Omarchy shell on a private networkless compositor; no host desktop/service access.",
+  "evidence": {
+    "output": "/tmp/omabit-060-shell-rc4-02",
+    "files": {
+      "host.json": "26a5e699a89650a8f5331f18efe54b2106d8eba4c5bcb118e8477b45c4acf965",
+      "result.json": "cb3e19b5df3bea75db25dbc1889a285775f4a8fada80a7f87f4a328d18355ccb",
+      "driver.py": "f4aa3b3861e9210be5ef88b8a52f5cd4a98787441f6d18c16e3affbd1790e2ee",
+      "shell-cold.log": "1007d87e5a86a9a2eb9d507817bd519c7e6db78ad948c11f9a0b158fb4592fb0",
+      "shell-restarted.log": "06c57e4296382a6ab7f69928bdd1a84897bdcf77857d6a2f7be56d8f0c170fae"
+    }
+  },
+  "superseded_driver_failure": {
+    "output": "/tmp/omabit-060-shell-rc4-01",
+    "cause": "Copied test driver incorrectly derived the repository from /lab/driver.py before entering its guard. Fixed to the explicit private /repo mount; no product changes.",
+    "log_sha256": "a43bd54164a685553ce68d2ca6af393104a97ea1a9953fb30e74d97c201d8fbb"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "host_access": false,
+  "checks": {
+    "previous_wrapper_loads": true,
+    "targeted_disable_unloads": true,
+    "candidate_versioned_wrapper_loads": true,
+    "profile_and_local_setup_boundary_preserved": true,
+    "shell_config_restored_exactly": true,
+    "no_shell_restart": true
+  },
+  "before": {
+    "version": "0.5.0",
+    "profile": "review-040",
+    "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v050/bin/urbit-collector",
+    "local_setup": false
+  },
+  "after": {
+    "version": "0.6.0-rc.3",
+    "profile": "review-040",
+    "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc3/bin/urbit-collector",
+    "local_setup": false
+  },
+  "date": "2026-11-24",
+  "scope": "Owner-run review040 DEV update prepared; live update not executed",
+  "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+  "prepared_work": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner",
+  "runner_id": "runner-a9a208a18445179f05df5644ed6d245c",
+  "updater_sha256": "e20106e6f8fcea8c95362b9914e30f7ca9ddd3ca59d3f12eae289e139ebeac53",
+  "plan_sha256": "9a28e02cfd4f020dac3ec27f4d5bedeafe5400635f3c2fc4f50b67f1a97b3661",
+  "fault_tests": {
+    "count": 3,
+    "passed": true,
+    "scenarios": [
+      "refuse repeated apply before host access",
+      "refuse changed candidate before service commands",
+      "late UI failure preserves migrated state and new tools with failure checkpoint"
+    ]
+  },
+  "live_update_executed": false,
+  "live_version_observed": "0.5.0",
+  "evidence": {
+    "/tmp/omabit-060-dev-ui-check.py": "fa17c5963d8c2f86c2b543203e23854a29527ee32c48f54063a52455357e5d15",
+    "/tmp/omabit-060-shell-dev01/result.json": "7e40a5f0b38a9f20ea1f7d50736dc88c786e54fd8d842fce151236c874bfdc09",
+    "/tmp/omabit-060-shell-dev01/shell.log": "22d2f923f994538f646e3f88252e86fcf76e2ab2bc761e5750e454fb776987a8"
+  },
+  "limits": [
+    "Custom DEV manager update has not been executed; the exact published0.5.0 to rc.3 native upgrade qualification is linked separately.",
+    "Private widget test uses empty DEV-shaped desktop roots and headless Sway, with no live services, enrollments, host sockets or ships.",
+    "Only wrapper namespace/label adapters differ from the exact published app; no published asset changed."
+  ],
+  "storage": {
+    "charged_bytes": 47801511936,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 1073741824,
+    "total_with_reserves": 48875253760
+  },
+  "offline_wal_backup_immutability_test": true,
+  "owner_write_permissions_verified": true,
+  "verification_driver": {
+    "path": "scripts/qualification/runtime-profiles/verify_review040_ui.py",
+    "change_from_tested_temp_driver": "repository root discovery only"
+  }
+}

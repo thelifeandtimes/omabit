@@ -30,7 +30,7 @@ func TestRuntimeSettingsLoomLabels(t *testing.T) {
 	for _, tc := range []struct {
 		exponent uint8
 		label    string
-	}{{20, "20 (1 MiB)"}, {29, "29 (512 MiB)"}, {30, "30 (1 GiB)"}, {31, "31 (2 GiB)"}, {34, "34 (16 GiB)"}, {0, "unknown"}, {35, "unknown"}} {
+	}{{20, "20 (1 MiB)"}, {29, "29 (512 MiB)"}, {30, "30 (1 GiB)"}, {31, "31 (2 GiB)"}, {34, "34 (16 GiB)"}, {0, "unknown"}, {35, "35 (32 GiB)"}, {38, "38 (256 GiB)"}, {41, "unknown"}} {
 		var out bytes.Buffer
 		if err := newOutput(&out, "text", false).Encode(protocol.Instance{Config: protocol.Configuration{Loom: tc.exponent}}); err != nil {
 			t.Fatal(err)

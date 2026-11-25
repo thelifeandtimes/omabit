@@ -9,12 +9,15 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/routines"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 // ManagedState is private driver state, persisted transactionally by the runner.
 // Only validated qualified-fake provenance can seed an imported initialized pier;
 // it is not an API for arbitrary filesystem paths or Docker resources.
 type ManagedState struct {
+	RuntimeHistory       []RuntimeTransition    `json:"runtime_history,omitempty"`
+	RuntimeProfile       string                 `json:"runtime_profile,omitempty"`
 	MemoryGiB            uint8                  `json:"memory_gib,omitempty"`
 	CPUCores             uint8                  `json:"cpu_cores,omitempty"`
 	ImportRestore        *ManagedImportRestore  `json:"import_restore,omitempty"`
@@ -49,6 +52,13 @@ type ManagedState struct {
 	NativeKeyDigest      string                 `json:"native_key_digest,omitempty"`
 	Boot                 *ManagedBoot           `json:"boot,omitempty"`
 	AmesPort             uint16                 `json:"ames_port,omitempty"`
+}
+
+type RuntimeTransition struct {
+	From      runtimeprofile.Profile `json:"from"`
+	To        runtimeprofile.Profile `json:"to"`
+	Revision  uint64                 `json:"revision"`
+	ChangedAt time.Time              `json:"changed_at"`
 }
 
 // StartupResumeIntent is internal authorization from the durable startup job,
@@ -225,6 +235,7 @@ type ManagedPruneIntent struct {
 }
 
 type ManagedMaintenance struct {
+	RuntimeProfile     string     `json:"runtime_profile,omitempty"`
 	Kind               string     `json:"kind"`
 	BeforePierBytes    int64      `json:"before_pier_bytes"`
 	AfterPierBytes     int64      `json:"after_pier_bytes"`
@@ -238,6 +249,7 @@ type ManagedMaintenance struct {
 }
 
 type ManagedObservation struct {
+	Error            string
 	State            string
 	Health           string
 	Endpoint         string

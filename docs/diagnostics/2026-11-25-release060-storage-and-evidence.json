@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "scope": "Classified regenerable caches, exact-byte duplicate retained artifacts and ended fresh VM outputs only. Immutable inputs, source, original migration fixtures, manual-review disks and installed state preserved.",
+  "cache_and_deduplication": {
+    "path": "/home/thelifeandtimes/repos/omabit/build/release060-stable/evidence/2026-11-25-release060-storage-retirement.json",
+    "sha256": "cfecf713c3d343db770de3c0d1f834b7692086e8cda170acb7c8def8b4f5e005"
+  },
+  "native_generated_retirement": {
+    "stable01": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable01/generated-retirement.json",
+      "sha256": "7be324eaf99fe00dd4b2d5d956b78a168b9ccb2bd3224151e73f6d7fd5da1ba2",
+      "files": 40,
+      "reclaimed_allocated_bytes": 2767282176
+    },
+    "stable-runtime01": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-runtime01/generated-retirement.json",
+      "sha256": "174673e6b492173027d3ee657c2b49a87e636ef732d6636a74932eff1895dcb5",
+      "files": 40,
+      "reclaimed_allocated_bytes": 3406057472
+    },
+    "stable-local01": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-local01/generated-retirement.json",
+      "sha256": "fb3aa067cfcab9dbaa6fa3dad39a652d50cc2365a683934c5d1e57b0e3802c42",
+      "files": 40,
+      "reclaimed_allocated_bytes": 2864762880
+    },
+    "stable-upgrade04001": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-upgrade04001/generated-retirement.json",
+      "sha256": "80dc054eb55a29fa1e75d8ea50866f1674d6d57343c33de164935da57f857c8e",
+      "files": 40,
+      "reclaimed_allocated_bytes": 2565689344
+    }
+  },
+  "persistence": {
+    "path": "/home/thelifeandtimes/repos/omabit/build/release060-stable/persistence.json",
+    "sha256": "023f11a0bb7b95eeed0a5643cc4a15362b94ef8fcc90c998564bca54f6158a88"
+  },
+  "durable_evidence_root": "/home/thelifeandtimes/repos/omabit/build/release060-stable",
+  "serial_transfer_recovery": "Bundled runtime and direct0.4.0 upgrade serial reports were damaged. Independent no-network readers mounted the ended overlay read-only,noload,nodev,nosuid,noexec without starting services. Complete saved reports match each original guest footer SHA256; original transfer failures, corrupted/missing frame metadata, source/disk hashes and all logs are retained.",
+  "reader_first_attempt": "The first bundled report verifier rejected a corrupted retained serial chunk. The second verifier recorded damaged chunks and required the complete saved report to match the guest footer checksum."
+}

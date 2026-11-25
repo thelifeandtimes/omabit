@@ -21,6 +21,7 @@ Window {
   property string recoveryRefusal: @@RECOVERY_REFUSAL@@
   property var roots: [{id:"default",path:"/default"},{id:"ssd",path:"/ssd"},{id:"hdd",path:"/hdd"}]
   property var storageRunner: ({runner_id:"A",name:"A",snapshot:{piers:{roots:roots}}})
+  Row { @@LIFECYCLE_BUTTONS@@ }
   P.StorageLocationSelector { id: location; connection: test.storageRunner; allowCustom: true }
   P.PierImportPane { id: form; width: 600; service: svc; connection: test.connection }
   P.MaintenancePane {
@@ -40,6 +41,7 @@ Window {
     property string currentAction: ""
     readonly property bool busy: currentAction!==""
     property var calls: []
+    property var lifecycleRequests: ({})
     property var inspections: ({})
     property var epochInspection: null
     property var importOutcomes: ({})
@@ -69,6 +71,7 @@ Window {
     property var timeout: ({stop:function(){}})
     function submit(args,kind) {
       if (busy) return false
+      var p=Model.lifecycleTarget(args);if(p){var next=Object.assign({},lifecycleRequests);next[p.key]=p;lifecycleRequests=next}
       calls=calls.concat([{args:args,kind:kind}]);currentAction=kind;return true
     }
     function reply(code,value,error) { output=value ? JSON.stringify(value) : "";errors=error || "";finish(code) }
@@ -272,6 +275,26 @@ Window {
           check(calls.length===2 && calls[0].args.join(" ").indexOf("--revision 2")>=0,"recovery callbacks duplicated or changed command target")
           check(!svc.calls.some(function(c){return c.args.indexOf("start")>=0}),"fixture dispatched Start")
           console.log("PASS: G04 actual offscreen recovery control uses configured capabilities, rejects stale reviews, handles refusal/retry and binds stopped receipt")
+          saved=runner("A");saved.snapshot.instances[0].observed_state="running";saved.snapshot.instances[0].desired_state="running";svc.connections=[saved];test.selectedKey="A/lab"
+          break
+        case 25:
+          var stop=control(test,"ship-stop")
+          check(stop.enabled,"Stop unavailable before click");stop.clicked()
+          check(!stop.enabled && stop.text==="Stopping…","Stop lacks immediate pending feedback")
+          svc.reply(0,{id:"stop-op",instance_id:"lab",request_id:svc.requestIdentity,kind:"stop",status:"queued"})
+          break
+        case 26:
+          var stop=control(test,"ship-stop")
+          check(!svc.busy && !stop.enabled && stop.text==="Stopping…","acknowledgement flickered Stop back to enabled")
+          saved=copy(svc.connections[0]);saved.snapshot.operations=[{id:"stop-op",instance_id:"different-zod",request_id:svc.requestIdentity,kind:"stop",status:"succeeded"}];svc.connections=[saved]
+          break
+        case 27:
+          check(control(test,"ship-stop").text==="Stopping…","another instance's completion released Stop")
+          saved=copy(svc.connections[0]);saved.snapshot.operations[0].instance_id="lab";saved.snapshot.instances[0].observed_state="stopped";saved.snapshot.instances[0].desired_state="stopped";svc.connections=[saved]
+          break
+        case 28:
+          check(control(test,"ship-stop").text==="■ Stop" && control(test,"ship-start").enabled,"completed Stop did not expose Start")
+          console.log("PASS: shipped lifecycle buttons show immediate pending feedback through acknowledgement/polling and bind completion to the selected instance")
           Qt.quit();break
         }
       } catch (error) { console.error("FAIL: offscreen step "+(test.step-1)+" "+error.message+" "+error.stack);Qt.exit(1) }

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
+	"strings"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
@@ -213,7 +214,14 @@ func (e *projectAnchorEngine) inspectProjectMemberSnapshotMode(ctx context.Conte
 			return projectMemberSnapshot{}, err
 		}
 	}
-	if !reflect.DeepEqual(inventory, afterInventory) || !reflect.DeepEqual(n, afterBridge) || !reflect.DeepEqual(v, afterAnchor) || namespace != afterNamespace {
+	unchangedInventory := reflect.DeepEqual(inventory, afterInventory)
+	if e.base.q.d.fleetObservation {
+		// Keep both complete engine scans and validate namespace references,
+		// including foreign joiners. Unrelated utility containers need not be
+		// identical across a read-only display observation.
+		unchangedInventory = sameProjectNamespaceInventory(p.Anchor.ID, inventory, afterInventory)
+	}
+	if !unchangedInventory || !reflect.DeepEqual(n, afterBridge) || !reflect.DeepEqual(v, afterAnchor) || namespace != afterNamespace {
 		return refuse("inventory, bridge, anchor or namespace changed during inspection")
 	}
 	if err = e.VerifyEngine(ctx, p.EngineID); err != nil {
@@ -243,6 +251,33 @@ func (e *projectAnchorEngine) inspectProjectMemberSnapshotMode(ctx context.Conte
 		o.BridgeAttachments = []string{p.Anchor.ID}
 	}
 	return projectMemberSnapshot{Observation: o, Containers: second}, nil
+}
+
+func sameProjectNamespaceInventory(anchor string, before, after []projectnetwork.NetworkContainer) bool {
+	selectNamespace := func(all []projectnetwork.NetworkContainer) ([]projectnetwork.NetworkContainer, error) {
+		members, err := projectnetwork.NamespaceMembers(anchor, all)
+		if err != nil {
+			return nil, err
+		}
+		ids := map[string]bool{anchor: true}
+		for _, id := range members {
+			ids[id] = true
+		}
+		selected := []projectnetwork.NetworkContainer{}
+		for _, c := range all {
+			if ids[c.ID] {
+				selected = append(selected, c)
+			}
+		}
+		slices.SortFunc(selected, func(a, b projectnetwork.NetworkContainer) int { return strings.Compare(a.ID, b.ID) })
+		return selected, nil
+	}
+	a, err := selectNamespace(before)
+	if err != nil {
+		return false
+	}
+	b, err := selectNamespace(after)
+	return err == nil && reflect.DeepEqual(a, b)
 }
 
 func projectMemberExitedDuringInspection(m projectObservedMember, before, after container) bool {

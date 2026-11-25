@@ -30,10 +30,10 @@ function runner(name="A",pier="@ssd/fakeships/lab/zod") {
   return {name,runner_id:"runner-"+name,mode:"development-managed",status:"available",checked_at:stamp,access_role:"operator",features:["pier-storage","storage-locations","import-pier","guided-pier-import","epoch-inventory","maintenance-schedules"],snapshot:{runner_id:"runner-"+name,instances:[i],operations:[],incidents:[],piers:{runner_id:"runner-"+name,observed_at:stamp,roots:[{id:"default",path:"/fixture/default"},{id:"ssd",path:"/fixture/ssd"},{id:"hdd",path:"/fixture/hdd"}],candidates:[{path:pier,fingerprint:"a".repeat(64),enrolled_by:"lab",busy:false}]}}};
 }
 function service(connections) {
-  const calls=[],s=scope("Service.qml",{connections,now,observing:true,currentAction:"",inspections:{},epochInspection:null,importOutcomes:{},storageOutcome:null,registrationOutcome:null,bootTarget:null,routineOutcome:null,hostMoveOutcome:null,output:"",errors:"",outputFailed:false,lastError:"",lastResult:"",refreshPending:false,
+  const calls=[],s=scope("Service.qml",{connections,now,observing:true,currentAction:"",lifecycleRequests:{},inspections:{},epochInspection:null,importOutcomes:{},storageOutcome:null,registrationOutcome:null,bootTarget:null,routineOutcome:null,hostMoveOutcome:null,output:"",errors:"",outputFailed:false,lastError:"",lastResult:"",refreshPending:false,
     action:{stdinEnabled:false},timeout:{stop(){}},Qt:{callLater(){}},clearEpochPreview(){},
     submit(args,kind){if(s.busy)return false;calls.push({args:Array.from(args),kind});s.currentAction=kind;return true;}},
-    ["storageConnection","movePier","addStorageRoot","operate","rememberInspection","reconcileInspection","importExternalPier","rememberImport","reconcileImports","finish"]);
+    ["storageConnection","movePier","addStorageRoot","operate","lifecycleKind","reconcileLifecycle","rememberInspection","reconcileInspection","importExternalPier","rememberImport","reconcileImports","finish"]);
   Object.defineProperty(s,"busy",{get(){return s.currentAction!=="";}});
   s.calls=calls;
   s.reply=(code,output="",errors="",outputFailed=false)=>{s.output=output;s.errors=errors;s.outputFailed=outputFailed;s.finish(code);};
@@ -148,7 +148,7 @@ function review(c,name="zod") {
   return {runner:c.runner_id,connection:c.name,source,loadedAt:now,plan:{runner_id:c.runner_id,source,storage_root:"default",instance_id:name,destination:"fakeships/"+name+"/"+name,ship:"~"+name,network:"fakenet",kind:"fake",http_port:18090,in_place:false}};
 }
 function importPane(s,c,r) {
-  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,visible:true,consent:{checked:true}},["clearReview","reviewAnother","submitImport"]);
+  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,visible:true,consent:{checked:true},runtimeChoice:{currentIndex:0}},["clearReview","reviewAnother","submitImport"]);
   for(const [name,type] of [["submitted","bool"],["outcome","var"],["progress","var"]])binding(pane,"PierImportPane.qml",name,type);
   return pane;
 }
@@ -253,3 +253,27 @@ for (const acknowledged of [true,false]) for (const changed of ["configured","de
   assert.equal(p.reviewAnother(),false);
 }
 console.log("PASS RC11-27 follow-up: exact success is terminal across revision/delete/recreate changes; unrelated receipts and histories never unlock new requests");
+
+// Exercise the actual submit/finish functions across a delayed poll and a
+// definite rejection. A successful acknowledgement must not make Stop flicker.
+{
+ const c=runner(),i=c.snapshot.instances[0],s=service([c]);
+ i.observed_state='running';i.desired_state='running';
+ s.generation=0;s.command=args=>args;s.timeout.restart=()=>{};
+ s.rememberRuntimeActionError=()=>{};
+ vm.runInContext(read('Service.qml').match(/^  function submit\([^\n]*\) \{[\s\S]*?^  \}/m)[0],s);
+ assert(s.operate(c,i,'stop'));
+ assert.equal(s.lifecycleKind(c,i),'stop');
+ const request=s.requestIdentity;
+ s.reply(0,JSON.stringify({id:'accepted',instance_id:i.id,request_id:request,kind:'stop',status:'queued'}));
+ assert.equal(s.busy,false);assert.equal(s.lifecycleKind(c,i),'stop');
+ assert.equal(s.operate(c,i,'stop'),false,'duplicate click during polling gap');
+ c.snapshot.operations=[{id:'accepted',instance_id:i.id,request_id:request,kind:'stop',status:'succeeded'}];
+ s.reconcileLifecycle();assert.equal(s.lifecycleKind(c,i),'');
+ assert(s.operate(c,i,'stop'));
+ s.reply(1,'',JSON.stringify({error:{code:'revision_conflict',message:'Changed'}}));
+ assert.equal(s.lifecycleKind(c,i),'','definite rejection must release pending state');
+ assert(s.operate(c,i,'stop'));
+ s.reply(1,'','Connection lost');assert.equal(s.lifecycleKind(c,i),'stop','uncertain dispatch waits for journal');
+}
+console.log('PASS: shipped submit/finish retains lifecycle feedback until the matching receipt and releases definite refusals');

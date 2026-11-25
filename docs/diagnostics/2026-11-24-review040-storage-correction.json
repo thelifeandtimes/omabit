@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-24",
+  "status": "pre-apply-storage-refusal-corrected",
+  "cause": "The 256MiB per-directory guard omitted two retained 217421172-byte boot pills when setting its threshold.",
+  "management_apparent_bytes_observed": 439735368,
+  "retained_boot_pill_count": 2,
+  "each_boot_pill_bytes": 217421172,
+  "backup_created": false,
+  "apply_started": false,
+  "live_update_executed": false,
+  "version_still_observed": "0.5.0",
+  "schema_still_observed": 65,
+  "storage": {
+    "breakdown": {
+      "management_backup": 439881728,
+      "sqlite_analysis_copy": 4878336,
+      "desktop_backups": 28672,
+      "old_binaries_backup": 70176768,
+      "candidate_binaries_staging": 70381568,
+      "runtime_archive_and_image_reserve": 417622036,
+      "growth_and_metadata_reserve": 134217728
+    },
+    "required_scratch_bytes": 1137704960,
+    "aggregate_cap_bytes": 51539607552
+  },
+  "charged_bytes": 47801511936,
+  "total_with_scratch": 48939216896,
+  "updater_sha256": "f4eee26da7d1bce14eeb15a780cf571c1b6332075c1a2545da59d19c4de6dfd2",
+  "plan_path": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner/plan.json",
+  "plan_sha256": "912ef9a9eebc0da20b3dd1155a394be4318159fb5d8a796cbd5465e5e38633cb",
+  "retained_previous_plan": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner/plan-before-9a28e02cfd4f020dac3ec27f4d5bedeafe5400635f3c2fc4f50b67f1a97b3661.json",
+  "unchanged_plugin_inputs": true,
+  "tests": {
+    "passed": true,
+    "count": 4,
+    "coverage": [
+      "large retained boot pills counted without a fixed directory ceiling",
+      "unsafe backup inputs refused",
+      "aggregate cap refusal before mutation",
+      "changed inputs refused",
+      "started attempt cannot apply or refresh again",
+      "late UI failure retains migrated state, new tools and offline WAL backup"
+    ]
+  },
+  "owner_next_action": "Rerun the same --apply command if ready; --check is available for read-only readiness."
+}

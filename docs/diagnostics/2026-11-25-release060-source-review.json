@@ -1,0 +1,26 @@
+{
+  "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "base": "ca5f7887ea5b508ae82d2b9cd3763ff474ffc72a",
+  "review_type": "primary-agent source review; no independent reviewer requested",
+  "reviewed": [
+    "immutable bundled/local profile identity and owner-private registry installation",
+    "CLI runner capability/catalogue/preflight identity matching",
+    "stopped-only confirmed revision-bound transitions with retained launch history",
+    "import selection and handoff artifact availability before source fencing",
+    "archive and runtime executable verification, no official fallback for custom selections",
+    "Stop orphan endpoint recovery bound to removed recorded container, owned network, independent ID/name absence and reinspection",
+    "project display observation ignores unrelated utility-container churn while retaining namespace membership checks",
+    "per-runner/instance/request lifecycle pending state and permission instance labels",
+    "UI1 layout moves the existing selector into Runtime Settings without altering selection behavior"
+  ],
+  "blocking_findings": [],
+  "limitations": [
+    "source review is not a native runtime pass; each final artifact scenario has separate evidence",
+    "upstream channel downloads and actual 64-bit execution remain unqualified"
+  ],
+  "backend_source_sha256": "b48109f66bde93202c124b06de1571492dee5be4cf6873580a32fd120f4cd2a5",
+  "backend_same_as_rc4": true,
+  "nonblocking_findings": [
+    "One existing trailing-whitespace-only line in frozen disposable guest harness; retained to preserve exact source/artifact identity."
+  ]
+}

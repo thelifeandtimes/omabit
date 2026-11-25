@@ -73,6 +73,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.StringVar(&req.PierPath, "pier-path", "", "convention-relative livenet destination")
 	f.StringVar(&req.RequestID, "request-id", "", "actor-scoped request identity")
 	f.StringVar(&req.Label, "label", "", "instance label")
+	f.StringVar(&req.Config.RuntimeProfile, "runtime-profile", "", "immutable reviewed runtime; omission retains official Vere 4.6")
 	f.StringVar(&file, "key-file", "", "private local boot key file; contents never enter command arguments")
 	f.BoolVar(&keyStdin, "key-stdin", false, "read a pasted boot key privately from standard input")
 	f.BoolVar(&secureKeyFile, "secure-key-file", false, "make the selected owned regular key file private before reading it")
@@ -80,7 +81,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
 	f.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); omitted=4")
 	f.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); omitted=2")
-	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
+	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default). Installed local runtimes may declare a larger maximum, up to40")
 	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 	f.StringVar(&pillSource, "pill", "", "Recommended Apps release URL (known S3 default is a frozen release alias), or explicit custom HTTPS URL/local file; blank uses Vere canonical default")
 	f.StringVar(&pillSHA, "pill-sha256", "", "trusted expected SHA-256 for a custom pill; requires --pill-size (built-in release is always pinned)")
@@ -110,8 +111,8 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
 		return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
 	}
-	if !validCreationLoom(loom) {
-		return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
+	if !validCreationLoom(loom, req.Config.RuntimeProfile) {
+		return fail(errors.New("--loom must be in 30..34 (1–16 GiB), or within the selected local runtime maximum (at most40)"), 2)
 	}
 	req.Ship = strings.TrimSpace(req.Ship)
 	if !strings.HasPrefix(req.Ship, "~") {
@@ -207,7 +208,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if err != nil {
 		return fail(err, 1)
 	}
-	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}
+	req.Config = protocol.Configuration{RuntimeProfile: req.Config.RuntimeProfile, HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}
 	op, err := c.CreateShip(ctx, req)
 	req.Key = ""
 	if err != nil {

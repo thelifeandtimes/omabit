@@ -22,6 +22,9 @@ var importRunID = regexp.MustCompile(`^[0-9a-f]{32}$`)
 
 func importRequest(req protocol.ImportFakeRequest) (protocol.CreateFakeRequest, *protocol.ImportSource, error) {
 	base := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, Config: req.Config, RequestID: req.RequestID}
+	if req.Config.RuntimeProfile != "" {
+		return base, nil, bad("historical qualified-fake imports retain their original official runtime; use profile-bound pier import for a reviewed runtime")
+	}
 	if !req.ConfirmStopped || !importRunID.MatchString(req.SourceRunID) || !epochs.ValidDigest(req.ExpectedDigest) {
 		return base, nil, bad("import requires a qualified source ID, its expected digest and explicit stopped-source confirmation")
 	}

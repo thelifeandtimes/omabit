@@ -288,6 +288,8 @@ def main():
     parser.add_argument("--version", required=True)
     parser.add_argument("--pill", type=Path)
     parser.add_argument("--pill-sha256")
+    parser.add_argument("--runtime-profile-archive", type=Path,
+                        help="optional exact reviewed runtime archive; verified against the built catalogue")
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
     parser.add_argument("--qualification", type=Path, help="attach qualification to an already built version; does not rebuild artifacts")
     args = parser.parse_args()
@@ -365,6 +367,9 @@ def main():
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
         metadata = {"version": args.version, "prerelease": "-" in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output([go, "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "distribution-native", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
+        if (source / "internal/runtimeprofile/profiles.go").exists():
+            metadata["runtime_profiles"] = json.loads(subprocess.check_output(
+                [binaries / "urbit-runner", "runtime-profiles"], cwd=source, env=env, text=True, timeout=10))
         metadata["engine_policy"] = {
             "id": "docker-rootless-v1", "stable_minimum_inclusive": "27.2.0",
             "stable_maximum_exclusive": "30.0.0", "required_api": "1.47",
@@ -380,6 +385,8 @@ def main():
         checksums(package)
         assets = stage / "assets"
         assets.mkdir()
+        if args.runtime_profile_archive:
+            package_runtime_archive(args.runtime_profile_archive, metadata.get("runtime_profiles", []), assets)
         archive(package, assets / (prefix + ".tar.gz"), epoch)
         for name in COMMANDS:
             shutil.copy2(binaries / name, assets / (name + "-linux-amd64"))
@@ -397,6 +404,23 @@ def main():
         assets.rename(final)
     print("Built release assets:", final)
     print("Source revision:", commit)
+
+
+def package_runtime_archive(source, profiles, assets):
+    """Copy only a compiled, immutable runtime pin; never load or execute it."""
+    if source.is_symlink() or not source.is_file() or not 0 < source.stat().st_size <= 256 * 1024**2:
+        raise ValueError("unsafe or oversized reviewed runtime archive")
+    digest, size = sha256(source), source.stat().st_size
+    matches = [p for p in profiles if p.get("kind") == "reviewed" and
+               p.get("archive_sha256") == digest and p.get("archive_bytes") == size]
+    if len(matches) != 1 or not re.fullmatch(r"vere-[a-z0-9.-]{1,80}", matches[0].get("id", "")):
+        raise ValueError("runtime archive does not match exactly one built reviewed profile")
+    target = assets / (matches[0]["id"] + ".tar.gz")
+    if target.exists():
+        raise ValueError("runtime archive output already exists")
+    shutil.copyfile(source, target)
+    if sha256(target) != digest or target.stat().st_size != size:
+        raise ValueError("runtime archive changed during packaging")
 
 
 if __name__ == "__main__":

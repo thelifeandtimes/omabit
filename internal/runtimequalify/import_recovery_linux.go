@@ -147,7 +147,7 @@ func applyImportRecovery(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, err
 	}
 	if state.ExternalImport.Identify {
-		identity, err := InspectPierIdentity(ctx, path)
+		identity, err := InspectPierIdentityWithProfile(ctx, path, state.RuntimeProfile)
 		ship, kind := "~zod", "fake"
 		if state.Fake != nil {
 			ship = state.Fake.Ship

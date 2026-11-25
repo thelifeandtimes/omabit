@@ -58,11 +58,11 @@ func (q *qualifier) inspectEpochInventoryAt(ctx context.Context, path string, hi
 		return nil, err
 	}
 	defer root.Close()
-	first, err := scanPierEpochs(ctx, root, path, q.r.RunID, q.owned, history)
+	first, err := scanPierEpochsForProfile(ctx, root, path, q.r.RunID, q.owned, q.d.runtimeProfile, history)
 	if err != nil {
 		return nil, err
 	}
-	second, err := scanPierEpochs(ctx, root, path, q.r.RunID, q.owned, history)
+	second, err := scanPierEpochsForProfile(ctx, root, path, q.r.RunID, q.owned, q.d.runtimeProfile, history)
 	if err != nil {
 		return nil, err
 	}
@@ -142,10 +142,18 @@ func boundedEntries(root *os.Root, limit int) ([]os.DirEntry, error) {
 }
 
 func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root, history ...bool) (*epochs.Inventory, error) {
-	return scanPierEpochs(ctx, root, q.pierPath(), q.r.RunID, q.owned, history...)
+	return scanPierEpochsForProfile(ctx, root, q.pierPath(), q.r.RunID, q.owned, q.d.runtimeProfile, history...)
 }
 
 func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned func(string, os.FileMode, bool) error, history ...bool) (*epochs.Inventory, error) {
+	return scanPierEpochsForProfile(ctx, root, pier, id, owned, "", history...)
+}
+
+func scanPierEpochsForProfile(ctx context.Context, root *os.Root, pier, id string, owned func(string, os.FileMode, bool) error, profile string, history ...bool) (*epochs.Inventory, error) {
+	selected, err := candidate.Resolve(profile)
+	if err != nil {
+		return nil, err
+	}
 	inv := &epochs.Inventory{Source: epochs.Source, PierID: id, Entries: []epochs.Entry{}}
 	var manifest []epochFingerprint
 	base := filepath.Join(pier, ".urb/log")
@@ -214,7 +222,7 @@ func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned f
 		if err != nil {
 			return nil, errors.New("epoch directory unavailable")
 		}
-		e, files, scanErr := scanEpochDirectory(ctx, dir, name, fp, fingerprint, history...)
+		e, files, scanErr := scanEpochDirectoryForProfile(ctx, dir, name, fp, fingerprint, profile, history...)
 		dir.Close()
 		if scanErr != nil {
 			return nil, scanErr
@@ -231,15 +239,19 @@ func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned f
 		return a < b
 	})
 	for i := range inv.Entries {
+		patched, _ := candidate.Resolve(candidate.JSONFixProfile)
+		if inv.Entries[i].VereVersion == patched.VereVersion && selected.Requirement != candidate.JSONFixRequirement {
+			return nil, errors.New("pier history requires the JSON decoder correction; never downgrade or edit epoch metadata")
+		}
 		inv.Entries[i].Protected = i >= len(inv.Entries)-epochs.ProtectedSuffix
-		if inv.Entries[i].LayoutVersion != 2 || inv.Entries[i].VereVersion != candidate.VereVersion {
+		if inv.Entries[i].LayoutVersion != 2 || inv.Entries[i].VereVersion != selected.VereVersion {
 			inv.Source = epochs.ImportSource
 		}
 	}
 	if len(history) > 0 && history[0] {
 		latest := inv.Entries[len(inv.Entries)-1]
-		if latest.LayoutVersion != 2 || (latest.VereVersion != candidate.VereVersion && latest.VereVersion != "4.6") {
-			return nil, errors.New("the latest epoch must be upgraded to Vere 4.6 before importing; historical epochs are preserved")
+		if latest.LayoutVersion != 2 || !selected.AcceptsEpochVersion(latest.VereVersion) {
+			return nil, fmt.Errorf("latest epoch runtime %q does not match selected %s; prepare a clean checkpoint with the required runtime before importing; never downgrade a patched pier or edit epoch metadata", latest.VereVersion, selected.ID)
 		}
 	}
 	data, err := json.Marshal(struct {
@@ -276,6 +288,14 @@ func macEpochLogMetadata(name string) bool {
 }
 
 func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expected epochFingerprint, fingerprint func(*os.Root, string, string, bool) (epochFingerprint, error), history ...bool) (epochs.Entry, []epochFingerprint, error) {
+	return scanEpochDirectoryForProfile(ctx, root, name, expected, fingerprint, "", history...)
+}
+
+func scanEpochDirectoryForProfile(ctx context.Context, root *os.Root, name string, expected epochFingerprint, fingerprint func(*os.Root, string, string, bool) (epochFingerprint, error), profile string, history ...bool) (epochs.Entry, []epochFingerprint, error) {
+	selected, err := candidate.Resolve(profile)
+	if err != nil {
+		return epochs.Entry{}, nil, err
+	}
 	e := epochs.Entry{Name: name}
 	fail := func() (epochs.Entry, []epochFingerprint, error) {
 		return e, nil, errors.New("incomplete, changed or unsupported epoch layout")
@@ -342,7 +362,7 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 					version = e.LayoutVersion == 1 || e.LayoutVersion == 2
 				}
 			} else {
-				vere = value == candidate.VereVersion
+				vere = selected.AcceptsEpochVersion(value)
 				e.VereVersion = value
 				if allowHistory {
 					vere = historicalVereVersion.MatchString(value)

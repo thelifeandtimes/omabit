@@ -1,0 +1,140 @@
+{
+  "passed": true,
+  "full_omarchy_shell": true,
+  "host_desktop_access": false,
+  "network": false,
+  "service_upgrade": false,
+  "checks": {
+    "cold_previous_full_shell": true,
+    "hot_update_same_shell_preferences_and_pin": true,
+    "rescan_preserves_paired_generation": true,
+    "cold_restart_retains_candidate_and_preferences": true
+  },
+  "before": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.5.0",
+      "loaded_version": "0.5.0",
+      "requested_release": "efd24c5004855f7a04acb680a108a4de8d66800500e245eb96266f1411708bca",
+      "loaded_release": "efd24c5004855f7a04acb680a108a4de8d66800500e245eb96266f1411708bca",
+      "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "843a8339075b492d8148e08c1f647c65",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": true,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "after": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.6.0-rc.3",
+      "loaded_version": "0.6.0-rc.3",
+      "requested_release": "b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52",
+      "loaded_release": "b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52",
+      "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "843a8339075b492d8148e08c1f647c65",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": true,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "restarted": {
+    "bootstrap": {
+      "bootstrap_api": 1,
+      "phase": "ready",
+      "error": "",
+      "profile": "review060",
+      "requested_profile": "review060",
+      "requested_version": "0.6.0-rc.3",
+      "loaded_version": "0.6.0-rc.3",
+      "requested_release": "b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52",
+      "loaded_release": "b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52",
+      "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+      "development": null,
+      "busy": false,
+      "enrollments_loaded": true,
+      "observing": false,
+      "runners": 0,
+      "ships": 0
+    },
+    "session": "e4c1155210b04be0add3a71edd048bff",
+    "profile": "review060",
+    "local_setup": false,
+    "page": "setup",
+    "selection": "review-runner/preserved-selection",
+    "visible": false,
+    "module": "thelifeandtimes.omabit.review060shell"
+  },
+  "artifact_sources": {
+    "previous": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+    "candidate": "747dd810c10b74b4fbcdc10f617e6b15dd545a45"
+  },
+  "package_hashes": {
+    "previous": "0851b3f830a297ab8073bc31fd27503811195e4d45c5268ff4a021f08ada548e",
+    "candidate": "f1676a51bede3302327917c9e80b8661bf482e47a8e40633903e60ac435037f7"
+  },
+  "namespace_adapters": {
+    "ReviewService.qml": "3512a1e3321be0583535f99eecb61ae124f6e095daa6ec62ac60dc881ff684ee",
+    "ReviewPanel.qml": "4ab0798ee9e5a2f975461c9b8965b36a1023f30e1404064eec716dc7e0c9e53e"
+  },
+  "shell_sha256": "d6d99af10ca020ca2c578bc7f67bf674d954efc206012a71af6769c662c37c37",
+  "shell_version": "Quickshell 0.3.2 (revision 2b4501a282689792b62e94f3fb30d8f512324fe6, distributed by Omarchy)",
+  "evidence": {
+    "driver.py": {
+      "path": "/tmp/omabit-060-shell-01/driver.py",
+      "sha256": "79b6cba81c0fb51eabeb8eaa638bb6e1bf125fd4a4968c119ca14e8795a0ab81"
+    },
+    "result.json": {
+      "path": "/tmp/omabit-060-shell-01/result.json",
+      "sha256": "933d882a1a1b1aab10604c026601e9ea0394c542a483aad008b91086b720c693"
+    },
+    "host.json": {
+      "path": "/tmp/omabit-060-shell-01/host.json",
+      "sha256": "b51b959153fdf8a6e3d42c4adf1bd9475385069608847ca33c8ee9c97956fbf4"
+    },
+    "shell-cold.log": {
+      "path": "/tmp/omabit-060-shell-01/shell-cold.log",
+      "sha256": "7c168c289bbbe8b887cb4a4545a1a25d846dc26c1c05f6fc7a93a954da5ea3ac"
+    },
+    "shell-restarted.log": {
+      "path": "/tmp/omabit-060-shell-01/shell-restarted.log",
+      "sha256": "23c373eeac972b1528dc3ed3ec360fc2c9ab2c2ed02fd3251aa5bfd1245d6d30"
+    },
+    "sway.log": {
+      "path": "/tmp/omabit-060-shell-01/sway.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "limits": [
+    "Unmodified Omarchy shell with exact sealed UI/tools, under a separate headless Sway compositor; host Hyprland integration is not exercised.",
+    "Review adapters change only plugin IDs and runtime manifest properties; product archive bytes remain unchanged.",
+    "Hyprland socket warnings and QML teardown warnings are retained in logs; activation status, widget pairing, visible monitor and preferences passed.",
+    "Empty private collector profile with local setup disabled; runtime and upgrade qualification are recorded separately."
+  ]
+}

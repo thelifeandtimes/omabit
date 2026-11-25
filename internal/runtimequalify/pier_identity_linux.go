@@ -15,6 +15,10 @@ import (
 )
 
 func InspectPierIdentity(ctx context.Context, path string) (protocol.PierIdentity, error) {
+	return InspectPierIdentityWithProfile(ctx, path, "")
+}
+
+func InspectPierIdentityWithProfile(ctx context.Context, path, profile string) (protocol.PierIdentity, error) {
 	var out protocol.PierIdentity
 	if err := ctx.Err(); err != nil {
 		return out, err
@@ -47,17 +51,18 @@ func InspectPierIdentity(ctx context.Context, path string) (protocol.PierIdentit
 	if err := ctx.Err(); err != nil {
 		return out, err
 	}
-	if err := inspectExternalEpochs(ctx, path); err != nil {
+	if err := inspectExternalEpochs(ctx, path, profile); err != nil {
 		return out, err
 	}
 	return protocol.PierIdentity{Ship: identity.Ship, Network: identity.Network, Kind: identity.Kind}, nil
 }
 
-func inspectExternalEpochs(ctx context.Context, path string) error {
+func inspectExternalEpochs(ctx context.Context, path string, profile string) error {
 	if err := pierstore.CheckStateFiles(ctx, path); err != nil {
 		return err
 	}
 	q := &qualifier{d: defaults(), uid: os.Geteuid(), gid: os.Getegid()}
+	q.d.runtimeProfile = profile
 	_, err := q.inspectEpochInventoryAt(ctx, path, true)
 	return err
 }

@@ -20,6 +20,7 @@ func TestRuntimeSettingsCLI(t *testing.T) {
 		{"create", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one", "--loom=34", "--native-control"}, 34, true},
 		{"default", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one"}, 31, false},
 		{"configure", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=34", "--native-control=true"}, 34, true},
+		{"preserve-local-loom", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=38"}, 38, false},
 		{"minimum", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one", "--loom=30"}, 30, false},
 		{"disable", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=30", "--native-control=false"}, 30, false},
 	} {
@@ -59,13 +60,16 @@ func TestRuntimeSettingsCLI(t *testing.T) {
 }
 
 func TestRuntimeSettingsCLICapabilityAndBounds(t *testing.T) {
-	for _, value := range []string{"19", "35", "256", "999999", "-1", "1.5"} {
+	for _, value := range []string{"19", "35", "41", "256", "999999", "-1", "1.5"} {
 		for _, command := range [][]string{
 			{"create-fake", "alpha", "--http-port=18080", "--request-id=one"},
 			{"create-comet", "alpha", "--http-port=18080", "--request-id=one", "--confirm-network"},
 			{"create-ship", "--ship=~sampel-palnet", "--key-file=/missing", "--request-id=one", "--confirm-network"},
 			{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343"},
 		} {
+			if command[0] == "configure" && value == "35" {
+				continue
+			} // May preserve a local runtime; selected runner validates its declaration.
 			var out, errs bytes.Buffer
 			args := append([]string{"--socket", "/nonexistent.sock"}, command...)
 			if code := run(context.Background(), append(args, "--loom="+value), &out, &errs); code != 2 {

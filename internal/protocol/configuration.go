@@ -6,8 +6,9 @@ import (
 )
 
 type configurationRequestWire struct {
-	ExpectedRevision uint64 `json:"expected_revision"`
-	Config           struct {
+	ConfirmRuntimeChange bool   `json:"confirm_runtime_change,omitempty"`
+	ExpectedRevision     uint64 `json:"expected_revision"`
+	Config               struct {
 		Configuration
 		NativeControl *bool `json:"native_control,omitempty"`
 	} `json:"config"`
@@ -18,6 +19,7 @@ type configurationRequestWire struct {
 func (r ConfigureRequest) MarshalJSON() ([]byte, error) {
 	var wire configurationRequestWire
 	wire.ExpectedRevision, wire.Config.Configuration = r.ExpectedRevision, r.Config
+	wire.ConfirmRuntimeChange = r.ConfirmRuntimeChange
 	if !r.PreserveNativeControl {
 		wire.Config.NativeControl = &r.Config.NativeControl
 	}
@@ -32,7 +34,7 @@ func (r *ConfigureRequest) UnmarshalJSON(data []byte) error {
 	if err := d.Decode(&wire); err != nil {
 		return err
 	}
-	*r = ConfigureRequest{ExpectedRevision: wire.ExpectedRevision, Config: wire.Config.Configuration, PreserveNativeControl: wire.Config.NativeControl == nil}
+	*r = ConfigureRequest{ConfirmRuntimeChange: wire.ConfirmRuntimeChange, ExpectedRevision: wire.ExpectedRevision, Config: wire.Config.Configuration, PreserveNativeControl: wire.Config.NativeControl == nil}
 	if wire.Config.NativeControl != nil {
 		r.Config.NativeControl = *wire.Config.NativeControl
 	}

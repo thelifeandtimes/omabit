@@ -4,7 +4,7 @@ from pathlib import Path
 import subprocess,shutil,tempfile,atexit
 r=Path(__file__).resolve().parents[1];temporary=tempfile.TemporaryDirectory(prefix='omabit-compact-');atexit.register(temporary.cleanup);d=Path(temporary.name)
 p=d/'Plugin';p.mkdir(exist_ok=True)
-for n in ('RegistrationPane.qml','KeyBootPane.qml','ProjectCreationStatus.qml','SwitchField.qml','BootstrapSelector.qml','RuntimeSettingsFields.qml','ContainerResourceFields.qml','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','Model.js'):
+for n in ('RuntimeProfileChoice.qml','RegistrationPane.qml','KeyBootPane.qml','ProjectCreationStatus.qml','SwitchField.qml','BootstrapSelector.qml','RuntimeSettingsFields.qml','ContainerResourceFields.qml','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','Model.js'):
  shutil.copy2(r/'plugins/omabit'/n,p/n)
 (p/'qmldir').write_text('singleton Design 1.0 Design.qml\n')
 c=d/'qs/Commons';c.mkdir(parents=True,exist_ok=True)

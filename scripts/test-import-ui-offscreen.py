@@ -9,8 +9,8 @@ import shutil
 import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
-COMPONENTS=('Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ProgressMeter.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
-METHODS=('previewExternalPier','rememberInspection','reconcileInspection','rememberImport','reconcileImports','storageConnection','importExternalPier','recoverImport','finish','clearEpochPreview','canMaintain','canSaveRoutine','canReviewTarget','invalidateEpochPreview','invalidateImportCatalogue')
+COMPONENTS=('RuntimeProfileChoice.qml','Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ProgressMeter.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
+METHODS=('previewExternalPier','lifecycleKind','reconcileLifecycle','rememberInspection','reconcileInspection','rememberImport','reconcileImports','storageConnection','importExternalPier','recoverImport','finish','clearEpochPreview','canMaintain','canSaveRoutine','canReviewTarget','invalidateEpochPreview','invalidateImportCatalogue')
 
 def method(source,name):
     found=re.search(r'^  function '+name+r'\([^\n]*\) \{[^\n]*\}$',source,re.M)
@@ -57,6 +57,8 @@ def main():
     calls=rows[0]
     assert [v['kind'] for v in calls if v['kind']!='preview-pier']==['import-pier','recover-import','recover-import','import-pier'],calls
     assert all(v['kind'] in ('preview-pier','import-pier','recover-import') for v in calls),calls
+    assert all('--runtime-profile' in v['args'] and v['args'][v['args'].index('--runtime-profile')+1]=='vere-4.6-jsonfix-0774857c'
+               for v in calls if v['kind']=='import-pier'), 'reviewed runtime dropped at import dispatch'
     for call in calls:
         args=call['args']
         assert args[:4]==['--runner','import-lab','--expected-runner-id','runner-import-lab'],args

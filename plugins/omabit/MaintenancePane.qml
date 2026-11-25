@@ -89,7 +89,7 @@ Column {
             CardTitle { text: action.modelData.title }
             Label { text: action.modelData.description; secondary: true; caption: true }
           }
-          ActionButton { objectName: "run-"+action.modelData.kind; text: "Run "+action.modelData.kind; enabled: root.service && root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,action.modelData.kind,root.service.now); onClicked: root.runMaintenance(action.modelData.kind) }
+          ActionButton { objectName: "run-"+action.modelData.kind; readonly property string pending: root.service ? root.service.lifecycleKind(root.connection,root.instance) : ""; text: pending===action.modelData.kind ? "Running "+pending+"…" : "Run "+action.modelData.kind; enabled: !pending && root.service && root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,action.modelData.kind,root.service.now); onClicked: root.runMaintenance(action.modelData.kind) }
         }
       }
     }

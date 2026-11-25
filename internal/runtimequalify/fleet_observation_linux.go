@@ -13,6 +13,7 @@ import (
 // response starts a new scope; mutation and login-code entry points never use
 // it. No admission result or timer-based authorization cache survives this call.
 func fleetObservationDependencies(d dependencies) dependencies {
+	d.fleetObservation = true
 	inspect := d.InspectHost
 	if inspect == nil {
 		inspect = hostcompat.InspectCurrent

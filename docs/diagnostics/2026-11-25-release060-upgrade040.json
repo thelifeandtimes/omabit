@@ -1,0 +1,2077 @@
+{
+  "format": 1,
+  "passed": true,
+  "steps": [],
+  "sources": {
+    "0.4.0": "a9623329a538ebf83d63365053d2d1011ade091e",
+    "0.6.0": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9"
+  },
+  "starting_versions": {
+    "desktop": "0.4.0",
+    "collector": "0.4.0",
+    "runner": "0.4.0",
+    "target": "0.6.0",
+    "fleet": false,
+    "namespace_tests": false,
+    "app_workflow": true,
+    "local_runtime": null,
+    "runtime_case": "upgrade"
+  },
+  "receipt_fixture": "published format reconstructed from genuine 0.4.0 installer result and SSH enrollment; old desktop setup-status verified ready",
+  "macos_import": {
+    "previous_refused_metadata": false,
+    "synthetic_companion_sha256": {
+      ".urb/log/._0i391592": "72e97fe060d465888d4f906c7aa93301ec46955e65b3860426eae46916b14468",
+      ".urb/log/._data.mdb": "39d3a303430ecb162f89a285b4a4d208c824c3cda4bdcd9c8a20350b32b7d825",
+      ".urb/log/._lock.mdb": "107c5a1859e82a7db06d8bef42e523914a91d0f843e5f84145eae6617b7b08ff",
+      ".urb/log/.DS_Store": "f75b67a8726e266d8d45a57225b4fe332eac80fe7fa34a8ca5715630b30238de",
+      ".urb/log/0i0/._data.mdb": "2d000277fcba41124909e0c3426346909136c5a88f9697e9e6e737db42f908fa",
+      ".urb/log/0i0/.DS_Store": "92d7e3310518ec476e8f2b515dadda9d9d32efb8c09e43375c63e7875a981660",
+      ".urb/chk/.DS_Store": "b578487bb4ae00c82fed7e9d88e6ffbd70af9f429c56a980347943f729bdae85"
+    },
+    "passed": true,
+    "identity": "~nec",
+    "stayed_stopped": true,
+    "metadata_preserved": true,
+    "unrelated_runtime_preserved": true
+  },
+  "large_local_preview": {
+    "previous_rejected": false,
+    "target_collector_with_previous_runner_passed": true,
+    "fixture_logical_bytes": 100000000001,
+    "fixture_allocated_bytes": 0,
+    "source_logical_bytes": 100399704411,
+    "full_large_copy_tested": false,
+    "target_collector_with_target_runner_passed": true,
+    "preview_preserved_source": true,
+    "preview_did_not_enroll": true,
+    "passed": true
+  },
+  "app_development_before": {
+    "passed": true,
+    "steps": {
+      "default-create-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "2298130a7e57de411fb344f8be8ff15ff943ad27b5140570be219a97e7c6d4c7",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-stable-before-upgrade"
+          },
+          "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+          "config_revision": 1,
+          "policy_revision": 0,
+          "action": "create-desk",
+          "baseline": {
+            "exists": false
+          }
+        }
+      },
+      "default-create": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "2298130a7e57de411fb344f8be8ff15ff943ad27b5140570be219a97e7c6d4c7",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 0,
+            "action": "create-desk",
+            "baseline": {
+              "exists": false
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "create-desk",
+              "state": "planned",
+              "at": "2026-11-25T22:24:25.140550212Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "blocked",
+              "at": "2026-11-25T22:24:25.723360026Z"
+            }
+          ]
+        }
+      },
+      "allowed-create-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "c73838933a1434fc0e1bc6ccc784e611fd46b18bdc6f5b629ceb9cfc9573952b",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-stable-before-upgrade"
+          },
+          "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+          "config_revision": 1,
+          "policy_revision": 1,
+          "action": "create-desk",
+          "baseline": {
+            "exists": false
+          }
+        }
+      },
+      "allowed-create": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "c73838933a1434fc0e1bc6ccc784e611fd46b18bdc6f5b629ceb9cfc9573952b",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "create-desk",
+            "baseline": {
+              "exists": false
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "create-desk",
+              "state": "planned",
+              "at": "2026-11-25T22:24:27.815210902Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "dispatched",
+              "at": "2026-11-25T22:24:28.498799084Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:24:29.118392785Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "observed",
+              "at": "2026-11-25T22:24:29.641825664Z",
+              "observation": {
+                "exists": true,
+                "revision": 1,
+                "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+                "publication": "private"
+              }
+            }
+          ]
+        }
+      },
+      "stage-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-stable-before-upgrade"
+          },
+          "settings_revision": 0,
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "files": 1,
+          "bytes": 29
+        }
+      },
+      "stage": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "settings_revision": 0,
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+            "files": 1,
+            "bytes": 29
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "created_at": "2026-11-25T22:24:31.028322318Z"
+        },
+        "read_at": "2026-11-25T22:24:31.124294817Z"
+      },
+      "default-commit-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "d39c7aa40ae77c4446b119eaf214d82e634a170a3bf295a4fb1f6b4542a548d8",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "stage_id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+          "settings_revision": 0,
+          "source_name": "omabit-stable-before-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "stage_id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+            "settings_revision": 0
+          },
+          "observation": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "policy_revision": 1,
+          "source_name": "omabit-stable-before-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9",
+          "changes": [
+            {
+              "path": "hello.txt",
+              "kind": "add"
+            }
+          ],
+          "change_count": 1,
+          "conflicts": [],
+          "conflict_count": 0,
+          "preserved_count": 5,
+          "managed_count": 1,
+          "read_at": "2026-11-25T22:24:32.902439293Z"
+        }
+      },
+      "default-commit": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "d39c7aa40ae77c4446b119eaf214d82e634a170a3bf295a4fb1f6b4542a548d8",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "commit",
+              "state": "planned",
+              "at": "2026-11-25T22:24:34.8902174Z"
+            },
+            {
+              "kind": "commit",
+              "state": "blocked",
+              "at": "2026-11-25T22:24:36.808553824Z"
+            }
+          ]
+        }
+      },
+      "allowed-commit-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "0cd1f940710d0ffd16c68cfeefcfdbf521482a4b55b8dd571098b4d5258a7d62",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 2,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "stage_id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+          "settings_revision": 0,
+          "source_name": "omabit-stable-before-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "stage_id": "8f111537c921642504a5bd80e4771d1da4b7bced4c062bf5c1ee6edb3994d9cb",
+            "settings_revision": 0
+          },
+          "observation": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "policy_revision": 2,
+          "source_name": "omabit-stable-before-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9",
+          "changes": [
+            {
+              "path": "hello.txt",
+              "kind": "add"
+            }
+          ],
+          "change_count": 1,
+          "conflicts": [],
+          "conflict_count": 0,
+          "preserved_count": 5,
+          "managed_count": 1,
+          "read_at": "2026-11-25T22:24:39.538063949Z"
+        }
+      },
+      "allowed-commit": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "0cd1f940710d0ffd16c68cfeefcfdbf521482a4b55b8dd571098b4d5258a7d62",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 2,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "commit",
+              "state": "planned",
+              "at": "2026-11-25T22:24:41.398752421Z"
+            },
+            {
+              "kind": "commit",
+              "state": "dispatched",
+              "at": "2026-11-25T22:24:43.313975665Z"
+            },
+            {
+              "kind": "commit",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:24:43.999598179Z"
+            },
+            {
+              "verified_source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+              "kind": "commit",
+              "state": "observed",
+              "at": "2026-11-25T22:24:46.105606461Z",
+              "observation": {
+                "exists": true,
+                "revision": 2,
+                "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+                "publication": "private"
+              }
+            }
+          ]
+        }
+      },
+      "default-publish-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "377684bd671250bae83e53fd8f91a64fae86ae7972b11033cb712db13cfc83eb",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 2,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "settings_revision": 1,
+          "ship_settings_revision": 0,
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "review_digest": "ec61e561777df4790e64e792190450b3c6696076bf1d4e6c8b2696dad8761413",
+          "checks_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "action": "publish-source"
+          },
+          "policy_revision": 2,
+          "review": {
+            "version": 1,
+            "action": "publish-source",
+            "observation": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            },
+            "application": {
+              "zest": "dead",
+              "source_revision": 2,
+              "source_ship": "",
+              "source_desk": "",
+              "expected_agents": [],
+              "agents": [],
+              "treaty_available": true,
+              "treaty_listed": false,
+              "treaty_hash": "",
+              "docket_available": true,
+              "docket_hash": "",
+              "frontend_mode": "none",
+              "frontend_state": "absent",
+              "frontend_docket_hash": ""
+            },
+            "ship_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod"
+              },
+              "revision": 0,
+              "ship": {
+                "purpose": "standard",
+                "instructions": ""
+              },
+              "updated_at": "0001-01-01T00:00:00Z"
+            },
+            "desk_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "revision": 1,
+              "desk": {
+                "workflow": "mounted",
+                "source_name": "omabit-stable-before-upgrade",
+                "publication": "source",
+                "repository": "",
+                "branch": "",
+                "checks": [],
+                "instructions": ""
+              },
+              "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+              "updated_at": "2026-11-25T22:24:47.103388493Z"
+            },
+            "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+            "digest": "ec61e561777df4790e64e792190450b3c6696076bf1d4e6c8b2696dad8761413"
+          },
+          "read_at": "2026-11-25T22:24:49.292201983Z"
+        },
+        "checks": []
+      },
+      "default-publish": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "377684bd671250bae83e53fd8f91a64fae86ae7972b11033cb712db13cfc83eb",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 2,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "publish-source",
+              "state": "planned",
+              "at": "2026-11-25T22:24:51.316870926Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "blocked",
+              "at": "2026-11-25T22:24:53.495509643Z"
+            }
+          ]
+        }
+      },
+      "allowed-publish-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "930a191fa33db65d16a4b15c105c6c4192cad6287ab5f0a514b4fcd7cf3fab29",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 3,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "settings_revision": 1,
+          "ship_settings_revision": 0,
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "review_digest": "ec61e561777df4790e64e792190450b3c6696076bf1d4e6c8b2696dad8761413",
+          "checks_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "action": "publish-source"
+          },
+          "policy_revision": 3,
+          "review": {
+            "version": 1,
+            "action": "publish-source",
+            "observation": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            },
+            "application": {
+              "zest": "dead",
+              "source_revision": 2,
+              "source_ship": "",
+              "source_desk": "",
+              "expected_agents": [],
+              "agents": [],
+              "treaty_available": true,
+              "treaty_listed": false,
+              "treaty_hash": "",
+              "docket_available": true,
+              "docket_hash": "",
+              "frontend_mode": "none",
+              "frontend_state": "absent",
+              "frontend_docket_hash": ""
+            },
+            "ship_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod"
+              },
+              "revision": 0,
+              "ship": {
+                "purpose": "standard",
+                "instructions": ""
+              },
+              "updated_at": "0001-01-01T00:00:00Z"
+            },
+            "desk_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-stable-before-upgrade"
+              },
+              "revision": 1,
+              "desk": {
+                "workflow": "mounted",
+                "source_name": "omabit-stable-before-upgrade",
+                "publication": "source",
+                "repository": "",
+                "branch": "",
+                "checks": [],
+                "instructions": ""
+              },
+              "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+              "updated_at": "2026-11-25T22:24:47.103388493Z"
+            },
+            "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+            "digest": "ec61e561777df4790e64e792190450b3c6696076bf1d4e6c8b2696dad8761413"
+          },
+          "read_at": "2026-11-25T22:24:56.419795201Z"
+        },
+        "checks": []
+      },
+      "allowed-publish": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "930a191fa33db65d16a4b15c105c6c4192cad6287ab5f0a514b4fcd7cf3fab29",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 3,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "publish-source",
+              "state": "planned",
+              "at": "2026-11-25T22:24:58.501130323Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "dispatched",
+              "at": "2026-11-25T22:25:00.491349251Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:25:00.931163923Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "observed",
+              "at": "2026-11-25T22:25:02.603792415Z",
+              "observation": {
+                "exists": true,
+                "revision": 2,
+                "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+                "publication": "published"
+              },
+              "application": {
+                "zest": "dead",
+                "source_revision": 2,
+                "source_ship": "",
+                "source_desk": "",
+                "expected_agents": [],
+                "agents": [],
+                "treaty_available": true,
+                "treaty_listed": false,
+                "treaty_hash": "",
+                "docket_available": true,
+                "docket_hash": "",
+                "frontend_mode": "none",
+                "frontend_state": "absent",
+                "frontend_docket_hash": ""
+              }
+            }
+          ]
+        }
+      },
+      "published": {
+        "observation": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "selection": {
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-stable-before-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1
+          },
+          "policy_revision": 3,
+          "observation": {
+            "exists": true,
+            "revision": 2,
+            "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+            "publication": "published"
+          },
+          "read_at": "2026-11-25T22:25:03.495560287Z"
+        },
+        "permissions": {
+          "commit": {
+            "value": "allow",
+            "source": "desk"
+          },
+          "publish": {
+            "value": "allow",
+            "source": "desk"
+          },
+          "create_desk": {
+            "value": "allow",
+            "source": "ship"
+          }
+        }
+      },
+      "completed": true
+    },
+    "boundary": "actual frozen CLI, restricted SSH, installed runner, Docker exec and native Clay; test operator explicitly opens only this fresh fake/desk gates; no Treaty/frontend claim from this scenario"
+  },
+  "original_app_tables": {
+    "app_development_policy": {
+      "ddl": "CREATE TABLE app_development_policy (id INTEGER PRIMARY KEY CHECK(id=1), body BLOB NOT NULL)",
+      "rows": 1,
+      "sha256": "22402ea55177b06ba641f5f777a931d637564722b370e443ae52aa47114abe26"
+    },
+    "app_development_policy_history": {
+      "ddl": "CREATE TABLE app_development_policy_history (revision INTEGER PRIMARY KEY, actor TEXT NOT NULL, updated_at TEXT NOT NULL, body BLOB NOT NULL)",
+      "rows": 5,
+      "sha256": "97b9602fd0f3424f16acd22da6a128a3b67633d187f184ade1d2a2a3fb0536de"
+    },
+    "desk_adoptions": {
+      "ddl": "CREATE TABLE desk_adoptions(id TEXT PRIMARY KEY REFERENCES desk_operations(id),body BLOB NOT NULL)",
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "desk_deployments": {
+      "ddl": "CREATE TABLE desk_deployments(id TEXT PRIMARY KEY REFERENCES desk_operations(id),body BLOB NOT NULL)",
+      "rows": 2,
+      "sha256": "f98847ad1a206f1b3006b9bd746d4fa3108a1edbf049630ae65bb2068ea501f8"
+    },
+    "desk_frontends": {
+      "ddl": "CREATE TABLE desk_frontends(id TEXT PRIMARY KEY REFERENCES desk_operations(id),body BLOB NOT NULL)",
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "desk_operation_history": {
+      "ddl": "CREATE TABLE desk_operation_history (id TEXT NOT NULL REFERENCES desk_operations(id), sequence INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(id,sequence))",
+      "rows": 18,
+      "sha256": "87deb28d164023a77866780dd4bb615067119b647f536207709e286653444c9a"
+    },
+    "desk_operations": {
+      "ddl": "CREATE TABLE desk_operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, body BLOB NOT NULL)",
+      "rows": 6,
+      "sha256": "4f4e2a4fb64adf160ee315f723d8cb2b7a2d8c40d75e97d6ce749cb7fd474773"
+    },
+    "desk_receivers": {
+      "ddl": "CREATE TABLE desk_receivers(id TEXT PRIMARY KEY REFERENCES desk_operations(id),body BLOB NOT NULL)",
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "desk_releases": {
+      "ddl": "CREATE TABLE desk_releases(id TEXT PRIMARY KEY REFERENCES desk_operations(id),body BLOB NOT NULL)",
+      "rows": 2,
+      "sha256": "efae2f9ed89a0937a5c0666f9846a0c58f1ddd652464adcc8d789a409adc4e05"
+    },
+    "desk_settings": {
+      "ddl": "CREATE TABLE desk_settings (target TEXT PRIMARY KEY, body BLOB NOT NULL)",
+      "rows": 1,
+      "sha256": "86d2a5acfea6ca0a7fb64c6a38fa9d3822a65dad0fb8885f71fb172b994a04dc"
+    },
+    "desk_settings_history": {
+      "ddl": "CREATE TABLE desk_settings_history (target TEXT NOT NULL REFERENCES desk_settings(target), revision INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(target,revision))",
+      "rows": 1,
+      "sha256": "ad17053d494d1670b85f918579a3fd9df3e3322cd9cf2c39108937b9e40e573f"
+    },
+    "desk_source_baselines": {
+      "ddl": "CREATE TABLE desk_source_baselines (target TEXT PRIMARY KEY, body BLOB NOT NULL)",
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "desk_source_ownership": {
+      "ddl": "CREATE TABLE desk_source_ownership(target TEXT PRIMARY KEY,body BLOB NOT NULL)",
+      "rows": 1,
+      "sha256": "63914ef850db90eebccbb8802703b412614225051345d7987f8c6082a335454c"
+    }
+  },
+  "baseline": {
+    "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+    "instances": [
+      {
+        "id": "upgrade-nec",
+        "ship": "~nec",
+        "mode": "fake",
+        "label": "upgrade-nec",
+        "config": {
+          "http_port": 19181,
+          "ames_port": 34343,
+          "loom": 31
+        },
+        "config_revision": 1,
+        "applied_revision": 1,
+        "desired_state": "stopped",
+        "pier_path": "fakeships/upgrade-nec/nec",
+        "bootstrap": {
+          "kind": "recommended",
+          "pill": {
+            "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+            "bytes": 59351751
+          }
+        }
+      },
+      {
+        "id": "upgrade-zod",
+        "ship": "~zod",
+        "mode": "fake",
+        "label": "upgrade-zod",
+        "config": {
+          "http_port": 19180,
+          "ames_port": 34343,
+          "loom": 31
+        },
+        "config_revision": 1,
+        "applied_revision": 1,
+        "desired_state": "running",
+        "pier_path": "fakeships/upgrade-zod/zod",
+        "bootstrap": {
+          "kind": "recommended",
+          "pill": {
+            "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+            "bytes": 59351751
+          }
+        }
+      }
+    ],
+    "operations": [
+      {
+        "id": "op-7e8249404c4ab6e542f37d846a282a3c",
+        "request_id": "upgrade-nec-stop",
+        "instance_id": "upgrade-nec",
+        "kind": "stop",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-11-25T22:24:16.007645527Z",
+        "finished_at": "2026-11-25T22:24:21.543505205Z"
+      },
+      {
+        "id": "op-ebddccdd1c7639de58e8ec9fdc1531d2",
+        "request_id": "upgrade-nec-start",
+        "instance_id": "upgrade-nec",
+        "kind": "start",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-11-25T22:20:16.979599031Z",
+        "finished_at": "2026-11-25T22:24:14.656747581Z"
+      },
+      {
+        "id": "op-dd4150edfc2fc584a730f62f600be392",
+        "request_id": "upgrade-nec-create",
+        "instance_id": "upgrade-nec",
+        "kind": "register-fake",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-11-25T22:20:16.818590458Z",
+        "finished_at": "2026-11-25T22:20:16.818590458Z"
+      },
+      {
+        "id": "op-2c2277e550c5bc8976f9635a810fe2ca",
+        "request_id": "upgrade-zod-start",
+        "instance_id": "upgrade-zod",
+        "kind": "start",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-11-25T22:16:54.465839965Z",
+        "finished_at": "2026-11-25T22:20:16.130952631Z"
+      },
+      {
+        "id": "op-d566766211ced0f5db440ca64ff28251",
+        "request_id": "upgrade-zod-create",
+        "instance_id": "upgrade-zod",
+        "kind": "register-fake",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-11-25T22:16:54.303338914Z",
+        "finished_at": "2026-11-25T22:16:54.303338914Z"
+      }
+    ]
+  },
+  "runtime_before": {
+    "engine": "InvocationID=c29c4d6742364aec924c310e013aebe4\nMainPID=420\n",
+    "containers": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3 1619 2026-11-25T22:16:57.364399184Z\n"
+  },
+  "schema_before": 59,
+  "desktop_transition": {
+    "records": [
+      {
+        "version": "0.4.0",
+        "release": "b6a968906ba3f02973efa069671af024a5a6ceb4f08f6d72fd7d7d4755ec5edb",
+        "source_commit": "a9623329a538ebf83d63365053d2d1011ade091e"
+      },
+      {
+        "version": "0.6.0",
+        "release": "845b689a0382ec82124cc069224b54e75768dc5d3b381d8794b8980d60d77e5e",
+        "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9"
+      }
+    ],
+    "directory": "/home/review/.cache/omabit/releases/845b689a0382ec82124cc069224b54e75768dc5d3b381d8794b8980d60d77e5e",
+    "loader": "actual native sealed archive importer; activation acknowledgements driven by guest harness"
+  },
+  "offered": {
+    "version": 1,
+    "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+    "target_sha256": "534957b0a1d890f0e729903a3f79a08026e492d8fecf9aec287f94d29c622937",
+    "installed_sha256": "5d273dfa82e2464f94c2ae5e8366cd314edf2917514b4baf3c7131824d195752",
+    "target_build": "fcf269ca8aa2",
+    "installed_build": "a9623329a538",
+    "available": true,
+    "pending": false,
+    "message": "Update the local runner to match this desktop bundle. OS authorization is required."
+  },
+  "denied_authorization": {
+    "error": "Host setup was not authorized. Your existing installation was preserved; try again when ready.",
+    "preserved": true
+  },
+  "original_app_history_preserved": true,
+  "upgraded": {
+    "state": {
+      "busy": false,
+      "status": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "target_sha256": "534957b0a1d890f0e729903a3f79a08026e492d8fecf9aec287f94d29c622937",
+        "installed_sha256": "534957b0a1d890f0e729903a3f79a08026e492d8fecf9aec287f94d29c622937",
+        "target_build": "fcf269ca8aa2",
+        "installed_build": "fcf269ca8aa2",
+        "available": false,
+        "pending": false,
+        "message": "Local services match this desktop bundle."
+      },
+      "error": "",
+      "message": "Service update completed. Your fleet is ready.",
+      "commands": 4,
+      "refreshes": 1,
+      "apply_text": "Update services"
+    },
+    "schema_after": 67,
+    "ship_continuity": true,
+    "access_preserved": true
+  },
+  "recheck_noop": true,
+  "older_writer_refused_without_state_change": true,
+  "manager_restart_preserved_runtime": true,
+  "app_development_after": {
+    "passed": true,
+    "steps": {
+      "default-create-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "a5a0f46ef979908053525911e4a375399c03230a32ede6182110f531cf93459b",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-candidate-after-upgrade"
+          },
+          "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+          "config_revision": 1,
+          "policy_revision": 5,
+          "action": "create-desk",
+          "baseline": {
+            "exists": false
+          }
+        }
+      },
+      "default-create": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "a5a0f46ef979908053525911e4a375399c03230a32ede6182110f531cf93459b",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 5,
+            "action": "create-desk",
+            "baseline": {
+              "exists": false
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "create-desk",
+              "state": "planned",
+              "at": "2026-11-25T22:25:38.98120854Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "blocked",
+              "at": "2026-11-25T22:25:39.600651995Z"
+            }
+          ]
+        }
+      },
+      "allowed-create-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "4bf11401a2b5bf76778a28df6a85810a9be75f260c13af7d6d007d3f30927b58",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-candidate-after-upgrade"
+          },
+          "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+          "config_revision": 1,
+          "policy_revision": 6,
+          "action": "create-desk",
+          "baseline": {
+            "exists": false
+          }
+        }
+      },
+      "allowed-create": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "4bf11401a2b5bf76778a28df6a85810a9be75f260c13af7d6d007d3f30927b58",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 6,
+            "action": "create-desk",
+            "baseline": {
+              "exists": false
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "create-desk",
+              "state": "planned",
+              "at": "2026-11-25T22:25:41.858093136Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "dispatched",
+              "at": "2026-11-25T22:25:42.545319706Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:25:43.20982293Z"
+            },
+            {
+              "kind": "create-desk",
+              "state": "observed",
+              "at": "2026-11-25T22:25:43.744834968Z",
+              "observation": {
+                "exists": true,
+                "revision": 1,
+                "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+                "publication": "private"
+              }
+            }
+          ]
+        }
+      },
+      "stage-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "version": 1,
+          "id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+          "target": {
+            "instance_id": "upgrade-zod",
+            "desk": "omabit-candidate-after-upgrade"
+          },
+          "settings_revision": 0,
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "files": 1,
+          "bytes": 29
+        }
+      },
+      "stage": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "settings_revision": 0,
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+            "files": 1,
+            "bytes": 29
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "created_at": "2026-11-25T22:25:45.606957542Z"
+        },
+        "read_at": "2026-11-25T22:25:45.728279895Z"
+      },
+      "default-commit-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "520a28a6e488f0fce26ae1f465b781c9f7dda1db8ea98d3c320a96c91c845eae",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 6,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "stage_id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+          "settings_revision": 0,
+          "source_name": "omabit-candidate-after-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "stage_id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+            "settings_revision": 0
+          },
+          "observation": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "policy_revision": 6,
+          "source_name": "omabit-candidate-after-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9",
+          "changes": [
+            {
+              "path": "hello.txt",
+              "kind": "add"
+            }
+          ],
+          "change_count": 1,
+          "conflicts": [],
+          "conflict_count": 0,
+          "preserved_count": 5,
+          "managed_count": 1,
+          "read_at": "2026-11-25T22:25:47.597894537Z"
+        }
+      },
+      "default-commit": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "520a28a6e488f0fce26ae1f465b781c9f7dda1db8ea98d3c320a96c91c845eae",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 6,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "commit",
+              "state": "planned",
+              "at": "2026-11-25T22:25:49.440476068Z"
+            },
+            {
+              "kind": "commit",
+              "state": "blocked",
+              "at": "2026-11-25T22:25:51.418091521Z"
+            }
+          ]
+        }
+      },
+      "allowed-commit-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "0022cc64117d6ea7a1c581999f4399de01815ae60191076ec537ce931174e804",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 7,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "stage_id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+          "settings_revision": 0,
+          "source_name": "omabit-candidate-after-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "stage_id": "a6395a2465cba5f6cd6bd5b9a29e0ee63707dff62bd74dfc5a1797309cf88a56",
+            "settings_revision": 0
+          },
+          "observation": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "policy_revision": 7,
+          "source_name": "omabit-candidate-after-upgrade",
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+          "plan_digest": "e2664996c609f60b667a91e3e809017700ab6fedd7323357cca1b4d867195af9",
+          "changes": [
+            {
+              "path": "hello.txt",
+              "kind": "add"
+            }
+          ],
+          "change_count": 1,
+          "conflicts": [],
+          "conflict_count": 0,
+          "preserved_count": 5,
+          "managed_count": 1,
+          "read_at": "2026-11-25T22:25:54.457190088Z"
+        }
+      },
+      "allowed-commit": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "0022cc64117d6ea7a1c581999f4399de01815ae60191076ec537ce931174e804",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 7,
+            "action": "commit",
+            "baseline": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            },
+            "source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb"
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "commit",
+              "state": "planned",
+              "at": "2026-11-25T22:25:56.400221765Z"
+            },
+            {
+              "kind": "commit",
+              "state": "dispatched",
+              "at": "2026-11-25T22:25:58.212128184Z"
+            },
+            {
+              "kind": "commit",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:25:58.89611892Z"
+            },
+            {
+              "verified_source_digest": "bcb2421d36848d9413df64c7e5d79986e5291d3faea7f5d160f0c6dd49cc48bb",
+              "kind": "commit",
+              "state": "observed",
+              "at": "2026-11-25T22:26:00.996703777Z",
+              "observation": {
+                "exists": true,
+                "revision": 2,
+                "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+                "publication": "private"
+              }
+            }
+          ]
+        }
+      },
+      "default-publish-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "204b19ced3fb072faf37761dffc3b3a2e24b540a59d36d8b63944d647d065f18",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 7,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "settings_revision": 1,
+          "ship_settings_revision": 0,
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "review_digest": "c00058e388463963933057b9eab21b8fae5b8b6070843d2cd9991c0c3f53394c",
+          "checks_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "action": "publish-source"
+          },
+          "policy_revision": 7,
+          "review": {
+            "version": 1,
+            "action": "publish-source",
+            "observation": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            },
+            "application": {
+              "zest": "dead",
+              "source_revision": 2,
+              "source_ship": "",
+              "source_desk": "",
+              "expected_agents": [],
+              "agents": [],
+              "treaty_available": true,
+              "treaty_listed": false,
+              "treaty_hash": "",
+              "docket_available": true,
+              "docket_hash": "",
+              "frontend_mode": "none",
+              "frontend_state": "absent",
+              "frontend_docket_hash": ""
+            },
+            "ship_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod"
+              },
+              "revision": 0,
+              "ship": {
+                "purpose": "standard",
+                "instructions": ""
+              },
+              "updated_at": "0001-01-01T00:00:00Z"
+            },
+            "desk_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "revision": 1,
+              "desk": {
+                "workflow": "mounted",
+                "source_name": "omabit-candidate-after-upgrade",
+                "publication": "source",
+                "repository": "",
+                "branch": "",
+                "checks": [],
+                "instructions": ""
+              },
+              "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+              "updated_at": "2026-11-25T22:26:01.871815925Z"
+            },
+            "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+            "digest": "c00058e388463963933057b9eab21b8fae5b8b6070843d2cd9991c0c3f53394c"
+          },
+          "read_at": "2026-11-25T22:26:03.795951848Z"
+        },
+        "checks": []
+      },
+      "default-publish": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "204b19ced3fb072faf37761dffc3b3a2e24b540a59d36d8b63944d647d065f18",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 7,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "publish-source",
+              "state": "planned",
+              "at": "2026-11-25T22:26:05.899930796Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "blocked",
+              "at": "2026-11-25T22:26:08.017991056Z"
+            }
+          ]
+        }
+      },
+      "allowed-publish-plan": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "intent": {
+          "intent": {
+            "version": 1,
+            "id": "06d3aef0f7e4f2f77af217dffd253235e071a58f963d43cf943233c1b529b510",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 8,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "settings_revision": 1,
+          "ship_settings_revision": 0,
+          "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+          "review_digest": "c00058e388463963933057b9eab21b8fae5b8b6070843d2cd9991c0c3f53394c",
+          "checks_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "review": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "request": {
+            "selection": {
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+              "config_revision": 1
+            },
+            "action": "publish-source"
+          },
+          "policy_revision": 8,
+          "review": {
+            "version": 1,
+            "action": "publish-source",
+            "observation": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            },
+            "application": {
+              "zest": "dead",
+              "source_revision": 2,
+              "source_ship": "",
+              "source_desk": "",
+              "expected_agents": [],
+              "agents": [],
+              "treaty_available": true,
+              "treaty_listed": false,
+              "treaty_hash": "",
+              "docket_available": true,
+              "docket_hash": "",
+              "frontend_mode": "none",
+              "frontend_state": "absent",
+              "frontend_docket_hash": ""
+            },
+            "ship_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod"
+              },
+              "revision": 0,
+              "ship": {
+                "purpose": "standard",
+                "instructions": ""
+              },
+              "updated_at": "0001-01-01T00:00:00Z"
+            },
+            "desk_setting": {
+              "version": 1,
+              "target": {
+                "instance_id": "upgrade-zod",
+                "desk": "omabit-candidate-after-upgrade"
+              },
+              "revision": 1,
+              "desk": {
+                "workflow": "mounted",
+                "source_name": "omabit-candidate-after-upgrade",
+                "publication": "source",
+                "repository": "",
+                "branch": "",
+                "checks": [],
+                "instructions": ""
+              },
+              "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+              "updated_at": "2026-11-25T22:26:01.871815925Z"
+            },
+            "continuity": "0aac22a41be6051c76a68726792e3dd81b8ed4f0dd282d71b54a1951497b3bf0",
+            "digest": "c00058e388463963933057b9eab21b8fae5b8b6070843d2cd9991c0c3f53394c"
+          },
+          "read_at": "2026-11-25T22:26:11.009348261Z"
+        },
+        "checks": []
+      },
+      "allowed-publish": {
+        "version": 1,
+        "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+        "mode": "development-managed",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "06d3aef0f7e4f2f77af217dffd253235e071a58f963d43cf943233c1b529b510",
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1,
+            "policy_revision": 8,
+            "action": "publish-source",
+            "baseline": {
+              "exists": true,
+              "revision": 2,
+              "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+              "publication": "private"
+            }
+          },
+          "actor": "ssh-key:SHA256:G07Xnv3OMXtZl15WY5AWSGOmzqwUczmXjG0fpkbA7Uw",
+          "steps": [
+            {
+              "kind": "publish-source",
+              "state": "planned",
+              "at": "2026-11-25T22:26:13.206239587Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "dispatched",
+              "at": "2026-11-25T22:26:15.290114048Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "acknowledged",
+              "at": "2026-11-25T22:26:15.705567819Z"
+            },
+            {
+              "kind": "publish-source",
+              "state": "observed",
+              "at": "2026-11-25T22:26:17.492319025Z",
+              "observation": {
+                "exists": true,
+                "revision": 2,
+                "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+                "publication": "published"
+              },
+              "application": {
+                "zest": "dead",
+                "source_revision": 2,
+                "source_ship": "",
+                "source_desk": "",
+                "expected_agents": [],
+                "agents": [],
+                "treaty_available": true,
+                "treaty_listed": false,
+                "treaty_hash": "",
+                "docket_available": true,
+                "docket_hash": "",
+                "frontend_mode": "none",
+                "frontend_state": "absent",
+                "frontend_docket_hash": ""
+              }
+            }
+          ]
+        }
+      },
+      "published": {
+        "observation": {
+          "version": 1,
+          "runner_id": "runner-ea6f566a527cf4693afd83352f74647d",
+          "mode": "development-managed",
+          "selection": {
+            "target": {
+              "instance_id": "upgrade-zod",
+              "desk": "omabit-candidate-after-upgrade"
+            },
+            "runtime_id": "b04cdbabc03f79e603702dbcebb120d748aca2dbd46f8c11376a3fed8d2156a3",
+            "config_revision": 1
+          },
+          "policy_revision": 8,
+          "observation": {
+            "exists": true,
+            "revision": 2,
+            "clay_hash": "0vf.ouap6.0fck1.u08p3.crrq6.jrera.vdqcf.urqp3.rsd7a.f8818.nhsnr",
+            "publication": "published"
+          },
+          "read_at": "2026-11-25T22:26:18.501242891Z"
+        },
+        "permissions": {
+          "commit": {
+            "value": "allow",
+            "source": "desk"
+          },
+          "publish": {
+            "value": "allow",
+            "source": "desk"
+          },
+          "create_desk": {
+            "value": "allow",
+            "source": "ship"
+          }
+        }
+      },
+      "completed": true
+    },
+    "boundary": "actual frozen CLI, restricted SSH, installed runner, Docker exec and native Clay; test operator explicitly opens only this fresh fake/desk gates; no Treaty/frontend claim from this scenario"
+  },
+  "date": "2026-11-25",
+  "artifact_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_sha256": {
+    "guest.py": "521f3bdaa582acfe1a679132bef4b0dc3c7836fff687390c33eed6f99c0983d9",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "0c70774d4f4d5a6dac5bd14340bcf9e9020dcdb848e9d77869034d38c4cf6771",
+    "run.py": "0bfb68073493700d629e53a77d01ed8ad4767734a261dba33d2908994a206b05"
+  },
+  "evidence": {
+    "host.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-upgrade04001/host.json",
+      "sha256": "329e92fb8e5554230ef424c7b7e17f4aa94f8dc7c123470a527cd676999329e7"
+    },
+    "result.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-upgrade04001/result.json",
+      "sha256": "d63ef25922aff2a02d09d2c2a9c24ab4b14cd808aa64e49bdd58e016df2707a5"
+    },
+    "serial.log": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-upgrade04001/serial.log",
+      "sha256": "4a329d42ba26564fb09249cad137f929e35d8f7ac255f5e87d35bbcd38eccd5a"
+    }
+  },
+  "isolation": {
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32"
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "scratch_bytes": 4294967296,
+    "charged_before": 47187062784,
+    "charged_after": 49753145344
+  },
+  "evidence_transfer_recovery": {
+    "format": 1,
+    "passed": true,
+    "scope": "Read-only retrieval of complete saved guest report after serial transfer omitted one chunk; original driver transfer failure retained.",
+    "original_driver_error": "JSONDecodeError: Invalid control character in serial report frame",
+    "original_host_exit": 0,
+    "missing_original_frames": [
+      2,
+      3
+    ],
+    "guest_footer": {
+      "chunks": 21,
+      "sha256": "f17956e30137feed08e1b3b37e9c7320044a6346cfb44d20c4c85ae51628bae1"
+    },
+    "saved_report_sha256": "d63ef25922aff2a02d09d2c2a9c24ab4b14cd808aa64e49bdd58e016df2707a5",
+    "matches_guest_footer": true,
+    "corrupted_original_frames": [],
+    "unparseable_original_line_sha256": [
+      "31267843e2af3f86bd6b8bdf26a6aee92cd554f1ebe9df25f658f27b16b511c5"
+    ],
+    "matches_intact_frames": 19,
+    "overlay_unchanged_sha256": "0dc0020dd74d4ce50f15d51251198d7965d7b296a91af98a2c42ee1af2e53c1b",
+    "base_unchanged_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "reader_driver_sha256": "dccbe695d8ec3482c56711585a3c278a8263feb984a21fc30498a9d5754e17d0",
+    "reader_source_sha256": "972fbe234c91840964717d25325f424ed8cb71e69908935708335bb6cb8fc292",
+    "reader_binary_sha256": "d0fdfcdb100548825d8a7f9043aa2006f9d9f8560eb0497c0333f7a923319555",
+    "reader_command_sha256": "6ecd0872074ca5214fdae1e6c662899ee1352ded463fe489d9cef7d1add67750",
+    "reader_serial_sha256": "a292fad990593c1548df02bc17991220905ea43bf96d93536622d749032e0789",
+    "reader_result": {
+      "chunks": 179,
+      "journal_replayed": false,
+      "read_only": true,
+      "services_started": false,
+      "sha256": "d63ef25922aff2a02d09d2c2a9c24ab4b14cd808aa64e49bdd58e016df2707a5"
+    },
+    "admission": {
+      "measurements": [
+        {
+          "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs",
+          "allocated_bytes": 20971134976,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence",
+          "allocated_bytes": 13867487232,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/srv/dev/urbit",
+          "allocated_bytes": 8449048576,
+          "unmeasured_reserve": 0,
+          "measurement_source": "existing-rootless-user-namespace",
+          "namespace": "user:[4026534692]"
+        },
+        {
+          "path": "/srv/dev/urbit-040",
+          "allocated_bytes": 5206487040,
+          "unmeasured_reserve": 0,
+          "measurement_source": "existing-rootless-user-namespace",
+          "namespace": "user:[4026534693]"
+        },
+        {
+          "path": "/home/thelifeandtimes/.local/share/omabit-review-040-retired-20261112",
+          "allocated_bytes": 146948096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-060-shell-stable01",
+          "allocated_bytes": 4071424,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-issues-vm-runtime.lock",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-assets",
+          "allocated_bytes": 221675520,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-dedup-plan.json",
+          "allocated_bytes": 20480,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-evidence",
+          "allocated_bytes": 11669504,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-extract-first.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-extract.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-extract040.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-inputs",
+          "allocated_bytes": 318066688,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-make-records.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader-cache",
+          "allocated_bytes": 45223936,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader-init",
+          "allocated_bytes": 4263936,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader.go",
+          "allocated_bytes": 4096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader01",
+          "allocated_bytes": 9314304,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader02",
+          "allocated_bytes": 13619200,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-record.py",
+          "allocated_bytes": 4096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-retire-shell.py",
+          "allocated_bytes": 4096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-retire.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-write-docs.py",
+          "allocated_bytes": 12288,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.cache/go-build",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/go/pkg/mod",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/repos/omabit/build",
+          "allocated_bytes": 325480448,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.t3/worktrees/omabit/codex-issues-16-21-recovery-appdev/build",
+          "allocated_bytes": 176128,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build",
+          "allocated_bytes": 91267072,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1",
+          "allocated_bytes": 71626752,
+          "unmeasured_reserve": 0
+        }
+      ],
+      "charged_bytes": 49757646848,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 67108864,
+      "total_with_reserves": 49824755712
+    },
+    "reader_path": "/tmp/omabit-release060-reader04001"
+  }
+}

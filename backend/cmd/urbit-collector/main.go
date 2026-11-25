@@ -334,6 +334,8 @@ Use COMMAND --help for command flags and constraints.
 	var label string
 	var fakeShip, pierName string
 	var bootstrap, pillSource string
+	var runtimeProfile string
+	var confirmRuntimeChange bool
 	var pillSHA string
 	var pillSize int64
 	var pierPath string
@@ -355,9 +357,10 @@ Use COMMAND --help for command flags and constraints.
 	case "projects":
 		usage += "\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1."
 	case "create-fake", "create-comet":
+		flags.StringVar(&runtimeProfile, "runtime-profile", "", "immutable reviewed runtime; omission retains official Vere 4.6")
 		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); omitted=4")
 		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); omitted=2")
-		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
+		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default). Installed local runtimes may declare a larger maximum, up to40")
 		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
@@ -381,12 +384,14 @@ Use COMMAND --help for command flags and constraints.
 		}
 	case "configure":
 		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT [--memory-gib 1..16] [--cpus 1..16]"
+		flags.StringVar(&runtimeProfile, "runtime-profile", "", "immutable runtime ID; omitted=preserve")
+		flags.BoolVar(&confirmRuntimeChange, "confirm-runtime-change", false, "explicit stopped-ship runtime transition; preserve a pier backup before starting an untested build")
 		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); stopped ship only; omitted=preserve, default=4")
 		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); stopped ship only; omitted=preserve, default=2")
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
-		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
+		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default). Installed local runtimes may declare a larger maximum, up to40")
 		flags.BoolVar(&nativeControl, "native-control", false, "omitted=preserve existing setting; use =true/=false explicitly\n\n"+protocol.NativeControlWarning)
 	case "operate":
 		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
@@ -480,8 +485,8 @@ Use COMMAND --help for command flags and constraints.
 		if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
 			return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
 		}
-		if !validCreationLoom(loom) {
-			return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
+		if !validCreationLoom(loom, runtimeProfile) {
+			return fail(errors.New("--loom must be in 30..34 (1–16 GiB), or within the selected local runtime maximum (at most40)"), 2)
 		}
 		if _, err := bootstrapChoice(bootstrap, pillSource); err != nil {
 			return fail(err, 2)
@@ -505,8 +510,8 @@ Use COMMAND --help for command flags and constraints.
 		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
 		}
-		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
-			return fail(errors.New("--loom is required and must be in 30..34 (1–16 GiB)"), 2)
+		if loom < protocol.MinLoom || loom > 40 || runtimeProfile != "" && !validCreationLoom(loom, runtimeProfile) {
+			return fail(errors.New("--loom is required: 30..34 for bundled runtimes, up to the installed local runtime's declared maximum (at most 40)"), 2)
 		}
 		runtimeSettings = runtimeSettings || loom < 31 || loom > 33
 	case "operate":
@@ -682,7 +687,7 @@ Use COMMAND --help for command flags and constraints.
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)
 		}
-		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}
+		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{RuntimeProfile: runtimeProfile, HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}
 		if fakeOptions {
 			if !slices.Contains(hello.Features, "fake-ship-options") {
 				return fail(errors.New("update this runner to choose a fake identity and pier directory"), 1)
@@ -694,13 +699,14 @@ Use COMMAND --help for command flags and constraints.
 		if hello.Mode != "development-managed" || hello.AccessRole != "operator" || !slices.Contains(hello.Features, "create-comet") {
 			return fail(errors.New("comet creation requires an operator and the explicit development-managed mode/capability"), 1)
 		}
-		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}, ConfirmNetwork: confirmNetwork})
+		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{RuntimeProfile: runtimeProfile, HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}, ConfirmNetwork: confirmNetwork})
 	case "configure":
 		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
+			ConfirmRuntimeChange:  confirmRuntimeChange,
 			ExpectedRevision:      revision,
 			PreserveNativeControl: !nativeControlSet,
 			Config: protocol.Configuration{
-				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores),
+				RuntimeProfile: runtimeProfile, HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores),
 			},
 		})
 	case "operate":

@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 
@@ -115,6 +116,18 @@ func (c *Client) SuggestHTTPPort(ctx context.Context) (protocol.PortSuggestion, 
 }
 
 func (c *Client) Configure(ctx context.Context, id string, req protocol.ConfigureRequest) (protocol.Instance, error) {
+	if req.ConfirmRuntimeChange {
+		h, err := c.Hello(ctx)
+		if err != nil {
+			return protocol.Instance{}, err
+		}
+		if !slices.Contains(h.Features, protocol.RuntimeTransitionFeature) {
+			return protocol.Instance{}, errors.New("update this runner for runtime-transition-v1 before changing an enrolled runtime")
+		}
+	}
+	if err := c.requireRuntimeProfile(ctx, req.Config.RuntimeProfile); err != nil {
+		return protocol.Instance{}, err
+	}
 	if err := validateID(id); err != nil {
 		return protocol.Instance{}, err
 	}
@@ -137,6 +150,9 @@ func (c *Client) Operate(ctx context.Context, id string, req protocol.OperationR
 }
 
 func (c *Client) CreateFake(ctx context.Context, req protocol.CreateFakeRequest) (protocol.Operation, error) {
+	if err := c.requireRuntimeProfile(ctx, req.Config.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	if err := validateID(req.ID); err != nil {
 		return protocol.Operation{}, err
 	}
@@ -148,6 +164,9 @@ func (c *Client) CreateFake(ctx context.Context, req protocol.CreateFakeRequest)
 }
 
 func (c *Client) EnrollPier(ctx context.Context, req protocol.EnrollPierRequest) (protocol.Operation, error) {
+	if err := c.requireRuntimeProfile(ctx, req.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	var result protocol.Operation
 	if err := c.do(ctx, http.MethodPost, "/v1/piers", req, &result, true); err != nil {
 		return result, err
@@ -163,6 +182,9 @@ func (c *Client) EnrollPier(ctx context.Context, req protocol.EnrollPierRequest)
 }
 
 func (c *Client) CreateShip(ctx context.Context, req protocol.CreateShipRequest) (protocol.Operation, error) {
+	if err := c.requireRuntimeProfile(ctx, req.Config.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	var op protocol.Operation
 	if err := c.do(ctx, http.MethodPost, "/v1/ships", req, &op, true); err != nil {
 		return op, err
@@ -174,6 +196,9 @@ func (c *Client) CreateShip(ctx context.Context, req protocol.CreateShipRequest)
 }
 
 func (c *Client) CreateComet(ctx context.Context, req protocol.CreateCometRequest) (protocol.Operation, error) {
+	if err := c.requireRuntimeProfile(ctx, req.Config.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	if err := validateID(req.ID); err != nil {
 		return protocol.Operation{}, err
 	}

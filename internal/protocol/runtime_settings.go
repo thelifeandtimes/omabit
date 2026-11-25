@@ -1,5 +1,7 @@
 package protocol
 
+import "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
+
 // The pinned Vere 4.6-5a7614f main.c _main_read_loom accepts 20..u3a_bits_max.
 // pkg/noun/allocate.h defines that maximum as 8*sizeof(c3_w)+u3a_vits;
 // c3_w is uint32_t and u3a_vits is 2, giving 34. These are byte exponents,
@@ -18,14 +20,16 @@ const (
 // RuntimeSettings travels with nondefault stopped-pier transfers. A nil value
 // in historical handoffs retains the original loom31/native-off contract.
 type RuntimeSettings struct {
-	MemoryGiB     uint8 `json:"memory_gib,omitempty"`
-	CPUCores      uint8 `json:"cpu_cores,omitempty"`
-	Loom          uint8 `json:"loom"`
-	NativeControl bool  `json:"native_control"`
+	RuntimeRequirement string `json:"runtime_requirement,omitempty"`
+	RuntimeProfile     string `json:"runtime_profile,omitempty"`
+	MemoryGiB          uint8  `json:"memory_gib,omitempty"`
+	CPUCores           uint8  `json:"cpu_cores,omitempty"`
+	Loom               uint8  `json:"loom"`
+	NativeControl      bool   `json:"native_control"`
 }
 
 func (s RuntimeSettings) Nondefault() bool {
-	return s.Loom != DefaultLoom || s.NativeControl || NondefaultContainerResources(s.MemoryGiB, s.CPUCores)
+	return s.RuntimeProfile != "" || s.Loom != DefaultLoom || s.NativeControl || NondefaultContainerResources(s.MemoryGiB, s.CPUCores)
 }
 
 // NativeControlWarning is shared by collector and runner help. Native-control
@@ -42,6 +46,24 @@ func ValidLoom(loom uint8) bool { return loom >= MinLoom && loom <= MaxLoom }
 // new selections must not strand a running ship, change its arguments on upgrade,
 // or invalidate a signed, already-prepared handoff.
 func ValidRecordedLoom(loom uint8) bool { return loom >= 20 && loom <= MaxLoom }
+
+// Larger address spaces require an explicitly installed runtime declaration.
+// The declaration is an owner's assertion; runtime qualification is separate.
+func ValidProfileLoom(id string, loom uint8, historical bool) bool {
+	p, err := runtimeprofile.Resolve(id)
+	if err != nil {
+		return false
+	}
+	limit := uint8(MaxLoom)
+	if p.Kind == "local" {
+		limit = p.MaxLoom
+	}
+	minimum := uint8(MinLoom)
+	if historical {
+		minimum = 20
+	}
+	return loom >= minimum && loom <= limit
+}
 
 // EffectiveLoom preserves pre-settings private runtime records. Public requests
 // still require an explicit valid value; zero is not a request-side default.
@@ -62,5 +84,6 @@ func (c Configuration) HandoffRuntimeSettings() RuntimeSettings {
 	if cpu == DefaultCPUCores {
 		cpu = 0
 	}
-	return RuntimeSettings{Loom: c.Loom, NativeControl: c.NativeControl, MemoryGiB: memory, CPUCores: cpu}
+	profile, _ := runtimeprofile.Resolve(c.RuntimeProfile)
+	return RuntimeSettings{RuntimeProfile: c.RuntimeProfile, RuntimeRequirement: profile.Requirement, Loom: c.Loom, NativeControl: c.NativeControl, MemoryGiB: memory, CPUCores: cpu}
 }

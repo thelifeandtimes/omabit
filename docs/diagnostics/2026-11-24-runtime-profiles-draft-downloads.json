@@ -1,0 +1,72 @@
+{
+  "passed": true,
+  "public_downloads": false,
+  "release_id": 457381653,
+  "tag": "v0.6.0-rc.3",
+  "source_commit": "747dd810c10b74b4fbcdc10f617e6b15dd545a45",
+  "assets": [
+    {
+      "name": "omabit-0.6.0-rc.3-linux-amd64.tar.gz",
+      "asset_id": 789011568,
+      "bytes": 36975728,
+      "sha256": "f1676a51bede3302327917c9e80b8661bf482e47a8e40633903e60ac435037f7",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/omabit-0.6.0-rc.3-linux-amd64.tar.gz"
+    },
+    {
+      "name": "omabit-linux-amd64",
+      "asset_id": 789011586,
+      "bytes": 26869609,
+      "sha256": "355f897a80db93a7e26dd25e0c1e688ef55d4f077e83862d2327ebb633afb6a3",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/omabit-linux-amd64"
+    },
+    {
+      "name": "omabit-recommended-apps-0.6.0-rc.3.pill",
+      "asset_id": 789011579,
+      "bytes": 59351751,
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/omabit-recommended-apps-0.6.0-rc.3.pill"
+    },
+    {
+      "name": "omabit-skills-0.6.0-rc.3.tar.gz",
+      "asset_id": 789011566,
+      "bytes": 73904,
+      "sha256": "280367c2807cfe44b73b1a7c40c11dbce853005b7c4e8d3a5c77edb5229c59b6",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/omabit-skills-0.6.0-rc.3.tar.gz"
+    },
+    {
+      "name": "release.json",
+      "asset_id": 789011614,
+      "bytes": 4176,
+      "sha256": "6bfbc54dcad6c2dfdce037dee65b1400b3e91ca4d2e5a5b06cfcd2ca53e753d2",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/release.json"
+    },
+    {
+      "name": "SHA256SUMS",
+      "asset_id": 789011564,
+      "bytes": 755,
+      "sha256": "c3220d8db6e798ad06a2257c254c65031318a1281b2ac7c50efaea0a2e6660c7",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/SHA256SUMS"
+    },
+    {
+      "name": "urbit-collector-linux-amd64",
+      "asset_id": 789011639,
+      "bytes": 13229180,
+      "sha256": "0168cf02b79d247acb834704ea5dfeb7c25a94fd243ac76bfc2b1eac07bf5c58",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/urbit-collector-linux-amd64"
+    },
+    {
+      "name": "urbit-runner-linux-amd64",
+      "asset_id": 789011665,
+      "bytes": 30278816,
+      "sha256": "bfd62c7be2d3a4ce513ecb425ea16129df2eb1218d99f5474a2d41072d386ee1",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/urbit-runner-linux-amd64"
+    },
+    {
+      "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+      "asset_id": 789011695,
+      "bytes": 54750277,
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-949973d7dc9a18782d2c/vere-4.6-jsonfix-0774857c.tar.gz"
+    }
+  ]
+}

@@ -39,6 +39,8 @@ CopyCodeButton 1.0 CopyCodeButton.qml
 Toast 1.0 Toast.qml
 ShipPortsPane 1.0 ShipPortsPane.qml
 RuntimeSettingsFields 1.0 RuntimeSettingsFields.qml
+RuntimeProfileChoice 1.0 RuntimeProfileChoice.qml
+RuntimeSelectionPane 1.0 RuntimeSelectionPane.qml
 RuntimePane 1.0 RuntimePane.qml
 RuntimeDetails 1.0 RuntimeDetails.qml
 ConnectivityStatus 1.0 ConnectivityStatus.qml

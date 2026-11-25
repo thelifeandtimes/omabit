@@ -16,7 +16,6 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
-	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
 var errDeskProcess = errors.New("exact app runtime process/context unavailable or changed")
@@ -72,7 +71,7 @@ func deskProcessReader(s *DeskRuntime, engineID, runtimeVersion string, boot fun
 			return refuse()
 		}
 		started, err := time.Parse(time.RFC3339Nano, selected.State.StartedAt)
-		if err != nil || q.r.RepoDigest != candidate.Image && q.r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/") || runtimeVersion != candidate.VereVersion {
+		if err != nil || q.r.RepoDigest != q.runtimeProfile().Image && q.r.RepoDigest != strings.TrimPrefix(q.runtimeProfile().Image, "docker.io/") || runtimeVersion != q.runtimeProfile().VereVersion {
 			return refuse()
 		}
 		private, err := json.Marshal(struct {
@@ -84,7 +83,7 @@ func deskProcessReader(s *DeskRuntime, engineID, runtimeVersion string, boot fun
 			return refuse()
 		}
 		h := sha256.Sum256(append([]byte("omabit-desk-process-context-v1\x00"), private...))
-		process := grubbery.RuntimeProcess{ContainerID: s.containerID, PID: uint32(selected.State.Pid), StartedAt: started.UTC(), HostBootID: ns.BootID, EngineID: engineID, ImageManifestDigest: candidate.ManifestDigest, RuntimeVersion: runtimeVersion, ContextSHA256: hex.EncodeToString(h[:])}
+		process := grubbery.RuntimeProcess{ContainerID: s.containerID, PID: uint32(selected.State.Pid), StartedAt: started.UTC(), HostBootID: ns.BootID, EngineID: engineID, ImageManifestDigest: q.runtimeProfile().ManifestDigest, RuntimeVersion: runtimeVersion, ContextSHA256: hex.EncodeToString(h[:])}
 		if process.Validate() != nil {
 			return refuse()
 		}

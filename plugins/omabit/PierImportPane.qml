@@ -33,19 +33,20 @@ Column {
   readonly property string selection: connection ? connection.runner_id+"/"+connection.name : ""
   readonly property var review: service ? service.externalImportPreview : null
   readonly property bool supported: !!connection && Model.hasFeature(connection,"guided-pier-import")
+  readonly property string runtimeProfile: runtimeChoice.selectedProfile
   readonly property bool localHost: !!service && !!service.localSetupStatus && service.localSetupStatus.ready && !!connection && service.localSetupStatus.connection.runner_id===connection.runner_id
-  readonly property bool current: !!service && Model.externalReviewCurrent(connection,review,source.text.trim(),service.now) && !!review.plan && review.plan.storage_root===location.rootID
+  readonly property bool current: !!service && Model.externalReviewCurrent(connection,review,source.text.trim(),service.now) && !!review.plan && review.plan.storage_root===location.rootID && String(review.plan.runtime_profile || "")===runtimeProfile
   readonly property var plan: current ? review.plan : null
   readonly property bool inspecting: !!service && service.currentAction==="preview-pier"
   readonly property var outcome: submission ? (service && service.importOutcomes[Model.importRequestKey(submission)]) || submission : null
   readonly property var progress: Model.importProgress(service ? service.connections : [],outcome,service ? service.now : Date.now())
-  onSelectionChanged: { reviewAnother();clearReview() }
+  onSelectionChanged: { reviewAnother();clearReview();if(!Model.hasFeature(connection,"runtime-profiles-v1"))runtimeChoice.selectedProfile="" }
   function clearReview() { consent.checked=false;if(visible && service)service.externalImportPreview=null }
   function reviewAnother() {
     if (service && service.busy || submitted && progress.active) return false
     submission=null;clearReview();return true
   }
-  function inspect() { if (submitted) return false;clearReview();return service.previewExternalPier(connection,source.text.trim(),location.rootID) }
+  function inspect() { if (submitted) return false;clearReview();return service.previewExternalPier(connection,source.text.trim(),location.rootID,runtimeProfile) }
   function submitImport() {
     if (submitted || !current) return false
     var target=service.importExternalPier(connection,review,consent.checked)
@@ -64,6 +65,12 @@ Column {
   Dialogs.FolderDialog { id:folderPicker;title:"Choose the existing pier directory";options:Dialogs.FolderDialog.DontUseNativeDialog;onAccepted:{source.text=Model.localPath(selectedFolder);root.clearReview()} }
   Label { width:parent.width;caption:true;secondary:true;visible:!root.localHost;text:"Enter the source path on the selected remote runner host." }
   StorageLocationSelector { id:location;width:parent.width;connection:root.connection;enabled:!root.submitted&&!root.service.busy;onEdited:root.clearReview() }
+  RuntimeProfileChoice {
+    id:runtimeChoice;objectName:"import-runtime-profile";width:parent.width;connection:root.connection
+    enabled:!root.submitted&&!root.service.busy
+    onEdited:root.clearReview()
+  }
+  Label { width:parent.width;caption:true;secondary:true;text:"Select a runtime compatible with this pier's event history. A patched pier may require the same correction in every later runtime." }
   ActionButton { objectName:"import-pier-review";text:root.inspecting ? "Inspecting pier…" : "Inspect pier";enabled:root.supported&&!root.service.busy&&!root.submitted&&Model.hostPath(source.text.trim());onClicked:root.inspect() }
   ProgressMeter { width:parent.width;visible:root.inspecting;indeterminate:true }
   Label { objectName:"import-pier-plan";width:parent.width;visible:root.current;text:root.plan ? root.plan.ship+" · "+(root.plan.network==="fakenet" ? "Fakenet" : "Livenet (Vere live mode)")+"\nInstance: "+root.plan.instance_id+" · HTTP "+root.plan.http_port+"\nDestination: "+Model.absolutePierPath(root.connection,root.plan.destination)+"\n"+root.plan.source.files+" files · "+Model.bytesText(root.plan.source.bytes)+(root.plan.in_place ? " · already in place" : "") : "" }

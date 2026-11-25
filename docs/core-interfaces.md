@@ -1,5 +1,14 @@
 # Shared CLI and MCP interfaces
 
+Runtime-profile review development adds `runtime.profile-preflight.v1`, an
+operator read bound to enrolled `name`, `runner_id` and an explicit
+`runtime_profile`. It negotiates `runtime-profiles-v1`, compares exact immutable
+catalogue metadata and verifies the staged archive/image without opening a pier.
+`runner.snapshot.v1` includes separate requested, recorded-launch and observed
+runtime identities. Runtime archive installation remains a local-owner CLI
+command; MCP receives no arbitrary executable upload or installation authority.
+See [runtime policy](runtime-policy.md) for qualification status and factory scope.
+
 Issue19's development slice adds one typed service catalog over existing
 `collection`, `client`, `protocol`, project and desk libraries. Run
 `omabit operations` for offline JSON schemas, capabilities, roles, effect classes,

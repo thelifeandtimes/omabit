@@ -1,5 +1,67 @@
 # Stable-release upgrade requirement
 
+## 0.6.0: qualified local 0.4.0/0.5.0 → 0.6.0 support window
+
+The exact frozen stable artifacts qualify direct published0.4.0/schema59 and
+0.5.0/schema65 upgrades to0.6.0/schema67 for local owner-user installations.
+[0.4.0 rehearsal](releases/0.6.0/rehearsal-0.4.0.json),
+[0.5.0 rehearsal](releases/0.6.0/rehearsal.json)
+and [qualification](releases/0.6.0/qualification.json) bind the source, artifact
+hashes and results. Native authorization denial/retry, ship and application history,
+access, running/stopped intent and live process continuity pass; manager restart
+and actual older-writer refusal pass. Earlier stable users follow their documented
+path to0.4.0. This supersedes the rc.4-only review window below for stable delivery.
+
+Update the stable desktop plugin, then use Setup → Local services & updates.
+Preserve the runtime-profiles directory with management state and pier backups.
+Do not lower schema markers or restore old binaries alone. New channel artifacts
+do not change enrolled pins. Remote upgrades, active recording-worker upgrades,
+power-loss durability and arbitrary development snapshots are outside this window.
+The owner's UI1 DEV update completed separately; stable publication performs no
+production or DEV service update.
+
+
+## Historical rc.4 review: local runtime manifests and explicit transitions, schema67
+
+The rc.4 source adds an older-writer fence for owner-installed immutable runtime
+manifests and journaled stopped runtime transitions. Migration preserves original
+instance and operation bodies. Preserve the runtime-profiles directory alongside
+management state; it contains the exact metadata and archives needed by enrolled
+ships. No migrated database may be opened by an older writer. The qualified review
+window is published0.5.0/schema65 and rc.3/schema66 directly to rc.4/schema67.
+Both [0.5.0](diagnostics/2026-11-25-runtime-feedback-stable-upgrade.json) and
+[rc.3](diagnostics/2026-11-25-runtime-feedback-rc3-upgrade.json) matching-artifact
+rehearsals pass for local owner-user installations: native authorization denial/retry,
+original ship/application/access history, running-process continuity, manager
+restart and older-writer refusal. The rc.3 case also retains an enrolled reviewed
+runtime selection and its installed archive. These results do not qualify remote
+updates, active recording-worker upgrades or power-loss durability. The custom
+DEV adapter is [prepared separately](review040-update.md), not applied. No live
+DEV or production update is implied.
+
+## Historical review: immutable per-ship runtimes, schema66
+
+Issue#22 introduces additive runtime-profile fields and a schema66 older-reader
+fence. An omitted historical profile keeps the exact official Vere4.6 artifact;
+migration does not rewrite original instance, operation, permission, recording or
+handoff bodies. Existing clients that omit a runtime setting preserve the stored
+selection. The JSON-fix correction requirement prevents an incompatible stock
+downgrade; changes of runtime need a separate reviewed checkpoint/replay plan.
+
+Source fixtures cover preservation, per-ship bindings and signed handoffs.
+The [frozen0.5.0→rc.3 rehearsal](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
+now passes the actual local owner-user service upgrade, schema65→66, preserved
+ship/app history, access and running processes, manager reopen and genuine0.5.0
+writer refusal. [Native core runtime checks](diagnostics/2026-11-24-runtime-profiles-native.json)
+pass separately. This review window covers that exact published0.5.0 starting
+state; earlier users first follow their documented stable upgrade chain. Remote
+updates, active recording-worker upgrades and power-loss durability are outside
+this scenario. [Full isolated shell activation](diagnostics/2026-11-24-runtime-profiles-full-shell.json)
+also passes. Use the [manual review guide](runtime-profiles-manual-review.md) for
+the exact prerelease delivery and owner-operated review path. Stable promotion
+and production deployment remain separate. No marker editing, state reset, re-enrollment or protected-pier testing is
+part of the procedure. Preserve runtime-profile archives alongside runner state.
+
 ## 0.5.0: qualified local0.4.0→0.5.0 support window
 
 The [exact qualification](releases/0.5.0/qualification.json) binds frozen59d83aa

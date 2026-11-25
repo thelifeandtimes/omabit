@@ -17,6 +17,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 // OpenManagedHost locks the fixed development state directory. Docker may be
@@ -26,6 +27,7 @@ func OpenManagedHost() (*ManagedHost, error) {
 	if err := q.accountBoundary(false); err != nil {
 		return nil, err
 	}
+	runtimeprofile.ConfigureStore(filepath.Join(q.d.home, ".local/share/urbit-runner/runtime-profiles"))
 	// Keep inventory and Stop available even if an externally edited pier tree
 	// needs repair. Discovery reports that problem; runtime path checks stay strict.
 	_ = pierstore.Init(q.d.home)
@@ -82,12 +84,16 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	if !runIDPattern.MatchString(state.ID) || state.Port < 1024 {
 		return nil, errors.New("invalid managed instance identity or HTTP port")
 	}
-	if !protocol.ValidRecordedLoom(protocol.EffectiveLoom(state.Loom)) {
+	if !protocol.ValidProfileLoom(state.RuntimeProfile, protocol.EffectiveLoom(state.Loom), true) {
 		return nil, errors.New("invalid loom")
 	}
 	if !protocol.ValidContainerResources(state.MemoryGiB, state.CPUCores) {
 		return nil, errors.New("invalid container resources")
 	}
+	if _, err := candidate.Resolve(state.RuntimeProfile); err != nil {
+		return nil, err
+	}
+	d.runtimeProfile = state.RuntimeProfile
 	d.memoryGiB, d.cpuCores = state.MemoryGiB, state.CPUCores
 	d.loom, d.nativeControl = protocol.EffectiveLoom(state.Loom), state.NativeControl
 	d.profile, d.managed, d.hostPort = ProfileHTTP, true, state.Port
@@ -177,18 +183,21 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 			return nil, errors.New("invalid recorded provisioning engine version")
 		}
 		if q.r.RunID != state.ID || q.r.Directory != dir || q.r.PillPath != filepath.Join(dir, candidate.PillName) || q.r.Profile != d.profile ||
-			q.r.Image != candidate.Image || q.r.VereVersion != candidate.VereVersion || q.r.PillSHA256 != d.pillSHA || q.r.PillBytes != d.pillBytes || q.r.PillURL != q.pillSource() {
+			q.r.RuntimeProfile != state.RuntimeProfile || q.r.Image != q.runtimeProfile().Image || q.r.VereVersion != q.runtimeProfile().VereVersion || q.r.PillSHA256 != d.pillSHA || q.r.PillBytes != d.pillBytes || q.r.PillURL != q.pillSource() {
 			return nil, errors.New("managed runtime state does not match its registered identity and candidate")
 		}
 		if len(q.r.Containers) > 3 {
 			return nil, errors.New("unexpected managed container inventory")
 		}
 		for _, c := range q.r.Containers {
+			if c.RuntimeProfile != state.RuntimeProfile {
+				return nil, errors.New("recorded launch runtime profile mismatch")
+			}
 			if c.EngineVersion != "" && !hostcompat.ValidateRecordedEngineVersion(c.EngineVersion) {
 				return nil, errors.New("invalid recorded launch engine version")
 			}
 			entry, args := baseCommand(c.Kind)
-			if !protocol.ValidContainerResources(c.MemoryGiB, c.CPUCores) || !protocol.ValidRecordedLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
+			if !protocol.ValidContainerResources(c.MemoryGiB, c.CPUCores) || !protocol.ValidProfileLoom(c.RuntimeProfile, protocol.EffectiveLoom(c.Loom), true) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
 				return nil, errors.New("invalid recorded runtime settings")
 			}
 			if c.SnapshotMinutes != 0 && c.SnapshotMinutes != DefaultSnapshotMinutes {
@@ -369,8 +378,8 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 		}
 		// Record ownership before creating storage, without adopting any existing
 		// path. An interruption here leaves a conservative recovery requirement.
-		q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image,
-			Platform: candidate.Platform, EngineVersion: q.engineEvidence.Version, VereVersion: candidate.VereVersion,
+		q.r = Result{RuntimeProfile: state.RuntimeProfile, Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: q.runtimeProfile().Image,
+			Platform: candidate.Platform, EngineVersion: q.engineEvidence.Version, VereVersion: q.runtimeProfile().VereVersion,
 			PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 		state.Prepared = true
 		if err := q.save(); err != nil {
@@ -465,6 +474,9 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 				return finish(unknown, err)
 			}
 		}
+		if err := q.reconcileStoppedNetwork(ctx); err != nil {
+			return finish(unknown, err)
+		}
 		if !q.restrictedEngine && managedMaintenanceUndispatched(state, q.r) {
 			previousStage := q.r.Stage
 			q.r.Stage = "stopped"
@@ -505,6 +517,11 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 		if err := q.save(); err != nil {
 			return finish(unknown, err)
 		}
+		if state.Initialized && q.d.runtimeProfile != "" {
+			if _, err := q.inspectImportEpochs(ctx); err != nil {
+				return finish(unknown, err)
+			}
+		}
 		if err := q.probe(ctx); err != nil {
 			return finish(unknown, err)
 		}
@@ -525,7 +542,7 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
 			return finish(unknown, errors.New("maintenance requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
 		}
-		state.Maintenance = &ManagedMaintenance{Kind: action, BeforePierBytes: before, StartedAt: time.Now().UTC(), MemAvailableBytes: mem, DiskAvailableBytes: disk}
+		state.Maintenance = &ManagedMaintenance{RuntimeProfile: state.RuntimeProfile, Kind: action, BeforePierBytes: before, StartedAt: time.Now().UTC(), MemAvailableBytes: mem, DiskAvailableBytes: disk}
 		if beforeEpochs != nil {
 			state.Maintenance.EpochsBefore = epochNames(beforeEpochs)
 		}
@@ -638,6 +655,11 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 			err = q.verifyLocalPill(ctx)
 		}
 		if err != nil {
+			return finish(unknown, err)
+		}
+	}
+	if state.Initialized && q.d.runtimeProfile != "" {
+		if _, err := q.inspectImportEpochs(ctx); err != nil {
 			return finish(unknown, err)
 		}
 	}
