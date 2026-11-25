@@ -66,6 +66,7 @@ def main():
  run(['ssh-keygen','-q','-t','ed25519','-N','','-f','/home/review/profile-operator'],True)
  run([tool('urbit-runner'),'install-host','--owner','review','--bundle',I/V/'rootless-bundle','--public-key','/home/review/profile-operator.pub','--acknowledge-host-changes'],timeout=600)
  hello=wait(lambda:col('hello'));assert 'runtime-profiles-v1' in hello['features']
+ def storage(*args,ok=True):return run([tool('urbit-collector'),'--runner','local','--expected-runner-id',hello['runner_id'],*args],True,ok=ok,timeout=180)
  run([tool('urbit-collector'),'enroll','local','--socket',SOCK],True)
  docker('load','--input',I/'runtime.oci.tar')
  events_log=(O/'container-events.jsonl').open('w')
@@ -141,7 +142,6 @@ def main():
   operation('profile-patched','stop','patched-before-import-copy')
   original=row('profile-patched');source=Path('/home/review/reviewed-import-source')
   run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/original['pier_path'],source],True,timeout=180)
-  def storage(*args,ok=True):return run([tool('urbit-collector'),'--runner','local','--expected-runner-id',hello['runner_id'],*args],True,ok=ok,timeout=180)
   refused=storage('preview-pier','--source',source,'--storage-root','default',ok=False)
   assert refused.returncode and source.exists(),(refused.stdout,refused.stderr)
   preview=json.loads(storage('preview-pier','--source',source,'--storage-root','default','--runtime-profile',PROFILE).stdout)
