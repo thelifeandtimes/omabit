@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-24",
+  "status": "owner-operated-live-dev-update-completed",
+  "scope": "Existing review040 DEV environment only",
+  "evidence_kind": "Updater complete receipt plus read-only live widget status",
+  "loaded": {
+    "version": "0.6.0-rc.3",
+    "profile": "review-040",
+    "collector": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc3/bin/urbit-collector",
+    "omabit": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc3/bin/omabit",
+    "loaded": true,
+    "local_setup": false
+  },
+  "preservation": {
+    "engine_and_containers_preserved": true,
+    "original_intent_config_operations_preserved": true
+  },
+  "backup": "/srv/dev/urbit-040/state/upgrade-060rc3-owner",
+  "old_plugin": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner/plugin-before",
+  "complete_receipt": {
+    "path": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner/complete.json",
+    "sha256": "30cc185cedb38446bcbf682be2253c100dd57eab8e60ad908120113106184895"
+  },
+  "manual_functional_review": "pending",
+  "known_existing_states": {
+    "review-zod": "unknown; pre-existing recovery state retained",
+    "release050-app-zod": "stopped"
+  }
+}

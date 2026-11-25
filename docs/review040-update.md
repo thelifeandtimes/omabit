@@ -1,5 +1,10 @@
 # Update the existing review040 DEV environment
 
+**Completed by the owner on2026-11-24.** The live DEV widget reports0.6.0-rc.3
+and the updater's [complete receipt is recorded](diagnostics/2026-11-24-review040-update-completed.json).
+The commands below document that update; do not run `--apply` again. Manual
+functional review is now the next step.
+
 “DEV environment” means the complete separate setup: widget, collector profile,
 runner, engine and data. “Namespace” describes its isolation boundaries and names;
 “configuration” means its settings. The current environment retains its historical

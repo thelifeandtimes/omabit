@@ -15078,3 +15078,23 @@ and late failure preserving migrated state/new tools/original WAL backup. The
 binds the final script and refreshed plan, retaining the old plan. No release
 artifact or installed file changed. The owner can now rerun the same `--apply`
 command; live update and manual review remain pending.
+
+## M797 — Owner completed the preserved DEV update; manual review next (2026-11-24)
+
+Status: supersedes M795/M796's pending live update. The owner reran the corrected
+command. Its complete receipt exists with no failure receipt; read-only live IPC
+confirms0.6.0-rc.3, profile review-040, the versioned candidate helper paths, loaded
+true and local setup false. The update receipt reports preserved engine/containers
+and original fleet configuration, intent and operation history. The original
+plugin and management/tool/preference backups remain retained. See the
+[completion record](diagnostics/2026-11-24-review040-update-completed.json).
+
+The assistant did not run the live apply. Existing review-zod remains in its
+pre-update unknown/recovery state; release050-app-zod remains stopped. Neither is
+automatically repaired or used as a destructive fixture. The owner now asks what
+to test manually. Start with UI/fleet preservation, import runtime selection and
+a fresh disposable fake for ordinary lifecycle/Pack. New-fake UI creation keeps
+the official default; the reviewed selector currently appears in guided import.
+A full reviewed-runtime import needs a stopped disposable fixture already bound
+to that runtime, not a protected or currently running user's pier. Owner feedback
+and stable promotion remain separate; no production operation is authorized.
