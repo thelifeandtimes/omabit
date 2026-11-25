@@ -1,0 +1,131 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "core functionality only",
+  "checks": {
+    "local_manifest_install_and_fresh_boot": true,
+    "explicit_stopped_stock_to_local_transition_preserves_pier": true,
+    "local_import_and_manager_restart_preserve_pin": true,
+    "native_utility_and_lifecycle_image_audit": true,
+    "both_test_ships_gracefully_stopped": true
+  },
+  "native_launches": [
+    {
+      "instance": "profile-local",
+      "name": "urbit-managed-fake-635052fa07dc51a5ca0af93ee0a2b443-probe",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    },
+    {
+      "instance": "profile-local",
+      "name": "urbit-managed-fake-635052fa07dc51a5ca0af93ee0a2b443-http-boot",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a341c0a697a9f62b13ea5e2e49d08e86-probe",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a341c0a697a9f62b13ea5e2e49d08e86-http-boot",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a341c0a697a9f62b13ea5e2e49d08e86-probe",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a341c0a697a9f62b13ea5e2e49d08e86-http-restart",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    },
+    {
+      "instance": "zod",
+      "name": "urbit-managed-fake-161e9de6f437921a28a44078427caef2-probe",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    },
+    {
+      "instance": "zod",
+      "name": "urbit-managed-fake-161e9de6f437921a28a44078427caef2-http-restart",
+      "image": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df"
+    }
+  ],
+  "local_runtime": {
+    "format": 1,
+    "kind": "local",
+    "platform": "linux/amd64",
+    "vere_version": "4.6-82f4558",
+    "image": "omabit/vere@sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "manifest_digest": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "config_digest": "sha256:b928fee51281b86b3a86d322b581daf74491b02ecea859ad91d6e7f6ba71fbbd",
+    "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+    "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+    "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+    "requirement": "vere-json-array-error-1145-v1",
+    "review_url": "",
+    "archive_sha256": "6a31b3710e718fe25ebea42f89300c85451d4f4db1078b3db400187425ad4a8e",
+    "archive_bytes": 54750411,
+    "channel": "",
+    "max_loom": 34,
+    "compatible_versions": "4.6 4.6-5a7614f",
+    "id": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+  },
+  "final_instances": [
+    {
+      "id": "profile-local",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+    },
+    {
+      "id": "profile-stock",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+    },
+    {
+      "id": "zod",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+    }
+  ],
+  "date": "2026-11-25",
+  "artifact_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_sha256": {
+    "guest.py": "c5d0a289452d44568ce0f23753571bbfff12e37af579730968c7a7128777e8ee",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "0c70774d4f4d5a6dac5bd14340bcf9e9020dcdb848e9d77869034d38c4cf6771",
+    "run.py": "0bfb68073493700d629e53a77d01ed8ad4767734a261dba33d2908994a206b05"
+  },
+  "evidence": {
+    "host.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-local01/host.json",
+      "sha256": "f01720df37edc59fb267376d8d75796bd661f247c56ab14b1dd50bb35b5b2cf1"
+    },
+    "result.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-local01/result.json",
+      "sha256": "6f0704625cd5cf3560f9afd493113d083d393f96dc6c5e6e68b8266b6bdb2f3a"
+    },
+    "serial.log": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-local01/serial.log",
+      "sha256": "bf83cab8f7729b77b5a3ed30ae57143fc25b61213e0eee9d784a7fdf4cfe3f60"
+    }
+  },
+  "isolation": {
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32"
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "scratch_bytes": 4294967296,
+    "charged_before": 47186903040,
+    "charged_after": 50051756032
+  }
+}

@@ -8,7 +8,7 @@ upgrade support window and tested limits.
 
 ## Update an existing Omarchy installation
 
-After 0.6.0 is published, update an unmodified stable Git installation with:
+Update an unmodified stable Git installation with:
 
 ```sh
 omarchy plugin update thelifeandtimes.omabit
@@ -20,7 +20,7 @@ and does not automatically update a local or remote runner.
 
 Once the verified 0.6.0 desktop has loaded, use **Setup → Local services &
 updates → Check services → Update services** and authorize the OS prompt. The
-supported stable starting release is0.5.0. Older installations must
+supported stable starting releases are0.4.0 and0.5.0. Older installations must
 follow their documented intermediate upgrades first. Finish pending management
 work before updating; do not reset, delete or re-enroll ships to perform an update.
 

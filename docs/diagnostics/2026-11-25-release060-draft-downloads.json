@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "version": "0.6.0",
+  "artifact_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "is_draft": true,
+  "is_prerelease": false,
+  "release": "https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0",
+  "draft_url": "https://github.com/thelifeandtimes/omabit/releases/tag/untagged-3a233c3fc33618d8a3e1",
+  "download_path": "/home/thelifeandtimes/repos/omabit/build/release060-stable/draft-downloads",
+  "assets": {
+    "SHA256SUMS": {
+      "sha256": "a0b86ad3993b9f041c1992298924576292eeb14d5df12c26744a53fe087b178d",
+      "bytes": 825
+    },
+    "omabit-0.6.0-linux-amd64.tar.gz": {
+      "sha256": "4c3413910002c6130d7c01ffde62266b479a893d08e48f4ececae0939370c2a6",
+      "bytes": 37030976
+    },
+    "omabit-linux-amd64": {
+      "sha256": "de8a4514c19a792a1795fbf63bea1de58a54247b356f28687860a9af44c592e0",
+      "bytes": 26887155
+    },
+    "omabit-recommended-apps-0.6.0.pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "bytes": 59351751
+    },
+    "omabit-skills-0.6.0.tar.gz": {
+      "sha256": "85031e3f007877fa03da50c79dbccdd5ccf6d002c46b938d6e9a2d4ac3926d49",
+      "bytes": 73890
+    },
+    "qualification.json": {
+      "sha256": "42a6710688148aea2828b2b5c90d537636f58fa3b85de99a01a2d47947502d34",
+      "bytes": 6137
+    },
+    "release.json": {
+      "sha256": "df204ceb710e0413bf11dfa0ada7b91329fccb82d4c18ac0f56c9a0c1c9b889f",
+      "bytes": 4312
+    },
+    "urbit-collector-linux-amd64": {
+      "sha256": "6cd9f67369b308a24174e4f1a92ff02d3239944b06fcb1607bafd56421d46838",
+      "bytes": 13257861
+    },
+    "urbit-runner-linux-amd64": {
+      "sha256": "534957b0a1d890f0e729903a3f79a08026e492d8fecf9aec287f94d29c622937",
+      "bytes": 30295412
+    },
+    "vere-4.6-jsonfix-0774857c.tar.gz": {
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "bytes": 54750277
+    }
+  },
+  "limits": "Draft verification only; final protected merge and public download/native cold-start verification remain required."
+}

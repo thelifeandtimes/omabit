@@ -1,5 +1,17 @@
 # Issue22 continuation and review handoff
 
+## Stable 0.6.0 promotion — supersedes earlier delivery status
+
+The owner completed RC4/UI1 review and authorized stable publication in M806.
+[Release PR25](https://github.com/thelifeandtimes/omabit/pull/25) promotes frozen
+source `fcf269ca8aa20aa9e43a70d7e282a91f12659cf9`. Exact stable upgrade, bundled
+runtime, local runtime, desktop and source qualification is recorded in
+[0.6.0 qualification](releases/0.6.0/qualification.json). This supersedes the older
+pending-recovery/DEV-application status below; preserve that history and its
+receipts. Production installation remains owner-operated. Final protected PR
+checks, merge and verified publication are required for stable delivery.
+
+
 ## Post-rc.4 UI follow-up
 
 The owner reports that rc.4 is looking good and requested one layout change:

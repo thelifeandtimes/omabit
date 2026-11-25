@@ -15315,3 +15315,37 @@ superseding M805's pending-owner status. Work proceeds on release/0.6.0 through
 the protected stable policy, including exact-artifact local0.5.0→0.6.0 upgrade
 qualification. RC evidence remains historical; the final source includes the
 requested Runtime Settings placement. See [preparation](releases/0.6.0/preparation.md).
+
+## M807 — Qualify exact stable0.6.0 artifacts (2026-11-25)
+
+Status: qualified stable candidate; protected merge and publication remain separate.
+M806's owner authorization is carried by release/0.6.0 and PR25. Product source
+fcf269ca8aa20aa9e43a70d7e282a91f12659cf9 is frozen; its backend digest matches
+reviewed RC4. Only final version metadata and the approved Runtime Settings layout
+change product behavior relative to that reviewed candidate. Source/race/QML CI,
+package/provenance, full native shell, direct0.4.0/schema59 and0.5.0/schema65 upgrades to0.6.0/schema67,
+bundled runtimes (14 checks/16 launches) and local-build workflows (5 checks/8
+launches) pass on the stable artifacts. The0.5.0 upgrade preserves both original ship
+identities, operations, access, runtime processes and19 application table
+projections; manager restart and genuine old-writer refusal pass.
+
+Evidence: [qualification](releases/0.6.0/qualification.json),
+[rehearsal](releases/0.6.0/rehearsal.json), and their exact diagnostic hashes.
+This supersedes rc.4-only qualification for stable promotion, not its historical
+records. Local execution uses the known reviewed executable in a separately
+packaged immutable local profile. Latest upstream channels, actual64-bit execution,
+remote/active-worker upgrades and power-loss durability remain unqualified.
+Keep immutable runtime registry metadata/archives with management state. Production
+and human-review DEV are unchanged by qualification; production update remains
+the owner's action after publication. The installed canonical stable plugin still pins0.4.0; that read-only version
+observation motivated the additional direct upgrade rehearsal. Keep protected merge, checks and download
+verification gates; no direct master push, reset or marker editing is authorized.
+
+All ten draft downloads match the exact qualified files; the distribution commit
+pins those bytes without rebuilding. [Draft verification](diagnostics/2026-11-25-release060-draft-downloads.json)
+and [storage/evidence preservation](diagnostics/2026-11-25-release060-storage-and-evidence.json)
+record the final preparation. Two serial report transfers were damaged; independent
+read-only extraction of each stopped guest's saved report matches its original
+complete-report checksum. Their original failure logs remain. No incomplete report
+is counted as a pass. Full artifacts, inputs, reader sources and detailed retirement
+manifests are retained under build/release060-stable across reboots.

@@ -1,6 +1,27 @@
 # Stable-release upgrade requirement
 
-## Current development: local runtime manifests and explicit transitions, schema67
+## 0.6.0: qualified local 0.4.0/0.5.0 → 0.6.0 support window
+
+The exact frozen stable artifacts qualify direct published0.4.0/schema59 and
+0.5.0/schema65 upgrades to0.6.0/schema67 for local owner-user installations.
+[0.4.0 rehearsal](releases/0.6.0/rehearsal-0.4.0.json),
+[0.5.0 rehearsal](releases/0.6.0/rehearsal.json)
+and [qualification](releases/0.6.0/qualification.json) bind the source, artifact
+hashes and results. Native authorization denial/retry, ship and application history,
+access, running/stopped intent and live process continuity pass; manager restart
+and actual older-writer refusal pass. Earlier stable users follow their documented
+path to0.4.0. This supersedes the rc.4-only review window below for stable delivery.
+
+Update the stable desktop plugin, then use Setup → Local services & updates.
+Preserve the runtime-profiles directory with management state and pier backups.
+Do not lower schema markers or restore old binaries alone. New channel artifacts
+do not change enrolled pins. Remote upgrades, active recording-worker upgrades,
+power-loss durability and arbitrary development snapshots are outside this window.
+The owner's UI1 DEV update completed separately; stable publication performs no
+production or DEV service update.
+
+
+## Historical rc.4 review: local runtime manifests and explicit transitions, schema67
 
 The rc.4 source adds an older-writer fence for owner-installed immutable runtime
 manifests and journaled stopped runtime transitions. Migration preserves original

@@ -7,13 +7,12 @@ local or remote ships, start and stop them, inspect their health, and manage
 maintenance from a fleet panel. When you need help, **Agent Help opens your
 default Omarchy coding agent with the relevant Omabit instructions and context**.
 
-The current stable release is [0.5.0](https://github.com/thelifeandtimes/omabit/releases/tag/v0.5.0).
-See its [features, upgrade path and tested limits](docs/release-0.5.0.md).
-This development branch is preparing per-ship runtime selection for
-[issue #22](https://github.com/thelifeandtimes/omabit/issues/22); that feature is
-not included in 0.5.0. The [review and migration guide](docs/runtime-profiles-review.md)
-tracks the remaining qualification gates; do not install unqualified development
-source on an existing live fleet.
+The current stable release is [0.6.0](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0).
+See its [features, upgrade path and tested limits](docs/releases/0.6.0/notes.md).
+Choose an installed Vere runtime for a fresh ship, a stopped-pier import, or an
+explicit stopped-ship runtime change. The CLI also packages owner-provided local
+builds. Runtime pins stay fixed until you explicitly change them; see
+[runtime policy](docs/runtime-policy.md) for installation and compatibility.
 
 ## What is Urbit?
 
@@ -74,11 +73,11 @@ omarchy plugin update thelifeandtimes.omabit
 
 Let the verified desktop bundle load, then review any separate **service update
 in Setup**. Updating the desktop alone does not update a local or remote runner.
-The tested direct 0.5.0 upgrade is from 0.4.0 on Linux/AMD64; older installations
+The tested direct 0.6.0 upgrades are from 0.4.0 or 0.5.0 on Linux/AMD64; older installations
 follow their documented intermediate upgrades. Existing enrollments, piers,
 settings, history and running/stopped intent must be preserved. Do not reset or
 re-create ships to perform an update. See [upgrade guidance](docs/guided-service-upgrades.md)
-and the [0.5.0 qualification record](docs/releases/0.5.0/qualification.json).
+and the [0.6.0 qualification record](docs/releases/0.6.0/qualification.json).
 
 ## Ask your agent for help
 

@@ -1,0 +1,342 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "core functionality only",
+  "checks": {
+    "missing_artifact_refuses_start_before_pier_execution": true,
+    "corrupt_archive_install_refuses_without_publication": true,
+    "exact_archive_install_idempotent_and_native_preflight": true,
+    "container_binary_checksums_and_versions": true,
+    "two_fresh_ships_different_pinned_runtimes": true,
+    "manager_restart_preserves_both_containers_and_pins": true,
+    "missing_archive_allows_stop_refuses_restart_no_fallback": true,
+    "enrolled_downgrade_refuses_preserving_configuration": true,
+    "replacement_and_omitted_profile_preserve_pin": true,
+    "pack_and_restart_preserve_pin": true,
+    "controlled_crash_recovery_preserves_pin": true,
+    "reviewed_import_refuses_stock_and_preserves_pin_through_start": true,
+    "native_utility_and_lifecycle_image_audit": true,
+    "both_test_ships_gracefully_stopped": true
+  },
+  "native_launches": [
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a7372205c57969d5f11b28b0600d1fe1-probe",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-stock",
+      "name": "urbit-managed-fake-a7372205c57969d5f11b28b0600d1fe1-http-boot",
+      "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-http-boot",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-pack",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-42b0d690d7a9236bd16329db9c12c67e-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "nec",
+      "name": "urbit-managed-fake-42b0d690d7a9236bd16329db9c12c67e-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-probe",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    },
+    {
+      "instance": "profile-patched",
+      "name": "urbit-managed-fake-246c79c4cdb10dafc0d98e74b2967b3c-http-restart",
+      "image": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d"
+    }
+  ],
+  "final_instances": [
+    {
+      "id": "nec",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": "vere-4.6-jsonfix-0774857c"
+    },
+    {
+      "id": "profile-patched",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": "vere-4.6-jsonfix-0774857c"
+    },
+    {
+      "id": "profile-stock",
+      "desired_state": "stopped",
+      "observed_state": "stopped",
+      "runtime_profile": ""
+    }
+  ],
+  "date": "2026-11-25",
+  "artifact_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "harness_sha256": {
+    "guest.py": "c5d0a289452d44568ce0f23753571bbfff12e37af579730968c7a7128777e8ee",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "0c70774d4f4d5a6dac5bd14340bcf9e9020dcdb848e9d77869034d38c4cf6771",
+    "run.py": "0bfb68073493700d629e53a77d01ed8ad4767734a261dba33d2908994a206b05"
+  },
+  "evidence": {
+    "host.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-runtime01/host.json",
+      "sha256": "0d2941ea79c4bffa6f6acfe273b642e700eaf12e328bc7e5510dc11e771dd6b1"
+    },
+    "result.json": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-runtime01/result.json",
+      "sha256": "92917d1b19f07e4521447aee0ca24ae18b914b0f956e7b4784ecc457c0712676"
+    },
+    "serial.log": {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-stable-runtime01/serial.log",
+      "sha256": "1cac4efe163ccf81dbf035af8e261d1a94a741027f6d5df3c35ceeadba9bbf0d"
+    }
+  },
+  "isolation": {
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32"
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "scratch_bytes": 4294967296,
+    "charged_before": 47118606336,
+    "charged_after": 50524774400
+  },
+  "evidence_transfer_recovery": {
+    "format": 1,
+    "passed": true,
+    "scope": "Read-only retrieval of complete saved guest report after serial transfer omitted one chunk; original driver transfer failure retained.",
+    "original_driver_error": "incomplete framed guest evidence",
+    "original_host_exit": 0,
+    "missing_original_frames": [
+      7
+    ],
+    "guest_footer": {
+      "chunks": 10,
+      "sha256": "151ec5174a4536c379c1da96597c9b86b131a34ea04575ab296017ba762c7999"
+    },
+    "saved_report_sha256": "92917d1b19f07e4521447aee0ca24ae18b914b0f956e7b4784ecc457c0712676",
+    "matches_guest_footer": true,
+    "corrupted_original_frames": [
+      6
+    ],
+    "matches_intact_frames": 8,
+    "overlay_unchanged_sha256": "67d52bda728ba869b0ac97fa8bf6e8238a1ddb52ccc4d167e87d454a2c660ff1",
+    "base_unchanged_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "reader_driver_sha256": "ce0f7dce25f03ed79014c061ce6d737d668bb2e1f0f8408124c01a9728a6d22c",
+    "reader_source_sha256": "c24123291ab4482ac4160a625597038576200adce9cf395dc88ed0df4777135b",
+    "reader_binary_sha256": "0c74c5901558adf2fe0071adda48d9afa383ce0b4767af8f9b82ff60301121bc",
+    "reader_command_sha256": "f2025d9b5f94e540eefe63c1a2b4160a6b23a6751e3e8ddef5899a8ea1b2f366",
+    "reader_serial_sha256": "f323c4b66a45cf19a8b526097d23b0c4aae541c78dec117586c6bd866ccb41d8",
+    "reader_result": {
+      "chunks": 76,
+      "journal_replayed": false,
+      "read_only": true,
+      "services_started": false,
+      "sha256": "92917d1b19f07e4521447aee0ca24ae18b914b0f956e7b4784ecc457c0712676"
+    },
+    "admission": {
+      "measurements": [
+        {
+          "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs",
+          "allocated_bytes": 21810880512,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence",
+          "allocated_bytes": 13867487232,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/srv/dev/urbit",
+          "allocated_bytes": 8449032192,
+          "unmeasured_reserve": 0,
+          "measurement_source": "existing-rootless-user-namespace",
+          "namespace": "user:[4026534692]"
+        },
+        {
+          "path": "/srv/dev/urbit-040",
+          "allocated_bytes": 5206441984,
+          "unmeasured_reserve": 0,
+          "measurement_source": "existing-rootless-user-namespace",
+          "namespace": "user:[4026534693]"
+        },
+        {
+          "path": "/home/thelifeandtimes/.local/share/omabit-review-040-retired-20261112",
+          "allocated_bytes": 146948096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-060-shell-stable01",
+          "allocated_bytes": 4071424,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-issues-vm-runtime.lock",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-assets",
+          "allocated_bytes": 221675520,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-dedup-plan.json",
+          "allocated_bytes": 20480,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-evidence",
+          "allocated_bytes": 11599872,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-extract-first.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-extract.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-inputs",
+          "allocated_bytes": 318066688,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-make-records.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader-cache",
+          "allocated_bytes": 45113344,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader-init",
+          "allocated_bytes": 4259840,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader.go",
+          "allocated_bytes": 4096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-reader01",
+          "allocated_bytes": 9314304,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-record.py",
+          "allocated_bytes": 4096,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-retire.py",
+          "allocated_bytes": 8192,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/tmp/omabit-release060-write-docs.py",
+          "allocated_bytes": 12288,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.cache/go-build",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/go/pkg/mod",
+          "allocated_bytes": 0,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/repos/omabit/build",
+          "allocated_bytes": 325480448,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.t3/worktrees/omabit/codex-issues-16-21-recovery-appdev/build",
+          "allocated_bytes": 176128,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build",
+          "allocated_bytes": 91267072,
+          "unmeasured_reserve": 0
+        },
+        {
+          "path": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1",
+          "allocated_bytes": 71626752,
+          "unmeasured_reserve": 0
+        }
+      ],
+      "charged_bytes": 50583515136,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 67108864,
+      "total_with_reserves": 50650624000
+    },
+    "reader_path": "/tmp/omabit-release060-reader02"
+  }
+}

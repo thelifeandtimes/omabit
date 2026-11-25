@@ -1,0 +1,230 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "version": "0.6.0",
+  "artifact_source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+  "release": {
+    "version": "0.6.0",
+    "prerelease": false,
+    "source_commit": "fcf269ca8aa20aa9e43a70d7e282a91f12659cf9",
+    "platform": "linux/amd64",
+    "go_version": "go version go1.27.4 linux/amd64",
+    "schema": 67,
+    "execution_model": "owner-user",
+    "default_pier_root": "/srv/urbit/piers",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "engine": "distribution-native",
+    "pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "default_url": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill",
+      "application_inventory": "not_asserted",
+      "name": "omabit-recommended-apps-0.6.0.pill",
+      "bytes": 59351751
+    },
+    "runtime_profiles": [
+      {
+        "format": 1,
+        "id": "vere-4.6-5a7614f",
+        "kind": "official",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-5a7614f",
+        "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "manifest_digest": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "config_digest": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+        "binary_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82"
+      },
+      {
+        "format": 1,
+        "id": "vere-4.6-jsonfix-0774857c",
+        "kind": "reviewed",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-82f4558",
+        "image": "omabit/vere@sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "manifest_digest": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "config_digest": "sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58",
+        "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+        "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+        "requirement": "vere-json-array-error-1145-v1",
+        "review_url": "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
+        "archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+        "archive_bytes": 54750277
+      }
+    ],
+    "engine_policy": {
+      "id": "docker-rootless-v1",
+      "stable_minimum_inclusive": "27.2.0",
+      "stable_maximum_exclusive": "30.0.0",
+      "required_api": "1.47",
+      "native_providers": [
+        "pacman",
+        "deb"
+      ],
+      "rootless_launcher_version": "29.7.2",
+      "qualification": "exact-stack-evidence-required"
+    },
+    "backend_source_sha256": "b48109f66bde93202c124b06de1571492dee5be4cf6873580a32fd120f4cd2a5",
+    "source_tree": "15f983c3f8c715b85e95011c9186afaec52ab1e9",
+    "source_epoch": 1795642426,
+    "source_inputs": "git-commit-blobs-v1",
+    "build_environment": "isolated-go-v1",
+    "assets": [
+      {
+        "name": "omabit-0.6.0-linux-amd64.tar.gz",
+        "bytes": 37030976,
+        "sha256": "4c3413910002c6130d7c01ffde62266b479a893d08e48f4ececae0939370c2a6"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26887155,
+        "sha256": "de8a4514c19a792a1795fbf63bea1de58a54247b356f28687860a9af44c592e0"
+      },
+      {
+        "name": "omabit-recommended-apps-0.6.0.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.6.0.tar.gz",
+        "bytes": 73890,
+        "sha256": "85031e3f007877fa03da50c79dbccdd5ccf6d002c46b938d6e9a2d4ac3926d49"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13257861,
+        "sha256": "6cd9f67369b308a24174e4f1a92ff02d3239944b06fcb1607bafd56421d46838"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30295412,
+        "sha256": "534957b0a1d890f0e729903a3f79a08026e492d8fecf9aec287f94d29c622937"
+      },
+      {
+        "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+        "bytes": 54750277,
+        "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510"
+      }
+    ]
+  },
+  "package_verification": "PASS: asset/archive checksums, provenance, executable smoke checks, installer dependencies, fresh install, replacement and customization refusal",
+  "build_log_sha256": "3c18eef9d72b3623ef67e036e040cf6968952824425502f75ee9c39c49147639",
+  "build_admission": {
+    "measurements": [
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs",
+        "allocated_bytes": 18404278272,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence",
+        "allocated_bytes": 13867487232,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/srv/dev/urbit",
+        "allocated_bytes": 8447557632,
+        "unmeasured_reserve": 0,
+        "measurement_source": "existing-rootless-user-namespace",
+        "namespace": "user:[4026534692]"
+      },
+      {
+        "path": "/srv/dev/urbit-040",
+        "allocated_bytes": 5205381120,
+        "unmeasured_reserve": 0,
+        "measurement_source": "existing-rootless-user-namespace",
+        "namespace": "user:[4026534693]"
+      },
+      {
+        "path": "/home/thelifeandtimes/.local/share/omabit-review-040-retired-20261112",
+        "allocated_bytes": 146948096,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-issues-vm-runtime.lock",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release060-dedup-plan.json",
+        "allocated_bytes": 20480,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release060-evidence",
+        "allocated_bytes": 11464704,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/tmp/omabit-release060-inputs",
+        "allocated_bytes": 221286400,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.cache/go-build",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/go/pkg/mod",
+        "allocated_bytes": 0,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/repos/omabit/build",
+        "allocated_bytes": 325480448,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.t3/worktrees/omabit/codex-issues-16-21-recovery-appdev/build",
+        "allocated_bytes": 176128,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build",
+        "allocated_bytes": 91267072,
+        "unmeasured_reserve": 0
+      },
+      {
+        "path": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1",
+        "allocated_bytes": 71626752,
+        "unmeasured_reserve": 0
+      }
+    ],
+    "charged_bytes": 46792974336,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 2147483648,
+    "total_with_reserves": 48940457984
+  },
+  "local_packaging_log_sha256": "aad2634a9c20b1da90dc1a2dc54e42b4006fa98485248f6506c78367c652bbfa",
+  "local_profile": {
+    "format": 1,
+    "kind": "local",
+    "platform": "linux/amd64",
+    "vere_version": "4.6-82f4558",
+    "image": "omabit/vere@sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "manifest_digest": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "config_digest": "sha256:b928fee51281b86b3a86d322b581daf74491b02ecea859ad91d6e7f6ba71fbbd",
+    "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+    "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+    "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+    "requirement": "vere-json-array-error-1145-v1",
+    "review_url": "",
+    "archive_sha256": "6a31b3710e718fe25ebea42f89300c85451d4f4db1078b3db400187425ad4a8e",
+    "archive_bytes": 54750411,
+    "channel": "",
+    "max_loom": 34,
+    "compatible_versions": "4.6 4.6-5a7614f",
+    "id": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+  },
+  "local_checks": {
+    "runtime_settings_model": true,
+    "ui1_guard_and_lock_tests": 10,
+    "framed_report_and_source_freeze_tests": 4,
+    "actual_panel_qml_tests": 5,
+    "actual_service_upgrade_qml_tests": 4
+  },
+  "local_test_limit": "Host-compatibility QML fixture compilation was unavailable in the read-only local Go cache; the complete qml-offscreen CI job passed on frozen source, including that fixture."
+}
