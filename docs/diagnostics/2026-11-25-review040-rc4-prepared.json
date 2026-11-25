@@ -95,5 +95,26 @@
     "command": "python3 -B scripts/qualification/runtime-profiles/test_review040_rc4_update.py",
     "passed": true,
     "tests": 4
-  }
+  },
+  "final_readiness_check": {
+    "status": "ready",
+    "live_changes": false,
+    "charged_bytes": 48153157632,
+    "total_with_scratch": 49464926208,
+    "storage": {
+      "breakdown": {
+        "management_backup": 558682112,
+        "sqlite_analysis_copy": 4960256,
+        "runtime_profiles_backup": 54763520,
+        "desktop_backups": 28672,
+        "old_binaries_backup": 70381568,
+        "candidate_binaries_staging": 70447104,
+        "runtime_archive_and_image_reserve": 417622036,
+        "growth_and_metadata_reserve": 134217728
+      },
+      "required_scratch_bytes": 1311768576,
+      "aggregate_cap_bytes": 51539607552
+    }
+  },
+  "final_readiness_log_sha256": "f79e40dafca0bf131f43833cede01f9dab418c7465ca932a68f1bc6a8546259b"
 }

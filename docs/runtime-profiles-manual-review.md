@@ -4,6 +4,12 @@ The rc.4 candidate addresses the feedback from the persistent review040 DEV
 environment. Product source: `27aac5001c43a7a1148df47dc9904bdeb1a4a536`;
 runner schema67. All linked qualification gates pass and the DEV update is staged. This is a prerelease. Stable/latest remains0.5.0.
 
+The immutable [rc.4 prerelease](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.4)
+is published and all nine public downloads match the qualified bytes. The distribution
+checkout is `cadeb8930373ba41db5dc8eff9a8a01e6d71ba23`. The source tag predates these
+bootstrap pins; do not install that tag as the native plugin. Publication does not
+update an installed service. [Publication evidence](diagnostics/2026-11-25-runtime-feedback-publication.json).
+
 ## Update this DEV environment
 
 Use the separate [owner update guide](review040-update.md). The old rc.3 update

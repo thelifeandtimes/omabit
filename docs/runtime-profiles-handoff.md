@@ -2,6 +2,8 @@
 
 ## Current review candidate — rc.4, prepared for owner application
 
+The [rc.4 review prerelease](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.4)
+is published; all public assets are verified and stable/latest remains0.5.0.
 Product source is27aac5001c43a7a1148df47dc9904bdeb1a4a536, version0.6.0-rc.4/schema67.
 Source, all managed-race shards, QML and full release reproduction pass. The bundled
 runtime scenario passes14 checks/16 launches; the independent local-build scenario

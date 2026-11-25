@@ -15194,3 +15194,14 @@ upgrade is implied. Latest upstream live/edge/dev endpoints returned HTTP403, an
 actual64-bit execution remains unqualified. Owner-provided compatibility/loom
 declarations are assertions, not proof for arbitrary binaries. Project factories
 retain their separate runtime contract. Keep issue22 and draft PR24 open for review.
+
+## M801 — Publish immutable rc.4 review delivery (2026-11-25)
+
+Status: published prerelease; owner DEV apply still pending. Extends M800 with
+[verified publication](diagnostics/2026-11-25-runtime-feedback-publication.json).
+All nine draft downloads and all nine unauthenticated public downloads match
+the qualified source27aac50 artifacts byte-for-byte. Stable/latest remains0.5.0.
+Distribution pins/instructions are incadeb8930373ba41db5dc8eff9a8a01e6d71ba23; the source
+tag predates those pins and is not the native-plugin install revision. No installed
+DEV or production service changed. The prepared rc.4 owner command and focused
+manual checklist are current; keep the completed rc.3 attempt and its backups.
