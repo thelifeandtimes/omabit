@@ -141,6 +141,20 @@ def main():
  for n in ('shell.qml','desktop.py','fleet_guest.py','fleet_client.py','desk_guest.py'):shutil.copy2(SUPPORT/n,payload/n)
  guest=(HERE/'guest.py').read_text() if a.case!='upgrade' else (SUPPORT/'guest.py').read_text()
  if a.case=='upgrade':
+  # rc.3 upgrades must retain an already selected reviewed runtime and its
+  # installed archive, as well as the ordinary running/stopped fixture ships.
+  if previous=='0.6.0-rc.3':
+   before=" host=install(PREVIOUS)\n"
+   selected=""" host=install(PREVIOUS)
+ run([tool(PREVIOUS,'urbit-runner'),'runtime-profile-install','--profile','vere-4.6-jsonfix-0774857c','--archive',I/'jsonfix.tar.gz'],True)
+ collector(PREVIOUS,'create-fake','upgrade-runtime-bound','--ship','~bud','--http-port','19184','--runtime-profile','vere-4.6-jsonfix-0774857c','--request-id','upgrade-runtime-bound-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
+ retained_archive=Path('/home/review/.local/share/urbit-runner/runtime-profiles/vere-4.6-jsonfix-0774857c/image.tar.gz')
+ retained_archive_hash=hashlib.sha256(retained_archive.read_bytes()).hexdigest()
+"""
+   after="  assert before==project(TARGET),'fleet configuration/history changed'\n"
+   verified=after+"  assert hashlib.sha256(retained_archive.read_bytes()).hexdigest()==retained_archive_hash\n  report['selected_runtime_and_archive_preserved']=True\n"
+   if guest.count(before)!=1 or guest.count(after)!=1:raise RuntimeError('reviewed-runtime upgrade adapter no longer matches')
+   guest=guest.replace(before,selected).replace(after,verified)
   original="  print('OMABIT_RELEASE_UPGRADE_RESULT '+json.dumps(report),flush=True)"
   framed="  raw=json.dumps(report,separators=(',',':')).encode();encoded=base64.b64encode(raw).decode();chunks=[encoded[i:i+3000] for i in range(0,len(encoded),3000)]\n  for i,data in enumerate(chunks):print('OMABIT_PROFILE_REPORT_CHUNK '+json.dumps({'i':i,'data':data}),flush=True)\n  print('OMABIT_PROFILE_REPORT_END '+json.dumps({'chunks':len(chunks),'sha256':hashlib.sha256(raw).hexdigest()}),flush=True)"
   if guest.count(original)!=1:raise RuntimeError('upgrade report adapter no longer matches')
