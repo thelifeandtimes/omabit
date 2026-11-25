@@ -6,8 +6,9 @@ The owner's manual review expands selection to fresh ordinary fake/comet/key
 boots, existing-pier imports, and explicit changes on stopped ordinary ships.
 This supersedes the finite-catalogue and no-transition restrictions in the
 historical rc.3 section below. Project members and private-chain factories keep
-their separate official-runtime contracts. This source is not yet qualified as
-a new installed release; rc.3 artifacts remain immutable.
+their separate official-runtime contracts. The exact rc.4 artifacts pass the linked [manual-review qualification](runtime-profiles-manual-review.md#evidence);
+live DEV remains on rc.3 until the owner applies its separate prepared update.
+The rc.3 artifacts remain immutable.
 
 An enrolled ship stores an exact artifact ID. Live/edge/dev identify the latest
 **installed** upstream channel build; refreshing a channel does not change any

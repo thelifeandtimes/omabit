@@ -15161,3 +15161,36 @@ change after the freeze. The new owner updater has separate rc.4 work/backup/plu
 paths, exact rc.3 starting hashes, schema66→67 checks and a retained runtime-profile
 backup. Its fault tests pass. It has not been prepared or applied at this checkpoint;
 first qualify the exact artifacts and wrapper, then prepare the owner command.
+
+## M800 — Qualify rc.4 and prepare the preserved DEV update (2026-11-25)
+
+Status: qualified review candidate, owner application pending. Supersedes M798/M799's
+qualification-pending status; product source remains27aac5001c43a7a1148df47dc9904bdeb1a4a536.
+[Manual review](runtime-profiles-manual-review.md#evidence) links passing source, all
+race shards, QML, reproduction/package checks, bundled runtime14-check/16-launch
+and local-build5-check/8-launch scenarios, both0.5.0/schema65 and rc.3/schema66
+upgrades to schema67, full Omarchy shell activation and exact DEV wrapper activation.
+Both native upgrades preserve original application history, identity/access and
+running processes and refuse older writers without state changes. The rc.3 case
+also preserves a selected reviewed profile and its installed archive.
+
+The first expanded runtime run stopped at an optional-empty JSON comparison; the
+first split local case stopped at a helper-scope error; the first copied shell
+driver derived its source path incorrectly. Each was a private harness issue,
+recorded and corrected without changing product artifacts. Completed re-runs pass.
+All temporary runtime VMs ended; generated disks were retired with manifests while
+logs, results, screenshots and immutable inputs remain. The48GiB cap is unchanged.
+
+[The owner update](review040-update.md) is staged in build/review040-update-060rc4-owner
+with exact source/tools/archive/plan hashes. Its readiness check passes with1,311,768,576
+bytes of declared backup/scratch. It retains managed state, runtime archives and
+desktop settings; refuses reuse, changed inputs or a partial-attempt retry; and
+never rolls a migrated database back to old binaries. The live environment remains
+rc.3. No live Stop/recovery or DEV apply was performed. The owner should apply the
+new rc.4 command, then explicitly Stop review-zod and perform the focused review.
+
+Publication is a review prerelease only; no stable/master promotion or production
+upgrade is implied. Latest upstream live/edge/dev endpoints returned HTTP403, and
+actual64-bit execution remains unqualified. Owner-provided compatibility/loom
+declarations are assertions, not proof for arbitrary binaries. Project factories
+retain their separate runtime contract. Keep issue22 and draft PR24 open for review.

@@ -1,93 +1,87 @@
 # Update the existing review040 DEV environment
 
-**Completed by the owner on2026-11-24.** The live DEV widget reports0.6.0-rc.3
-and the updater's [complete receipt is recorded](diagnostics/2026-11-24-review040-update-completed.json).
-The commands below document that update; do not run `--apply` again. Manual
-functional review is now the next step.
+**rc.4 is prepared for the owner to apply; live DEV remains on rc.3.** The exact
+package, native runtime paths, both upgrade starting versions and separate DEV
+widget activation pass. The final readiness check reports ready with no live changes.
 
-“DEV environment” means the complete separate setup: widget, collector profile,
-runner, engine and data. “Namespace” describes its isolation boundaries and names;
-“configuration” means its settings. The current environment retains its historical
-`review040` identifier across version updates.
+“DEV environment” is the clearest name for the complete setup: widget, collector
+profile, runner, engine and data. “Namespace” describes its isolation boundaries;
+“configuration” means its settings. It retains the historical review040 identifier.
 
-This owner-run adapter targets only `/srv/dev/urbit-040`, the `review-040` profile,
-`omabit-dev-040-runner.service`, and plugin ID `thelifeandtimes.omabit.review040`.
-The observed starting build is published0.5.0/schema65 with runner identity
-`runner-a9a208a18445179f05df5644ed6d245c`. It does not target the older DEV
-environment rooted at `/srv/dev/urbit` or the normal production plugin.
+This owner-run adapter targets only `/srv/dev/urbit-040`, profile `review-040`,
+`omabit-dev-040-runner.service` and plugin `thelifeandtimes.omabit.review040`.
+It verifies the exact installed rc.3 build and runner identity before proceeding.
 
 ## Commands for this machine
 
-The complete candidate is already staged in
-`/home/thelifeandtimes/repos/omabit/build/review040-update-060rc3-owner`.
-Close any pending DEV operation, then run as your normal user, **without sudo**:
+Close pending DEV operations. Run as your normal user, **without sudo**:
 
 ```bash
 cd /home/thelifeandtimes/repos/omabit
-python3 -B scripts/qualification/runtime-profiles/update_review040.py --apply
+python3 -B scripts/qualification/runtime-profiles/update_review040_rc4.py --check
+python3 -B scripts/qualification/runtime-profiles/update_review040_rc4.py --apply
 ```
 
-The initial fixed256MiB backup-size guard was corrected after the owner's
-pre-apply refusal. Both existing boot pills remain included. The refreshed plan
-passes measured backup/scratch admission under the unchanged48GiB cap; no live
-update started during that refusal. You can check readiness without changing the
-environment using the same command with `--check` instead of `--apply`.
-
-Require a final `"status": "complete"`. Then verify the live DEV widget:
+Require a final `"status": "complete"`, then inspect:
 
 ```bash
 omarchy shell thelifeandtimes.omabit.review040.review status
 ```
 
-Expected: version `0.6.0-rc.3`, profile `review-040`, `loaded:true`, and
-`local_setup:false`. Its helper paths should name
-`thelifeandtimes.omabit.review040-v060rc3`. The bar button stays **DEV**.
+Expected: version `0.6.0-rc.4`, profile `review-040`, `loaded:true`,
+`local_setup:false`, and helper paths under `thelifeandtimes.omabit.review040-v060rc4`.
+The bar button stays **DEV**. Use the [focused manual review](runtime-profiles-manual-review.md)
+to check recovery, pending buttons, the permission map and runtime selection.
 
-The script stages no fresh ship and does not perform a ship import or runtime
-transition. It stops only the DEV manager, retains an offline management backup
-and original binaries/preferences, installs the matching rc.3 helpers and exact
-reviewed runtime archive in that DEV engine, then starts the manager with its
-existing no-resume service arguments. Existing container processes, fleet
-configuration, intent and operation history are compared before/after. The old
-widget is retained outside the watched plugin directory; the candidate uses a new
-versioned directory with the same plugin ID, profile and desktop paths. Only that
-widget is reloaded, and original shell configuration bytes are restored.
+The completed rc.3 update used `update_review040.py` and
+`build/review040-update-060rc3-owner`. Do not rerun or reset that earlier attempt.
+Its [completion receipt](diagnostics/2026-11-24-review040-update-completed.json)
+and backups remain intact.
 
-Backups are retained at `/srv/dev/urbit-040/state/upgrade-060rc3-owner` and in the
-staging directory. The runner advances to schema66; selecting old binaries is not
-a supported rollback. If the command fails, stop and share the reported phase
-from `build/review040-update-060rc3-owner/failed.json`. Do not rerun it blindly or
-reset state. A second apply is deliberately refused after the attempt begins.
+## Preservation and failure handling
 
-## Preparation and evidence
+The rc.4 preparation lives in `build/review040-update-060rc4-owner`. Apply creates
+`/srv/dev/urbit-040/state/upgrade-060rc4-owner`, preserving management state,
+runtime profiles/archives, old binaries, desktop data and shell configuration.
+It stops only the DEV manager, installs matching rc.4 tools and verifies the
+already selected reviewed archive, then starts the manager with its existing
+no-resume service arguments. It compares original configuration, intent, history,
+engine identity and container processes before/after. It neither creates a ship
+nor changes a ship's selected runtime.
 
-Preparation has already run and does not need repeating. For a separately
-reviewed fresh attempt, the preparer takes the published bundle/archive and a new
-working directory, checks the exact existing DEV identity, service and binary
-hashes, and enforces the approved aggregate storage budget. `--prepare` never
-stops services or changes installed files; only `--apply` does the live update.
-The estimator counts actual management, SQLite analysis, desktop and tool copies,
-plus explicit archive/image and growth reserves. Apply remeasures before any
-mutation. `--refresh-plan` is a preparation-only recovery action: it keeps the
-old plan and refuses a started attempt, existing backup, changed identity or
-changed plugin inputs. It is not a way to retry a partially executed update.
+The old widget is retained in the new work directory's `plugin-before`; the new
+versioned widget keeps the same plugin ID, profile and desktop paths. Only that
+widget is unloaded/reloaded. Original shell configuration bytes are restored.
+Production services and the separate older DEV root `/srv/dev/urbit` are untouched.
 
-The [preparation record](diagnostics/2026-11-24-review040-update-prepared.json)
-binds the final updater and plan hashes. A separate networkless full Omarchy shell
-passed loading the old wrapper, targeted unloading, loading the new versioned
-wrapper, unchanged profile/local-setup boundaries and exact shell-config
-restoration without restarting the shell. That test used empty private DEV-shaped
-paths, not this environment's live state. Fault tests cover altered candidate
-refusal, repeat-attempt refusal, and a late UI failure preserving the migrated
-database/new tools/original offline WAL backup instead of downgrading them.
-The later [storage correction](diagnostics/2026-11-24-review040-storage-correction.json)
-supersedes the original updater/plan hashes and fixed backup thresholds; four
-regression tests pass, including large retained boot pills and refusal before
-mutation when the aggregate budget is exceeded.
+Runner state advances from schema66 to67. An older writer must refuse it;
+restoring older binaries alone is not a rollback. If apply fails, retain the
+reported phase and `build/review040-update-060rc4-owner/failed.json`. Do not rerun,
+reset state, edit the schema marker or discard the checkpoint. Repeat apply is
+refused once an attempt starts. The updater does not automatically downgrade on
+failure. Its fault tests cover changed inputs, repeat attempts, capacity refusal
+and a late UI failure retaining migrated state and backups.
 
-The [native0.5.0→rc.3 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
-and [runtime tests](diagnostics/2026-11-24-runtime-profiles-native.json) qualify the
-exact published product bytes. **The custom live DEV update has not been run by
-the assistant.** Its final receipt will exist only after the owner runs the
-command successfully. This is a prepared owner-operated adapter, not a claim that
-this custom service layout has already completed the upgrade.
+## Preparation and qualification
+
+`--prepare` stages the exact candidate after read-only identity checks. `--check`
+remeasures all backup/image scratch under the unchanged48GiB aggregate cap and
+verifies the unstarted plan; neither modifies installed files or services.
+`--refresh-plan` retains and renews only an unstarted plan after a reviewed adapter
+correction. It cannot retry a partially executed update.
+
+- [Frozen package and provenance](diagnostics/2026-11-25-runtime-feedback-build.json).
+- [Source, all race shards, QML and reproducibility](diagnostics/2026-11-25-runtime-feedback-ci.json).
+- [Bundled runtime:14 checks and16 container launches](diagnostics/2026-11-25-runtime-feedback-bundled-native.json).
+- [Local-build fresh/switch/import:5 checks and8 launches](diagnostics/2026-11-25-runtime-feedback-local-native.json).
+- [Direct0.5.0→rc.4 upgrade](diagnostics/2026-11-25-runtime-feedback-stable-upgrade.json) and
+  [rc.3→rc.4 upgrade](diagnostics/2026-11-25-runtime-feedback-rc3-upgrade.json): real native
+  authorization denial/retry, schema migration, older-writer refusal, retained
+  running containers and original ship/application/access history.
+- [Full isolated Omarchy shell](diagnostics/2026-11-25-runtime-feedback-full-shell.json).
+- [Exact DEV wrapper and prepared owner update](diagnostics/2026-11-25-review040-rc4-prepared.json).
+
+
+The assistant has not applied the live update. A local preparation and isolated
+rehearsal do not establish that this custom DEV layout has already completed it;
+the owner's complete receipt establishes that final result.

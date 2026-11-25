@@ -1,0 +1,182 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "passed": true,
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "draft_metadata": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758488",
+        "contentType": "application/x-gtar",
+        "createdAt": "2026-11-25T08:42:18Z",
+        "digest": "sha256:e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgRY",
+        "label": "",
+        "name": "omabit-0.6.0-rc.4-linux-amd64.tar.gz",
+        "size": 37031093,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:20Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/omabit-0.6.0-rc.4-linux-amd64.tar.gz"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758483",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-11-25T08:42:18Z",
+        "digest": "sha256:20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgRT",
+        "label": "",
+        "name": "omabit-linux-amd64",
+        "size": 26887155,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:19Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/omabit-linux-amd64"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758492",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-11-25T08:42:18Z",
+        "digest": "sha256:85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgRc",
+        "label": "",
+        "name": "omabit-recommended-apps-0.6.0-rc.4.pill",
+        "size": 59351751,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:21Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/omabit-recommended-apps-0.6.0-rc.4.pill"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758485",
+        "contentType": "application/x-gtar",
+        "createdAt": "2026-11-25T08:42:18Z",
+        "digest": "sha256:8f47fdf2e8dbd188c497cdc149a313663595d65c68087193cc764edcee78e39b",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgRV",
+        "label": "",
+        "name": "omabit-skills-0.6.0-rc.4.tar.gz",
+        "size": 73906,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:18Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/omabit-skills-0.6.0-rc.4.tar.gz"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758519",
+        "contentType": "application/json",
+        "createdAt": "2026-11-25T08:42:19Z",
+        "digest": "sha256:1651f6301f558b3499b252200b1c53b8afd1ac8fac4049ebf7a690168dbbd111",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgR3",
+        "label": "",
+        "name": "release.json",
+        "size": 4176,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:19Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/release.json"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758491",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-11-25T08:42:18Z",
+        "digest": "sha256:e42a08bd3c2307251f8965c00e50e27637028ed4e1bf4974f173b61f3b9662d2",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgRb",
+        "label": "",
+        "name": "SHA256SUMS",
+        "size": 755,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:18Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/SHA256SUMS"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758522",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-11-25T08:42:19Z",
+        "digest": "sha256:68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgR6",
+        "label": "",
+        "name": "urbit-collector-linux-amd64",
+        "size": 13257861,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:20Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/urbit-collector-linux-amd64"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758547",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-11-25T08:42:20Z",
+        "digest": "sha256:64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgST",
+        "label": "",
+        "name": "urbit-runner-linux-amd64",
+        "size": 30295412,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:24Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/urbit-runner-linux-amd64"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/thelifeandtimes/omabit/releases/assets/790758593",
+        "contentType": "application/x-gtar",
+        "createdAt": "2026-11-25T08:42:20Z",
+        "digest": "sha256:c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+        "downloadCount": 0,
+        "id": "RA_kwDOVDb-Jc4vIgTB",
+        "label": "",
+        "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+        "size": 54750277,
+        "state": "uploaded",
+        "updatedAt": "2026-11-25T08:42:23Z",
+        "url": "https://github.com/thelifeandtimes/omabit/releases/download/untagged-8c54a18491e33c3957af/vere-4.6-jsonfix-0774857c.tar.gz"
+      }
+    ],
+    "id": "RE_kwDOVDb-Jc4bSiS5",
+    "isDraft": true,
+    "isPrerelease": true,
+    "tagName": "v0.6.0-rc.4",
+    "targetCommitish": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+    "url": "https://github.com/thelifeandtimes/omabit/releases/tag/untagged-8c54a18491e33c3957af"
+  },
+  "download_directory": "/tmp/omabit-rc4-draft-downloads",
+  "assets": {
+    "vere-4.6-jsonfix-0774857c.tar.gz": {
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "bytes": 54750277
+    },
+    "urbit-runner-linux-amd64": {
+      "sha256": "64c064be18a15936b9a4b271bf2dd71e4915c6eadeb0468e20e3dd50449e922f",
+      "bytes": 30295412
+    },
+    "urbit-collector-linux-amd64": {
+      "sha256": "68c8e71c74ea83b12415d8b5e6545c42043dbb99ae23e8af410ac8ee5d93441c",
+      "bytes": 13257861
+    },
+    "SHA256SUMS": {
+      "sha256": "e42a08bd3c2307251f8965c00e50e27637028ed4e1bf4974f173b61f3b9662d2",
+      "bytes": 755
+    },
+    "omabit-skills-0.6.0-rc.4.tar.gz": {
+      "sha256": "8f47fdf2e8dbd188c497cdc149a313663595d65c68087193cc764edcee78e39b",
+      "bytes": 73906
+    },
+    "omabit-recommended-apps-0.6.0-rc.4.pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "bytes": 59351751
+    },
+    "release.json": {
+      "sha256": "1651f6301f558b3499b252200b1c53b8afd1ac8fac4049ebf7a690168dbbd111",
+      "bytes": 4176
+    },
+    "omabit-linux-amd64": {
+      "sha256": "20a891038f7f0be04b8eb7df902d0ce7dc5a1c15d8747dd7ea69517befbc35e7",
+      "bytes": 26887155
+    },
+    "omabit-0.6.0-rc.4-linux-amd64.tar.gz": {
+      "sha256": "e2e254bb3c1f565af374aa3a64adf24163091188d9102181ddfbb0e03984cf85",
+      "bytes": 37031093
+    }
+  },
+  "bootstrap_pin_sha256": "1d4806663095ad47e269b04113072e7cf2ab14236cda4b6b98e400f755f47c64"
+}

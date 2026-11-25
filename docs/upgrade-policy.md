@@ -6,10 +6,17 @@ The rc.4 source adds an older-writer fence for owner-installed immutable runtime
 manifests and journaled stopped runtime transitions. Migration preserves original
 instance and operation bodies. Preserve the runtime-profiles directory alongside
 management state; it contains the exact metadata and archives needed by enrolled
-ships. No migrated database may be opened by an older writer. The planned review
-window is published0.5.0/schema65 and rc.3/schema66 to the new candidate; actual
-matching-artifact rehearsals are still pending. Earlier rc.3 evidence does not
-qualify rc.4. No live DEV or production update is implied.
+ships. No migrated database may be opened by an older writer. The qualified review
+window is published0.5.0/schema65 and rc.3/schema66 directly to rc.4/schema67.
+Both [0.5.0](diagnostics/2026-11-25-runtime-feedback-stable-upgrade.json) and
+[rc.3](diagnostics/2026-11-25-runtime-feedback-rc3-upgrade.json) matching-artifact
+rehearsals pass for local owner-user installations: native authorization denial/retry,
+original ship/application/access history, running-process continuity, manager
+restart and older-writer refusal. The rc.3 case also retains an enrolled reviewed
+runtime selection and its installed archive. These results do not qualify remote
+updates, active recording-worker upgrades or power-loss durability. The custom
+DEV adapter is [prepared separately](review040-update.md), not applied. No live
+DEV or production update is implied.
 
 ## Historical review: immutable per-ship runtimes, schema66
 

@@ -1,159 +1,89 @@
-# Omabit 0.6.0-rc.3 manual review
+# Omabit 0.6.0-rc.4 manual review
 
-This is the complete Linux/AMD64 prerelease candidate for issue22, including the
-native UI, matching collector/runner/CLI, skills, recommended pill and reviewed
-Vere archive. It preserves the official default runtime and adds an explicit
-immutable runtime choice for each ordinary managed ship.
+The rc.4 candidate addresses the feedback from the persistent review040 DEV
+environment. Product source: `27aac5001c43a7a1148df47dc9904bdeb1a4a536`;
+runner schema67. All linked qualification gates pass and the DEV update is staged. This is a prerelease. Stable/latest remains0.5.0.
 
-Download from [v0.6.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.3).
-The exact **distribution checkout** is
-`664f938ad15f139dbf79e0baef3f4bda145c9d02`.
-The product source is `747dd810c10b74b4fbcdc10f617e6b15dd545a45`; that source tag
-predates the distribution pins. Do not install the source tag as the plugin.
-Stable/latest remains0.5.0; publishing this candidate changes no installed service.
+## Update this DEV environment
 
-For the existing `review040` DEV environment under `/srv/dev/urbit-040`, use the
-[dedicated DEV update commands](review040-update.md). The normal-plugin profile
-commands below do not update that custom environment.
-
-## Download and verify
-
-Use a new directory. Keep the archive and checksums with your review materials.
-The commands need Git, curl and Python3; they do not install or update services.
-The commands pin that exact checkout; the branch name is only used to fetch it.
+Use the separate [owner update guide](review040-update.md). The old rc.3 update
+is complete and must not be repeated. The rc.4 command is:
 
 ```bash
-review_dir="$HOME/Downloads/omabit-0.6.0-rc.3-review"
-(
-  set -eu
-  mkdir -m 700 "$review_dir"
-  git clone --no-checkout --single-branch --branch codex/issue-22-runtime-profiles \
-  https://github.com/thelifeandtimes/omabit.git "$review_dir/source"
-  git -C "$review_dir/source" checkout --detach 664f938ad15f139dbf79e0baef3f4bda145c9d02
-  mkdir "$review_dir/assets"
-  cd "$review_dir/assets"
-  release_url=https://github.com/thelifeandtimes/omabit/releases/download/v0.6.0-rc.3
-  for asset in SHA256SUMS release.json omabit-0.6.0-rc.3-linux-amd64.tar.gz \
-    omabit-linux-amd64 urbit-collector-linux-amd64 urbit-runner-linux-amd64 \
-    omabit-skills-0.6.0-rc.3.tar.gz omabit-recommended-apps-0.6.0-rc.3.pill \
-    vere-4.6-jsonfix-0774857c.tar.gz; do
-    curl --fail --location --output "$asset" "$release_url/$asset"
-  done
-  printf '%s  SHA256SUMS\n' c3220d8db6e798ad06a2257c254c65031318a1281b2ac7c50efaea0a2e6660c7 | sha256sum --check -
-  sha256sum --check SHA256SUMS
-)
+cd /home/thelifeandtimes/repos/omabit
+python3 -B scripts/qualification/runtime-profiles/update_review040_rc4.py --check
+python3 -B scripts/qualification/runtime-profiles/update_review040_rc4.py --apply
 ```
 
-Stop if a command or checksum fails. These nine files are the original qualified
-bytes; no rebuild is needed. Bundle SHA256:
-`f1676a51bede3302327917c9e80b8661bf482e47a8e40633903e60ac435037f7`.
-
-## Review the desktop with empty separate state
-
-For an existing normal0.5.0 Omabit plugin, its compatible bootstrap can load this
-sealed release explicitly. This switches the normal widget to a new desktop
-profile; it leaves the previous profile's data intact. It does not modify any
-separately named DEV widget or upgrade a runner. Use the existing normal plugin,
-not an older/custom DEV wrapper with different state paths.
+Run as the existing owner, without sudo. Require `"status": "complete"`, then:
 
 ```bash
-(
-set -eu
-cd "$review_dir/source"
-python3 -B scripts/omabit-dev.py status > "$review_dir/desktop-before.json"
-python3 -B scripts/omabit-dev.py import-release \
-  "$review_dir/assets/release.json" \
-  "$review_dir/assets/omabit-0.6.0-rc.3-linux-amd64.tar.gz"
-python3 -B scripts/omabit-dev.py profile-create review060
-python3 -B scripts/omabit-dev.py select review060 \
-  --release b83468b7724020d344a1221b9d3093f3f562e46639c94a39f02d2e4c43d2bc52
-omarchy shell thelifeandtimes.omabit.bootstrap status
-)
+omarchy shell thelifeandtimes.omabit.review040.review status
 ```
 
-If `review060` already exists, retain it and use a different new name in both
-commands. Activation may take a few seconds. Require `phase:"ready"`, an empty
-`error`, `loaded_version:"0.6.0-rc.3"`, source `747dd810…` and the full loaded
-release digest above. Open Omabit and confirm **PRERELEASE**, Setup and the empty
-Fleet. Inspect the available Setup and Add a ship controls without submitting an import.
-Local service setup is disabled in this profile. Profiles isolate desktop data;
-they do not isolate host services or piers.
+Expected: version0.6.0-rc.4, profile review-040, loaded true, local_setup false,
+with helper paths in the versioned review040-v060rc4 plugin. Existing enrollment,
+piers, runtime pins, stopped/running intent and history remain. The assistant does
+not apply this command or perform live recovery on the owner's behalf.
 
-To restore the prior desktop selection exactly, without modifying its release
-pin or data:
+## Focused review
 
-```bash
-cd "$review_dir/source"
-python3 -B - "$review_dir/desktop-before.json" <<'PY'
-import json, subprocess, sys
-state = json.load(open(sys.argv[1]))
-name = state['selected']
-subprocess.run([sys.executable, '-B', 'scripts/omabit-dev.py', 'select', name,
-                '--release', state['profiles'][name]['selection']], check=True)
-PY
-omarchy shell thelifeandtimes.omabit.bootstrap status
-```
+1. Select **review-zod**, then **Stop** to reconcile its retained network endpoint.
+   Require a terminal successful Stop, stopped state and cleared recovery flag;
+   let another refresh complete to ensure it stays stopped. This operation does
+   not recreate its pier. If it remains unknown, retain the operation's diagnostic;
+   do not reset/reimport it or manually remove network resources.
+2. On an ordinary disposable ship, press Stop and Start once each. The button
+   should immediately show **Stopping…** or **Starting…**, stay disabled through
+   submission and polling, and return only when its matching operation finishes.
+   Pack/Meld/Roll use the same pending behavior.
+3. Run Pack for the **zod** instance. Observe **release050-app-zod** separately.
+   Its status should no longer turn unknown because an unrelated Pack container
+   appears or disappears. These instances have distinct runtime identities despite
+   sharing the fake Urbit identity ~zod.
+4. Open the permission map. Each fake's card should display its **instance ID**,
+   with its friendly label if different. A stopped expanded project member should
+   retain its permission scope. Ordinary blocked permissions are still blocked.
+5. Open **Set up this computer** in DEV. It should explain the separate development
+   environment and offer **Add a ship**, without an indefinitely checking installer.
+   The production host installer remains disabled in this review profile.
+6. On the intended disposable runner, review all three runtime workflows: choose a
+   runtime when booting a fresh fake; choose one before previewing/importing a stopped
+   disposable pier; and Stop an enrolled ordinary ship, choose its new runtime,
+   confirm the change, then Start explicitly. Confirm the requested and observed
+   runtime details match. Selection alone must leave the ship stopped.
 
-Keep the new review profile and downloads; there is no reset/cleanup prerequisite.
+Project members/private-chain factories retain their separate runtime contract;
+the new enrolled-ship selector applies to ordinary managed ships.
 
-## Optional review against an existing local0.5.0 runner
+## Local builds and channels
 
-This is a separate owner-operated upgrade. The tested starting state is the
-published0.5.0 local owner-user installation, schema65. Earlier stable users must
-first follow their documented chain to0.5.0. Remote service updates, active
-recording-worker upgrades, power-loss recovery and custom DEV service layouts are
-outside the qualified window. Do not apply the normal setup updater to a custom
-`/srv/dev` installation.
+[Runtime policy](runtime-policy.md) documents packaging a local Linux x86-64 Vere
+executable, installing its manifest/archive as the runner owner and selecting its
+immutable ID. The CLI supports an owner-declared loom limit up to40; the ordinary
+UI offers30..34 and preserves a larger existing CLI value. Actual64-bit execution
+and latest upstream channel downloads are not qualified by this candidate.
 
-Restore the original desktop profile first. To use rc.3 with that profile, select
-its existing name with the exact release digest above instead of creating another
-profile. This retains its enrollment and credentials. In **Setup**, review the
-selected runner's identity, existing installation and proposed service update.
-Then explicitly authorize that update if desired. A fresh-install/reset offer is
-not the tested path. A desktop selection alone never authorizes a service update.
+Live/edge/dev refer to the latest **installed** channel artifact on that runner.
+Installing a newer channel build does not change a ship's saved pin. The upstream
+latest endpoints returned HTTP403 during this work, so the UI does not claim an
+unverified download is available. Local patched executables remain usable through
+the owner packaging/install path. Compatibility declarations are owner assertions;
+an incompatible downgrade from a required JSON correction is refused.
 
-The update advances runner state to schema66. Preserve its database, identities,
-credentials, piers, settings and operation history. Compare Fleet before/after;
-stopped ships must stay stopped, running peers must retain their processes, and
-existing ships retain the official pin. An uncertain update must continue its
-original attempt/receipt. Do not force a downgrade or edit the schema marker;
-the actual0.5.0 writer refuses the newer state.
+## Evidence
 
-For runtime operations, use a fresh disposable fake on a deliberately selected
-review runner. Stage the exact reviewed archive as that runner's owner, using the
-matching rc.3 tool, then require successful artifact preflight before creating or
-importing anything. The [runtime review guide](runtime-profiles-review.md#stage-the-artifact-before-inspecting-a-patched-pier)
-contains the commands and exact runtime metadata. Use both runtime choices in
-separate fakes, check runtime details, Stop/Start and Pack, and retain their pins.
-Never change a ship's runtime to test a downgrade.
+- [Frozen package and provenance](diagnostics/2026-11-25-runtime-feedback-build.json).
+- [Source, all race shards, QML and reproducibility](diagnostics/2026-11-25-runtime-feedback-ci.json).
+- [Bundled runtime:14 checks and16 container launches](diagnostics/2026-11-25-runtime-feedback-bundled-native.json).
+- [Local-build fresh/switch/import:5 checks and8 launches](diagnostics/2026-11-25-runtime-feedback-local-native.json).
+- [Direct0.5.0→rc.4 upgrade](diagnostics/2026-11-25-runtime-feedback-stable-upgrade.json) and
+  [rc.3→rc.4 upgrade](diagnostics/2026-11-25-runtime-feedback-rc3-upgrade.json): real native
+  authorization denial/retry, schema migration, older-writer refusal, retained
+  running containers and original ship/application/access history.
+- [Full isolated Omarchy shell](diagnostics/2026-11-25-runtime-feedback-full-shell.json).
+- [Exact DEV wrapper and prepared owner update](diagnostics/2026-11-25-review040-rc4-prepared.json).
 
-Protected existing ships and the owner's later `~sarlev` import are separate
-decisions with the [identity safeguards](protected-ships.md). Preparing this
-candidate did not inspect or operate those ships.
 
-## Evidence and feedback
-
-- [Native core scenario](diagnostics/2026-11-24-runtime-profiles-native.json):
-  all14 checks, both runtime pins, replacement, maintenance, controlled recovery,
-  stopped fake import and16-container lifecycle/utility audit.
-- [Published0.5.0 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json):
-  actual native QML flow, denial/retry, schema65→66, preserved identity/history/access,
-  existing processes, manager reopen and genuine older-writer refusal.
-- [Full Omarchy shell](diagnostics/2026-11-24-runtime-profiles-full-shell.json):
-  cold/hot/rescan/restart with unchanged archives and preserved preferences, in a
-  private headless Sway compositor. Host Hyprland integration is not covered.
-- [Draft downloads](diagnostics/2026-11-24-runtime-profiles-draft-downloads.json) and
-  [public delivery](diagnostics/2026-11-24-runtime-profiles-publication.json):
-  all nine assets match original sizes, SHA256 and GitHub digests. The public tag
-  points to the frozen product;0.5.0 remains latest.
-- [Manual entry point](diagnostics/2026-11-24-runtime-profiles-manual-entry.json):
-  pinned checkout, verified import, isolated profile and exact restoration of the
-  prior non-default profile/release pass in fresh private state.
-
-The frozen source passed core, all four managed-race shards, QML and aggregate
-source CI. The protected stable-release policy intentionally rejects this topic
-prerelease. Wider native handoff/recording and malformed-input decoder regression
-tests are not claimed. Review feedback belongs on
-[PR24](https://github.com/thelifeandtimes/omabit/pull/24), with loaded version,
-profile, operation and error text; omit credentials. Keep issue22 open until owner
-review is complete.
+The original rc.3 artifacts and completed update receipts are retained. No protected
+ship, tmux ship, ~/temp-ur content or production service was used for qualification.

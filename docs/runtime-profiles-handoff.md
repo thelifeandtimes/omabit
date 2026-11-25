@@ -1,25 +1,29 @@
 # Issue22 continuation and review handoff
 
-## Active feedback implementation — rc.4 (not yet delivered)
+## Current review candidate — rc.4, prepared for owner application
 
-The owner completed the rc.3 DEV update and reported recovery, action-feedback,
-permission-label and runtime-selection issues. M798 and the current section of
-[runtime policy](runtime-policy.md) supersede the historical next-action and
-finite-catalogue statements below. The current source implements the fixes and
-owner-installed local/channel artifacts with explicit stopped transitions.
-The version is0.6.0-rc.4/schema67; the source freeze, matching native runtime,
-0.5.0/rc.3 upgrade rehearsals and new owner update adapter remain pending.
-Do not reuse the completed review040-update-060rc3-owner attempt or alter its
-backups. Do not run the live DEV apply automatically.
+Product source is27aac5001c43a7a1148df47dc9904bdeb1a4a536, version0.6.0-rc.4/schema67.
+Source, all managed-race shards, QML and full release reproduction pass. The bundled
+runtime scenario passes14 checks/16 launches; the independent local-build scenario
+passes5 checks/8 launches, covering fresh boot, explicit stopped transition, import
+and manager restart. Direct0.5.0→rc.4 and rc.3→rc.4 native upgrade rehearsals pass,
+including preserved application history and older-writer refusal. Full isolated
+Omarchy shell activation and the exact DEV wrapper pass. See [manual review](runtime-profiles-manual-review.md)
+for evidence and scope, and [the prepared owner command](review040-update.md).
 
-The expanded runtime harness accepts `--local-runtime DIRECTORY` containing the
-builder's profile.json and runtime-image.tar.gz. It verifies their digest/length
-binding, then stages them only in a fresh disposable VM. It tests local fresh
-boot, explicit stopped transition, local import and manager restart in addition
-to the existing core scenario. Latest upstream channels returned HTTP403; real
-64-bit Vere execution is not yet qualified. Project members retain their separate
-runtime contract. All historical rc.3 evidence below still applies only to its
-unchanged published bytes.
+Live review040 remains rc.3; no assistant apply or review-zod recovery was performed.
+The new unstarted work is build/review040-update-060rc4-owner. Preserve the completed
+rc.3 work/backup. Do not apply automatically, reset a failed checkpoint or infer
+that stable publication/production service updates are authorized. Master remains
+protected; its gate intentionally refuses this prerelease topic.
+
+M800 supersedes M798/M799's qualification-pending status. Earlier failed private
+harness runs are retained with causes and retirement manifests; product bytes did
+not change. Split runtime cases use --case runtime and --case local-runtime with
+--local-runtime DIRECTORY to stay within the48GiB cap/4GiB per-VM scratch. All
+qualification VMs ended and their generated disks were retired with evidence.
+Latest upstream channels returned HTTP403; actual64-bit execution remains unverified.
+Project factories keep their separate official-runtime contract.
 
 ## Historical rc.3 handoff
 
