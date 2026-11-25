@@ -68,110 +68,117 @@ def main():
  hello=wait(lambda:col('hello'));assert 'runtime-profiles-v1' in hello['features']
  run([tool('urbit-collector'),'enroll','local','--socket',SOCK],True)
  docker('load','--input',I/'runtime.oci.tar')
- assert api_preflight()[0]==409
- col('create-fake','profile-patched','--ship','~nec','--http-port','19181','--runtime-profile',PROFILE,'--loom','34','--request-id','profile-patched-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
- operation('profile-patched','start','missing-artifact-start',success=False)
- assert not row('profile-patched')['runtime_status'].get('initialized',False)
- assert not docker('ps','-q').stdout.strip()
- check('missing_artifact_refuses_start_before_pier_execution')
- corrupt=Path('/home/review/corrupt-runtime.tar.gz');shutil.copyfile(I/'jsonfix.tar.gz',corrupt)
- with corrupt.open('r+b') as f:f.write(b'BAD')
- os.chown(corrupt,1000,1000)
- fail=run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',corrupt],True,ok=False)
- assert fail.returncode and 'checksum' in fail.stderr
- archive=Path('/home/review/.local/share/urbit-runner/runtime-profiles')/PROFILE/'image.tar.gz'
- assert not archive.exists();corrupt.unlink();check('corrupt_archive_install_refuses_without_publication')
- run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',I/'jsonfix.tar.gz'],True)
- code,preflight=api_preflight();assert code==200 and preflight['available'] and preflight['profile']['id']==PROFILE
- run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',I/'jsonfix.tar.gz'],True)
- check('exact_archive_install_idempotent_and_native_preflight')
- call=run([tool('omabit'),'call','runtime.profile-preflight.v1','--input-json',json.dumps({'name':'local','runner_id':hello['runner_id'],'runtime_profile':PROFILE})],True,ok=False)
- assert call.returncode==0,(call.stdout,call.stderr)
- report['shared_cli_preflight']={'exit':call.returncode,'out':call.stdout[-2500:],'err':call.stderr[-800:]}
- # Exact image metadata and binaries before any pier creation.
- for label,image,binary,version in [('stock',STOCK_MANIFEST,'b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0','4.6-5a7614f'),('patched',PATCH_MANIFEST,'0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c','4.6-82f4558')]:
-  value=docker('run','--rm','--network','none','--read-only','--entrypoint','/bin/sh',image,'-c','sha256sum /bin/urbit; /bin/urbit --version').stdout
-  assert binary in value and version in value,value
- check('container_binary_checksums_and_versions')
  events_log=(O/'container-events.jsonl').open('w')
  events=subprocess.Popen(['runuser','-u','review','--','env','HOME=/home/review','XDG_RUNTIME_DIR=/run/user/1000','PATH=/usr/bin:/bin','docker','--host','unix:///run/user/1000/urbit-docker.sock','events','--filter','type=container','--format','{{json .}}'],stdout=events_log,stderr=subprocess.DEVNULL)
- # The genuine manager executes and maintains two different pinned runtime images.
- for name,ship,port,profile in [('profile-stock','~zod',19180,''),('profile-patched','~nec',19181,PROFILE)]:
-  args=['create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--loom','34','--bootstrap','recommended','--pill',str(I/'boot.pill')]
-  if profile:args+=['--runtime-profile',profile]
+ if scenario.get('runtime_case')!='local-runtime':
+  assert api_preflight()[0]==409
+  col('create-fake','profile-patched','--ship','~nec','--http-port','19181','--runtime-profile',PROFILE,'--loom','34','--request-id','profile-patched-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
+  operation('profile-patched','start','missing-artifact-start',success=False)
+  assert not row('profile-patched')['runtime_status'].get('initialized',False)
+  assert not docker('ps','-q').stdout.strip()
+  check('missing_artifact_refuses_start_before_pier_execution')
+  corrupt=Path('/home/review/corrupt-runtime.tar.gz');shutil.copyfile(I/'jsonfix.tar.gz',corrupt)
+  with corrupt.open('r+b') as f:f.write(b'BAD')
+  os.chown(corrupt,1000,1000)
+  fail=run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',corrupt],True,ok=False)
+  assert fail.returncode and 'checksum' in fail.stderr
+  archive=Path('/home/review/.local/share/urbit-runner/runtime-profiles')/PROFILE/'image.tar.gz'
+  assert not archive.exists();corrupt.unlink();check('corrupt_archive_install_refuses_without_publication')
+  run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',I/'jsonfix.tar.gz'],True)
+  code,preflight=api_preflight();assert code==200 and preflight['available'] and preflight['profile']['id']==PROFILE
+  run([tool('urbit-runner'),'runtime-profile-install','--profile',PROFILE,'--archive',I/'jsonfix.tar.gz'],True)
+  check('exact_archive_install_idempotent_and_native_preflight')
+  call=run([tool('omabit'),'call','runtime.profile-preflight.v1','--input-json',json.dumps({'name':'local','runner_id':hello['runner_id'],'runtime_profile':PROFILE})],True,ok=False)
+  assert call.returncode==0,(call.stdout,call.stderr)
+  report['shared_cli_preflight']={'exit':call.returncode,'out':call.stdout[-2500:],'err':call.stderr[-800:]}
+  # Exact image metadata and binaries before any pier creation.
+  for label,image,binary,version in [('stock',STOCK_MANIFEST,'b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0','4.6-5a7614f'),('patched',PATCH_MANIFEST,'0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c','4.6-82f4558')]:
+   value=docker('run','--rm','--network','none','--read-only','--entrypoint','/bin/sh',image,'-c','sha256sum /bin/urbit; /bin/urbit --version').stdout
+   assert binary in value and version in value,value
+  check('container_binary_checksums_and_versions')
+  # The genuine manager executes and maintains two different pinned runtime images.
+  for name,ship,port,profile in [('profile-stock','~zod',19180,''),('profile-patched','~nec',19181,PROFILE)]:
+   args=['create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--loom','34','--bootstrap','recommended','--pill',str(I/'boot.pill')]
+   if profile:args+=['--runtime-profile',profile]
   
-  if not profile:col(*args)
-  operation(name,'start',name+'-start');wait(lambda:row(name)['observed_state']=='running',600)
-  audit_profile(name,profile,[PATCH,PATCH_MANIFEST] if profile else [STOCK,STOCK_MANIFEST])
- check('two_fresh_ships_different_pinned_runtimes')
- before={name:row(name)['runtime_status']['container_id'] for name in ('profile-stock','profile-patched')}
- run(['systemctl','--user','restart','urbit-runner.service'],True);wait(lambda:col('hello'))
- assert before=={name:row(name)['runtime_status']['container_id'] for name in before};check('manager_restart_preserves_both_containers_and_pins')
- # Loss of the archive must not prevent a safe stop or select stock on restart.
- holding=archive.with_name('image.retained-for-test.tar.gz');archive.rename(holding)
- operation('profile-patched','stop','patched-missing-stop');assert row('profile-stock')['runtime_status']['container_id']==before['profile-stock']
- operation('profile-patched','start','patched-missing-start',success=False)
- assert row('profile-patched')['observed_state']!='running' and api_preflight()[0]==409
- holding.rename(archive)
- operation('profile-patched','stop','patched-restored-artifact-reconcile')
- assert not row('profile-patched').get('recovery_required', False)
- check('missing_archive_allows_stop_refuses_restart_no_fallback')
- # A changed runtime selection on an enrolled pier must refuse without a write.
- prior=row('profile-patched');config=dict(prior['config']);config['runtime_profile']='vere-4.6-5a7614f'
- code,error=endpoint('/v1/instances/profile-patched/configuration','PUT',{'expected_revision':prior['config_revision'],'config':config})
- assert code==409 and row('profile-patched')['config']==prior['config'];report['transition_refusal']=error;check('enrolled_downgrade_refuses_preserving_configuration')
- # Old CLI's omitted profile field must preserve the selection.
- col('configure','profile-patched','--revision',str(prior['config_revision']),'--http-port','19181','--ames-port','34343','--loom','34')
- assert row('profile-patched')['config']['runtime_profile']==PROFILE
- operation('profile-patched','start','patched-replacement-start');wait(lambda:row('profile-patched')['observed_state']=='running',600)
- patched=audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);assert patched['runtime_status']['container_id']!=before['profile-patched']
- check('replacement_and_omitted_profile_preserve_pin')
- operation('profile-patched','stop','patched-before-pack');operation('profile-patched','pack','patched-pack')
- operation('profile-patched','start','patched-after-pack');wait(lambda:row('profile-patched')['observed_state']=='running',600)
- audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);check('pack_and_restart_preserve_pin')
- # Only the fresh disposable patched fake receives a controlled crash.
- crashed=row('profile-patched')['runtime_status']['container_id']
- docker('kill','--signal','KILL',crashed)
- wait(lambda:row('profile-patched')['observed_state']!='running')
- operation('profile-patched','stop','patched-crash-reconcile')
- operation('profile-patched','start','patched-crash-recovery');wait(lambda:row('profile-patched')['observed_state']=='running',600)
- audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);check('controlled_crash_recovery_preserves_pin')
- # Import a stopped copy of this new fake, never a user pier or live identity.
- operation('profile-patched','stop','patched-before-import-copy')
- original=row('profile-patched');source=Path('/home/review/reviewed-import-source')
- run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/original['pier_path'],source],True,timeout=180)
- def storage(*args,ok=True):return run([tool('urbit-collector'),'--runner','local','--expected-runner-id',hello['runner_id'],*args],True,ok=ok,timeout=180)
- refused=storage('preview-pier','--source',source,'--storage-root','default',ok=False)
- assert refused.returncode and source.exists(),(refused.stdout,refused.stderr)
- preview=json.loads(storage('preview-pier','--source',source,'--storage-root','default','--runtime-profile',PROFILE).stdout)
- assert preview['ship']=='~nec' and preview['network']=='fakenet',preview
- imported=preview['instance_id']
- storage('import-pier',imported,'--source',source,'--path',preview['destination'],'--ship',preview['ship'],'--fingerprint',preview['source']['fingerprint'],'--http-port',str(preview['http_port']),'--runtime-profile',PROFILE,'--request-id','reviewed-import','--confirm-stopped','--identify')
- def imported_ready():
-  snap=col('snapshot');op=next((x for x in snap['operations'] if x['request_id']=='reviewed-import'),None)
-  if not op or op['status'] in ('queued','pending','running'):return False
-  assert op['status']=='succeeded',op
-  return row(imported)['observed_state']=='stopped'
- wait(imported_ready,300)
- assert row(imported)['config']['runtime_profile']==PROFILE and not source.exists()
- current=row(imported)
- col('configure',imported,'--revision',str(current['config_revision']),'--http-port',str(current['config']['http_port']),'--ames-port',str(current['config']['ames_port']),'--loom','34')
- operation(imported,'start','reviewed-import-first-start');wait(lambda:row(imported)['observed_state']=='running',600)
- audit_profile(imported,PROFILE,[PATCH,PATCH_MANIFEST]);operation(imported,'stop','reviewed-import-stop')
- report['imported_instance']=imported;check('reviewed_import_refuses_stock_and_preserves_pin_through_start')
- operation('profile-patched','start','patched-after-import-copy');wait(lambda:row('profile-patched')['observed_state']=='running',600)
- for name in ('profile-patched','profile-stock'):
-  if row(name)['desired_state']!='stopped' or row(name)['observed_state']=='running':operation(name,'stop',name+'-final-stop')
+   if not profile:col(*args)
+   operation(name,'start',name+'-start');wait(lambda:row(name)['observed_state']=='running',600)
+   audit_profile(name,profile,[PATCH,PATCH_MANIFEST] if profile else [STOCK,STOCK_MANIFEST])
+  check('two_fresh_ships_different_pinned_runtimes')
+  before={name:row(name)['runtime_status']['container_id'] for name in ('profile-stock','profile-patched')}
+  run(['systemctl','--user','restart','urbit-runner.service'],True);wait(lambda:col('hello'))
+  assert before=={name:row(name)['runtime_status']['container_id'] for name in before};check('manager_restart_preserves_both_containers_and_pins')
+  # Loss of the archive must not prevent a safe stop or select stock on restart.
+  holding=archive.with_name('image.retained-for-test.tar.gz');archive.rename(holding)
+  operation('profile-patched','stop','patched-missing-stop');assert row('profile-stock')['runtime_status']['container_id']==before['profile-stock']
+  operation('profile-patched','start','patched-missing-start',success=False)
+  assert row('profile-patched')['observed_state']!='running' and api_preflight()[0]==409
+  holding.rename(archive)
+  operation('profile-patched','stop','patched-restored-artifact-reconcile')
+  assert not row('profile-patched').get('recovery_required', False)
+  check('missing_archive_allows_stop_refuses_restart_no_fallback')
+  # A changed runtime selection on an enrolled pier must refuse without a write.
+  prior=row('profile-patched');config=dict(prior['config']);config['runtime_profile']='vere-4.6-5a7614f'
+  code,error=endpoint('/v1/instances/profile-patched/configuration','PUT',{'expected_revision':prior['config_revision'],'config':config})
+  assert code==409 and row('profile-patched')['config']==prior['config'];report['transition_refusal']=error;check('enrolled_downgrade_refuses_preserving_configuration')
+  # Old CLI's omitted profile field must preserve the selection.
+  col('configure','profile-patched','--revision',str(prior['config_revision']),'--http-port','19181','--ames-port','34343','--loom','34')
+  assert row('profile-patched')['config']['runtime_profile']==PROFILE
+  operation('profile-patched','start','patched-replacement-start');wait(lambda:row('profile-patched')['observed_state']=='running',600)
+  patched=audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);assert patched['runtime_status']['container_id']!=before['profile-patched']
+  check('replacement_and_omitted_profile_preserve_pin')
+  operation('profile-patched','stop','patched-before-pack');operation('profile-patched','pack','patched-pack')
+  operation('profile-patched','start','patched-after-pack');wait(lambda:row('profile-patched')['observed_state']=='running',600)
+  audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);check('pack_and_restart_preserve_pin')
+  # Only the fresh disposable patched fake receives a controlled crash.
+  crashed=row('profile-patched')['runtime_status']['container_id']
+  docker('kill','--signal','KILL',crashed)
+  wait(lambda:row('profile-patched')['observed_state']!='running')
+  operation('profile-patched','stop','patched-crash-reconcile')
+  operation('profile-patched','start','patched-crash-recovery');wait(lambda:row('profile-patched')['observed_state']=='running',600)
+  audit_profile('profile-patched',PROFILE,[PATCH,PATCH_MANIFEST]);check('controlled_crash_recovery_preserves_pin')
+  # Import a stopped copy of this new fake, never a user pier or live identity.
+  operation('profile-patched','stop','patched-before-import-copy')
+  original=row('profile-patched');source=Path('/home/review/reviewed-import-source')
+  run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/original['pier_path'],source],True,timeout=180)
+  def storage(*args,ok=True):return run([tool('urbit-collector'),'--runner','local','--expected-runner-id',hello['runner_id'],*args],True,ok=ok,timeout=180)
+  refused=storage('preview-pier','--source',source,'--storage-root','default',ok=False)
+  assert refused.returncode and source.exists(),(refused.stdout,refused.stderr)
+  preview=json.loads(storage('preview-pier','--source',source,'--storage-root','default','--runtime-profile',PROFILE).stdout)
+  assert preview['ship']=='~nec' and preview['network']=='fakenet',preview
+  imported=preview['instance_id']
+  storage('import-pier',imported,'--source',source,'--path',preview['destination'],'--ship',preview['ship'],'--fingerprint',preview['source']['fingerprint'],'--http-port',str(preview['http_port']),'--runtime-profile',PROFILE,'--request-id','reviewed-import','--confirm-stopped','--identify')
+  def imported_ready():
+   snap=col('snapshot');op=next((x for x in snap['operations'] if x['request_id']=='reviewed-import'),None)
+   if not op or op['status'] in ('queued','pending','running'):return False
+   assert op['status']=='succeeded',op
+   return row(imported)['observed_state']=='stopped'
+  wait(imported_ready,300)
+  assert row(imported)['config']['runtime_profile']==PROFILE and not source.exists()
+  current=row(imported)
+  col('configure',imported,'--revision',str(current['config_revision']),'--http-port',str(current['config']['http_port']),'--ames-port',str(current['config']['ames_port']),'--loom','34')
+  operation(imported,'start','reviewed-import-first-start');wait(lambda:row(imported)['observed_state']=='running',600)
+  audit_profile(imported,PROFILE,[PATCH,PATCH_MANIFEST]);operation(imported,'stop','reviewed-import-stop')
+  report['imported_instance']=imported;check('reviewed_import_refuses_stock_and_preserves_pin_through_start')
+  operation('profile-patched','start','patched-after-import-copy');wait(lambda:row('profile-patched')['observed_state']=='running',600)
+  for name in ('profile-patched','profile-stock'):
+   if row(name)['desired_state']!='stopped' or row(name)['observed_state']=='running':operation(name,'stop',name+'-final-stop')
  # Expand the ordinary workflows with a separately packaged local executable.
  local=scenario.get('local_runtime')
  if local:
   local_id=local['id'];local_images=[local['config_digest'],local['manifest_digest']]
   run([tool('urbit-runner'),'runtime-profile-install','--manifest',I/'local-profile.json','--archive',I/'local-runtime.tar.gz'],True)
-  code,value=endpoint('/v1/runtime-profiles/'+local_id);assert code==200 and value['profile']==local
+  code,value=endpoint('/v1/runtime-profiles/'+local_id)
+  expected={k:v for k,v in local.items() if v!=''}
+  assert code==200 and value['available'] and value['profile']==expected,(code,value,expected)
   col('create-fake','profile-local','--ship','~zod','--http-port','19185','--runtime-profile',local_id,'--loom','34','--request-id','profile-local-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
   operation('profile-local','start','local-first-start');wait(lambda:row('profile-local')['observed_state']=='running',600)
   audit_profile('profile-local',local_id,local_images)
   operation('profile-local','stop','local-first-stop');check('local_manifest_install_and_fresh_boot')
+  if scenario.get('runtime_case')=='local-runtime':
+   col('create-fake','profile-stock','--ship','~nec','--http-port','19180','--loom','34','--request-id','profile-stock-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
+   operation('profile-stock','start','local-case-stock-start');wait(lambda:row('profile-stock')['observed_state']=='running',600)
+   operation('profile-stock','stop','local-case-stock-stop')
   before_switch=row('profile-stock');config=dict(before_switch['config']);config['runtime_profile']=local_id
   # Confirmation is required, and changing intent does not automatically boot.
   code,error=endpoint('/v1/instances/profile-stock/configuration','PUT',{'expected_revision':before_switch['config_revision'],'config':config})
@@ -215,7 +222,7 @@ def main():
     expected=[digest for pin in pins for digest in (profiles[pin]['manifest_digest'],profiles[pin]['config_digest'])]
     assert attrs['image'] in expected,(id,attrs)
     report['native_launches'].append({'instance':id,'name':name,'image':attrs['image']})
- assert any(x['instance']=='profile-patched' and x['name'].endswith('-pack') for x in report['native_launches']),report['native_launches']
+ if scenario.get('runtime_case')!='local-runtime':assert any(x['instance']=='profile-patched' and x['name'].endswith('-pack') for x in report['native_launches']),report['native_launches']
  check('native_utility_and_lifecycle_image_audit')
  assert all(x['public']['desired_state']=='stopped' for x in saved.values());check('both_test_ships_gracefully_stopped')
  report['final_snapshot']=col('snapshot')

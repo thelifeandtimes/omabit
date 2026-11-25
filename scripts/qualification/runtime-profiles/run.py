@@ -69,7 +69,7 @@ def validate_frozen_changes(changed):
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  for n in ('portable','previous','candidate','rootless','output','init'):p.add_argument('--'+n,type=Path)
- p.add_argument('--case',choices=('runtime','upgrade'),default='runtime')
+ p.add_argument('--case',choices=('runtime','local-runtime','upgrade'),default='runtime')
  p.add_argument('--namespace-tests',type=Path)
  p.add_argument('--local-runtime',type=Path,help='owner-built profile.json and runtime-image.tar.gz for the expanded runtime scenario')
  p.add_argument('--app-workflow',action='store_true',help='create original stable app history before upgrade and verify preservation')
@@ -78,6 +78,7 @@ def main():
  p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40,help='48 requires explicit temporary operator authorization')
  p.add_argument('--run',action='store_true');a=p.parse_args()
  if not a.run:p.print_help();return
+ if a.case=='local-runtime' and not a.local_runtime:p.error('--local-runtime is required for the local-runtime case')
  if int(next(x.split()[1] for x in Path('/proc/meminfo').read_text().splitlines() if x.startswith('MemAvailable:')))*1024<12*GIB:raise RuntimeError('12GiB memory headroom required')
  if os.geteuid()==0:raise RuntimeError('Run as ordinary owner')
  if bool(a.theme_source)!=bool(a.dms_source):p.error('both receiver sources required')
@@ -138,7 +139,7 @@ def main():
   if local_runtime['kind']!='local' or digest(archive)!=local_runtime['archive_sha256'] or archive.stat().st_size!=local_runtime['archive_bytes']:raise RuntimeError('local runtime artifact binding differs')
   stage_immutable(manifest,payload/'local-profile.json');stage_immutable(archive,payload/'local-runtime.tar.gz')
  for n in ('shell.qml','desktop.py','fleet_guest.py','fleet_client.py','desk_guest.py'):shutil.copy2(SUPPORT/n,payload/n)
- guest=(HERE/'guest.py').read_text() if a.case=='runtime' else (SUPPORT/'guest.py').read_text()
+ guest=(HERE/'guest.py').read_text() if a.case!='upgrade' else (SUPPORT/'guest.py').read_text()
  if a.case=='upgrade':
   original="  print('OMABIT_RELEASE_UPGRADE_RESULT '+json.dumps(report),flush=True)"
   framed="  raw=json.dumps(report,separators=(',',':')).encode();encoded=base64.b64encode(raw).decode();chunks=[encoded[i:i+3000] for i in range(0,len(encoded),3000)]\n  for i,data in enumerate(chunks):print('OMABIT_PROFILE_REPORT_CHUNK '+json.dumps({'i':i,'data':data}),flush=True)\n  print('OMABIT_PROFILE_REPORT_END '+json.dumps({'chunks':len(chunks),'sha256':hashlib.sha256(raw).hexdigest()}),flush=True)"
@@ -169,7 +170,7 @@ def main():
    (dest/'manifest.json').write_text(json.dumps(manifest)+'\n')
    (dest/'application-profile.json').write_text(json.dumps({'version':1,'profile':'qualification040'})+'\n')
  shutil.copytree(ROOT/'native/bootstrap',payload/'bootstrap',ignore=shutil.ignore_patterns('__pycache__'))
- (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests),'app_workflow':a.app_workflow,'local_runtime':local_runtime}))
+ (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests),'app_workflow':a.app_workflow,'local_runtime':local_runtime,'runtime_case':a.case}))
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)
  run(['mkfs.ext4','-q','-F','-d',payload,disk],stdout=subprocess.DEVNULL)
@@ -195,7 +196,7 @@ def main():
  if root_limit<2*GIB:raise RuntimeError('fixed inputs leave insufficient root scratch')
  cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=100%','-p','TasksMax=512','--',
  'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/usr/bin/prlimit','--fsize='+str(root_limit)+':'+str(root_limit),'--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
- receipt={'boot_helper':boot_provenance,'root_logical_file_max':root_limit,'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':harness_hashes,'case':a.case,'artifact_source_commit':source,'scenario':('runtime profiles '+target if a.case=='runtime' else previous+' desktop and services to '+target),'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
+ receipt={'boot_helper':boot_provenance,'root_logical_file_max':root_limit,'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':harness_hashes,'case':a.case,'artifact_source_commit':source,'scenario':('runtime profiles '+target if a.case!='upgrade' else previous+' desktop and services to '+target),'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  with (work/'serial.log').open('wb') as log:
   proc=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)
