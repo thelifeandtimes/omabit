@@ -1,6 +1,54 @@
 # Update the existing review040 DEV environment
 
-**rc.4 is prepared for the owner to apply; live DEV remains on rc.3.** The exact
+## Current: RC4 UI follow-up
+
+The owner's rc.4 update completed. The separately labelled local UI preview
+`0.6.0-rc.4+dev.ui.1` is staged. The first owner apply stopped after disabling the
+widget: Omarchy added a missing empty `bar.layout.tray` section and the original
+guard rejected it. No plugin replacement or runner change occurred. The corrected
+recovery is checked and rehearsed; it retains the original failed attempt and plan.
+
+The UI preview moves Vere runtime selection into
+Runtime Settings, preserves the exact rc.4 helper binaries and does not restart
+the runner/engine or change any ships. This is a local DEV preview, not a new
+published RC or a replacement for the immutable rc.4 artifacts.
+
+Close pending DEV UI work, then run as your normal user, without sudo:
+
+```bash
+cd /home/thelifeandtimes/repos/omabit
+python3 -B scripts/qualification/runtime-profiles/update_review040_ui1.py --check-recovery &&
+python3 -B scripts/qualification/runtime-profiles/update_review040_ui1.py --recover-disabled
+```
+
+After the owner's reboot, the temporary shared lock was missing. The updater now
+creates that lock safely when absent, preserves an existing lock and refuses a
+concurrent holder. The saved checkpoint and staged widget survived; recovery had
+not started. The repaired post-reboot check reports `ready-to-recover`; use the
+same commands above. See [the reboot check](diagnostics/2026-11-25-review040-ui1-reboot.json).
+
+Require `"status": "complete"`. Reopen the DEV widget and expand **Edit runtime
+settings…** on a ship's Overview. The displayed version includes `+dev.ui.1`.
+Only the DEV widget is unloaded/reloaded; shell configuration is restored exactly.
+The old widget is retained in `build/review040-update-060rc4-ui1/plugin-before`;
+the completion receipt lives beside it. If apply fails, preserve that work
+directory and its checkpoint; do not rerun a started recovery. The original
+`--apply` remains blocked. Recovery accepts only this known failure before any
+plugin rename, byte-identical original/staged widgets, and unchanged live settings
+matching the saved disabled checkpoint. Other changes require inspection.
+
+The exact activation passed in a private Omarchy shell, including original widget
+retention, unchanged shell settings, new helper paths/version and repeat-attempt
+refusal. The recovery rehearsal reproduces the actual missing-tray failure and
+completes with the original failure/plan/settings backups preserved. Six guard
+tests also pass. See [the recovery record](diagnostics/2026-11-25-review040-ui1-recovery.json),
+which supersedes the earlier preparation's incomplete layout-shape coverage.
+The assistant has checked recovery, not applied it to DEV.
+
+## Historical RC4 backend/widget update — completed by the owner
+
+The following describes the completed rc.3→rc.4 update. Do not rerun it.
+The exact
 package, native runtime paths, both upgrade starting versions and separate DEV
 widget activation pass. The final readiness check reports ready with no live changes.
 

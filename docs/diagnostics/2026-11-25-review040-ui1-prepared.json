@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-25",
+  "status": "prepared-owner-apply-pending",
+  "version": "0.6.0-rc.4+dev.ui.1",
+  "kind": "local-ui-preview",
+  "published_rc4_modified": false,
+  "live_apply_performed": false,
+  "runner_upgrade": false,
+  "work": "/home/thelifeandtimes/repos/omabit/build/review040-update-060rc4-ui1",
+  "plan_sha256": "a04763e77178c75d792bd9ae914e090cc7154b0e196ef86a72935c89a69e5155",
+  "updater_sha256": "d6315fa46651840bf99a1a55dc1449882b8288ce95f354d688961adefe6322b2",
+  "rc4_completion_receipt_sha256": "89ff5286a80230c05f196faeebff4d3a52c5c450aca226974ac92640151b4b1a",
+  "overlay": {
+    "version": "0.6.0-rc.4+dev.ui.1",
+    "kind": "local-ui-preview",
+    "base_release": "0.6.0-rc.4",
+    "base_source": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+    "base_build_sha256": "67d2587fe45ec6788038fe61a43f907d2e24c603ad4db2c7a647edea05bb416f",
+    "description": "Move Vere runtime selection into Runtime Settings.",
+    "overrides": {
+      "ReviewService060.qml": "3b20a27dcfcbb051153f76f7e522d3d9f279bdb66ba0214a7dae50e1d94ae64a",
+      "app060rc4/MonitorWindow.qml": "4ae1c94588b3eda67dcc0cd120c8ca871b2535c3502194dfd59bfc44155a4560",
+      "app060rc4/Service.qml": "1610bce3e9c56c50a5cdd71c471e90c36996ab521405c75617b68fb1a9d340e4",
+      "app060rc4/ShipPortsPane.qml": "d2acb073d6c9fc2c194037d71ccd08e2ddea43b5df7aef1332145938c3c7c6d0",
+      "manifest.json": "347ef1a31483c2fb5c6aa81a065c4b45fd181aa37b5fe00878c2e466dd7327b3"
+    }
+  },
+  "isolated_activation": {
+    "directory": "/tmp/omabit-060-shell-devui1-02",
+    "result_sha256": "2acc50326464e29727cbf96c72192e42dbf49f352c5d1fd24288515a08d98585",
+    "result": {
+      "passed": true,
+      "host_access": false,
+      "network": false,
+      "checks": {
+        "previous_rc4_wrapper_loads": true,
+        "exact_adapter_activation": true,
+        "new_version_and_helper_paths": true,
+        "original_plugin_retained": true,
+        "original_shell_settings_preserved": true,
+        "no_shell_restart": true,
+        "repeat_attempt_refused": true
+      },
+      "after": {
+        "version": "0.6.0-rc.4+dev.ui.1",
+        "profile": "review-040",
+        "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1/bin/urbit-collector",
+        "omabit": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1/bin/omabit",
+        "loaded": true,
+        "local_setup": false
+      },
+      "updater_sha256": "d6315fa46651840bf99a1a55dc1449882b8288ce95f354d688961adefe6322b2"
+    }
+  },
+  "initial_rehearsal": {
+    "directory": "/tmp/omabit-060-shell-devui1-01",
+    "passed": false,
+    "cause": "Configuration guard expected disabledPlugins addition; Omarchy instead removes the third-party widget bar placement. Corrected to verify only that exact removal."
+  },
+  "readiness": {
+    "status": "ready",
+    "charged_bytes": 50151694336,
+    "additional_scratch_bytes": 16777216,
+    "cap_bytes": 51539607552
+  },
+  "layout_validation": "/tmp/omabit-runtime-settings-layout-01",
+  "limitations": [
+    "Local DEV preview only; no new published release qualification.",
+    "Owner must apply; completed preparation does not prove live activation."
+  ]
+}

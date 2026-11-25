@@ -15205,3 +15205,113 @@ Distribution pins/instructions are incadeb8930373ba41db5dc8eff9a8a01e6d71ba23; t
 tag predates those pins and is not the native-plugin install revision. No installed
 DEV or production service changed. The prepared rc.4 owner command and focused
 manual checklist are current; keep the completed rc.3 attempt and its backups.
+
+## M802 — Group Vere selection with runtime settings (2026-11-25)
+
+Status: source UI change verified; not packaged or installed. The owner reports
+rc.4 is looking good and asks to move the ship-page Vere dropdown into Runtime
+Settings. RuntimeSelectionPane now sits inside ShipPortsPane's expandable editor,
+above the HTTP port, resource and loom controls. Its confirmation and stopped-ship
+requirements are unchanged. The existing fixture includes the relocated component
+dependencies and sizes its window to the expanded content.
+
+The settings model suite and real isolated QML pane check pass, including wide
+and narrow rendering, saving resource limits, and running/old-runner restrictions.
+Evidence is retained in `/tmp/omabit-runtime-settings-layout-01`. The first sandboxed
+attempt could not inspect the host PID used for storage admission; the host-visible
+retry passed admission and ran the UI with inert callbacks in a private namespace.
+No live plugin, service or ship changed. Published rc.4 remains immutable; this
+layout change requires a new candidate before distribution. M801's pending-owner
+status is historical; this task did not inspect the current installed version.
+
+## M803 — Prepare a separate RC4 local UI preview (2026-11-25)
+
+Status: prepared and checked, owner apply pending. The owner asked for commands to
+update DEV with M802's layout. The completed rc.4 receipt and read-only preflight
+now verify live rc.4/schema67, superseding M801's pending-owner status. Instead of
+replacing a published artifact, the UI preview has its own version
+`0.6.0-rc.4+dev.ui.1`, plugin directory and explicit DEV-UI provenance. It reuses
+byte-identical rc.4 tools, preserves the base BUILD metadata and overrides only
+the two layout files, displayed UI version, manifest and wrapper title.
+
+The [prepared update record](diagnostics/2026-11-25-review040-ui1-prepared.json)
+binds the candidate, adapter and passing isolated full-shell activation. The first
+rehearsal correctly stopped at a config guard: Omarchy removes a third-party widget's
+bar placement rather than adding it to disabledPlugins. The corrected guard permits
+only that exact placement removal, and the second rehearsal passes all seven checks.
+The unstarted owner plan was renewed with its original retained. Exact original
+shell bytes and old plugin are preserved; the shell process stays running.
+
+The adapter never stops or modifies a manager/engine, accesses piers, changes
+runtime profiles or migrates state. Apply is owner-run, single-use and retains
+checkpoints on failure. Final read-only readiness passes under the existing48GiB
+cap. Neither the UI preview nor any live ship operation was applied by the assistant.
+This supersedes M802 only for local DEV delivery; a public release still needs
+a new immutable candidate and its release qualification.
+
+## M804 — Recover UI1 after Omarchy fills an omitted tray section (2026-11-25)
+
+Status: recovery verified, owner execution pending. Supersedes M803's complete
+activation-coverage claim for the owner's older shell configuration. The owner's
+apply stopped in disable-dev-widget because Omarchy's ensureConfigShape inserted
+an absent empty bar.layout.tray alongside the intended widget removal. The earlier
+private fixture already included tray and missed this case. Inspection confirms
+the original and candidate trees match the saved plan, neither rename happened,
+and live shell settings match shell-disabled.json exactly. The DEV widget is
+disabled; runner/runtime binaries and ships were not changed by the updater.
+
+The corrected guard permits only PluginRegistry's known section normalization and
+target placement removal. --check-recovery and --recover-disabled accept only the
+known old updater hash/failure phase, unchanged widgets, matching paths and exact
+saved shell state; original failed/start/plan files remain intact. Separate recovery
+markers prevent repeat or partial recovery. A reachable shell and absent widget IPC
+target are verified independently. Any unrelated config change is refused.
+
+Six private guard tests pass. The full private shell reproduces the owner failure,
+then executes the actual recovery and verifies exact settings restoration, retained
+old plugin/failure evidence, new version/helper paths, no shell restart and repeated
+recovery refusal. Runner preflight/budget are inert only inside that private test;
+the real read-only recovery check separately passes. An initial test-launch attempt
+hit an argument-name collision before starting a shell; that fixture-only error was
+corrected and its directory retained. See [recovery evidence](diagnostics/2026-11-25-review040-ui1-recovery.json).
+No live recovery was applied by the assistant. Preserve the owner's original attempt
+and use the dedicated recovery commands, without resetting or renewing its plan.
+
+## M805 — Recreate the delivery lock after reboot (2026-11-25)
+
+Status: fixed and checked; owner UI recovery remains pending. The owner reported a
+machine crash/reboot, then both recovery commands failed before entering recovery:
+the adapter opened /tmp/omabit-issues-vm-runtime.lock read-only and assumed it already
+existed. /tmp is tmpfs, so that coordination file did not survive reboot. Boot
+records show the new boot at13:18 on2026-11-25. This was an updater bug, not evidence
+that a recovery checkpoint had disappeared.
+
+The lock now uses create-if-missing, no-follow, nontruncating open; it validates a
+regular owner-owned file and holds the existing exclusive flock. It refuses
+concurrent holders and unsafe file types, closes on all exits and never unlinks a
+lock. Four tests cover reboot recreation/reuse, contention, symlink refusal and
+nonblocking FIFO refusal; all ten recovery/lock tests pass. The real post-reboot
+check recreated the lock and returned ready-to-recover with48,080,400,384 charged
+bytes under the unchanged48GiB cap. Original/staged widget trees and shell settings
+still match the retained failed checkpoint. No recovery-started marker exists.
+
+[The reboot record](diagnostics/2026-11-25-review040-ui1-reboot.json) binds the fix,
+checks and retained checkpoint. No live widget recovery, ship operation or service
+restart was performed by the assistant. Previous /tmp rehearsal artifacts were
+volatile; their embedded results in repository diagnostics remain historical evidence.
+
+Read-only crash triage found NVIDIA Xid56 at12:45:12 and display flip timeouts at
+13:16:14/17 before the new boot. The inspected12:00–shutdown kernel interval contains
+no OOM-kill/panic/lockup evidence and no recorded pre-reboot user-space coredump.
+Those observations do not establish the cause of the reported machine crash.
+No GPU/system configuration changes or speculative crash fix were applied.
+
+## M806 — Authorize stable0.6.0 release preparation (2026-11-25)
+
+Status: preparing; no stable publication or production deployment yet. The owner
+requested a release and will update production personally. The UI1 complete receipt
+now confirms successful owner recovery and unchanged runner/engine identity,
+superseding M805's pending-owner status. Work proceeds on release/0.6.0 through
+the protected stable policy, including exact-artifact local0.5.0→0.6.0 upgrade
+qualification. RC evidence remains historical; the final source includes the
+requested Runtime Settings placement. See [preparation](releases/0.6.0/preparation.md).

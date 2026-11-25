@@ -1,5 +1,27 @@
 # Issue22 continuation and review handoff
 
+## Post-rc.4 UI follow-up
+
+The owner reports that rc.4 is looking good and requested one layout change:
+Vere runtime selection now lives inside the ship's expandable Runtime Settings
+editor. The settings model tests and isolated QML resource-pane check pass at
+640px and420px; see M802. M803 supersedes the delivery-pending status: a distinct
+local UI preview, `0.6.0-rc.4+dev.ui.1`, is prepared and checked with the exact
+activation rehearsed in a private shell. M804 records the owner's failed apply:
+Omarchy inserted an absent empty tray section when disabling the widget. The old
+and staged plugins remain intact and the DEV widget is disabled. The corrected
+checkpoint recovery is verified and awaits the [owner commands](review040-update.md);
+do not rerun the original apply or discard its markers. Published rc.4 artifacts
+remain immutable. The owner's
+rc.4 completion receipt and read-only preflight confirm that DEV is now on rc.4;
+the older rc.3 live status below is historical.
+
+M805 adds reboot-safe lock creation. The owner's subsequent reboot cleared /tmp,
+but the repository checkpoint/candidate and installed rc.4 widget remain intact.
+Recovery never started. The corrected updater passes ten guard/lock tests and the
+real post-reboot `--check-recovery`; owner recovery is still pending. Earlier /tmp
+rehearsal directories were volatile; durable diagnostic JSON retains their results.
+
 ## Current review candidate — rc.4, prepared for owner application
 
 The [rc.4 review prerelease](https://github.com/thelifeandtimes/omabit/releases/tag/v0.6.0-rc.4)

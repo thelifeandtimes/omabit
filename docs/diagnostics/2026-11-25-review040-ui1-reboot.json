@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-25",
+  "status": "ready-to-recover-owner-apply-pending",
+  "issue": "Reboot removed tmpfs lock; read-only open failed before recovery began.",
+  "fix": "Safely create the shared lock if absent; retain nonblocking exclusive locking and reject unsafe targets.",
+  "updater_sha256": "df5515af41748b4e574e54084c01e5382b30121622f9df76b8cf7d69f9e50bff",
+  "test_sha256": "b17c51226e6dc32bc1d4ed33660f7014a209c54905e0edb73d452488d1822b76",
+  "guard_and_lock_tests_passed": 10,
+  "checkpoint_files": {
+    "plan.json": "a04763e77178c75d792bd9ae914e090cc7154b0e196ef86a72935c89a69e5155",
+    "failed.json": "b55bb09f6c8248d227637bde64558ad9c93823e453b289069dcc827aa1febe2a",
+    "apply-started.json": "15a0fc527ae6ab9f88b8f403b01a7706cd43f34afd8c44c96192b32918bf0bd0",
+    "shell-before.json": "b92e10e54eb6b561e20e8b7518fab859d655cb76604b75c14d4277c6e79ee569",
+    "shell-disabled.json": "7bb9dc10f5d33eccfc57f0f470bb9944305ca4e89b26e98c38bac4aea1954075"
+  },
+  "post_reboot_check": {
+    "status": "ready-to-recover",
+    "charged_bytes": 48080400384,
+    "cap_bytes": 51539607552,
+    "recovery_started": false,
+    "original_and_staged_plugins_verified": true,
+    "shell_checkpoint_verified": true,
+    "rc4_runner_preflight_passed": true
+  },
+  "crash_triage": {
+    "current_boot_id": "0766ca09-5993-4948-8498-f81e2ef8f2a6",
+    "boot_started_local": "2026-11-25 13:18:36 PST",
+    "relevant_prior_kernel_events": [
+      "2026-11-25T12:45:12-08:00 sourcebox kernel: NVRM: Xid (PCI:0000:11:00): 56, CMDre 00000007 00000000 00000000 00000001 00000000",
+      "2026-11-25T12:45:12-08:00 sourcebox kernel: NVRM: Xid (PCI:0000:11:00): 56, CMDre 00000000 00000000 00000000 00000001 00000000",
+      "2026-11-25T13:16:14-08:00 sourcebox kernel: [drm:nv_drm_atomic_commit [nvidia_drm]] *ERROR* [nvidia-drm] [GPU ID 0x00001100] Flip event timeout on head 0",
+      "2026-11-25T13:16:17-08:00 sourcebox kernel: [drm:nv_drm_atomic_commit [nvidia_drm]] *ERROR* [nvidia-drm] [GPU ID 0x00001100] Flip event timeout on head 0"
+    ],
+    "oom_panic_lockup_evidence_in_inspected_interval": false,
+    "pre_reboot_userspace_coredumps_in_inspected_interval": false,
+    "cause_confirmed": false,
+    "scope": "Read-only local logs; no GPU, system, ship or service changes."
+  },
+  "live_recovery_applied": false
+}

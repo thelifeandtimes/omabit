@@ -201,7 +201,6 @@ Window {
               Column {
                 width: parent.width; spacing: Style.space(16); visible: root.page === "overview"
                 RuntimePane { width:parent.width;service:root.service;connection:root.connection;instance:root.instance;active:root.visible&&root.visibility!==Window.Minimized&&root.page==="overview" }
-                RuntimeSelectionPane {width:parent.width;service:root.service;connection:root.connection;instance:root.instance;visible:!!root.instance && !root.instance.project_id}
                 GridLayout {
                   width: parent.width; columns: width < Style.space(590) ? 2 : 3; columnSpacing: Style.space(10); rowSpacing: Style.space(10)
                   Metric { objectName: "container-memory"; Layout.fillWidth: true; label: "CONTAINER RAM"; value: root.resources.value; note: root.resources.note; ratio: root.sample ? root.sample.value / root.sample.limit : -1 }

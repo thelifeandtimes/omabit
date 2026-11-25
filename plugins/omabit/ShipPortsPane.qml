@@ -22,6 +22,7 @@ Column {
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: !!root.target
+    RuntimeSelectionPane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: !!root.instance && !root.instance.project_id }
     Label { text: "Host HTTP port"; secondary: true; caption: true }
     Field { id: httpPort; objectName: "ship-http-port"; width: parent.width; validator: IntValidator {bottom:1024;top:65535} }
     ContainerResourceFields { id: resources; width: parent.width; supported: !!root.target && root.target.containerResources; stopped: !!root.target && root.target.resourcesEditable }

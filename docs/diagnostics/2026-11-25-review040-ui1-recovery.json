@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-25",
+  "status": "owner-recovery-pending",
+  "version": "0.6.0-rc.4+dev.ui.1",
+  "cause": "Omarchy added missing empty bar.layout.tray during widget disable; the original exact-settings guard omitted that normalization.",
+  "observed_checkpoint": {
+    "phase": "disable-dev-widget",
+    "old_plugin_unchanged": true,
+    "candidate_unchanged": true,
+    "no_plugin_rename": true,
+    "live_config_matches_disabled_backup": true,
+    "original_files": {
+      "plan.json": "a04763e77178c75d792bd9ae914e090cc7154b0e196ef86a72935c89a69e5155",
+      "failed.json": "b55bb09f6c8248d227637bde64558ad9c93823e453b289069dcc827aa1febe2a",
+      "apply-started.json": "15a0fc527ae6ab9f88b8f403b01a7706cd43f34afd8c44c96192b32918bf0bd0",
+      "shell-before.json": "b92e10e54eb6b561e20e8b7518fab859d655cb76604b75c14d4277c6e79ee569",
+      "shell-disabled.json": "7bb9dc10f5d33eccfc57f0f470bb9944305ca4e89b26e98c38bac4aea1954075"
+    }
+  },
+  "guard_tests": {
+    "command": "python3 -B scripts/qualification/runtime-profiles/test_review040_ui1_update.py",
+    "passed": 6
+  },
+  "private_shell": {
+    "directory": "/tmp/omabit-060-shell-devui1-recovery-02",
+    "result_sha256": "3f777084cee2420a5d60a311c1e285f348375d974bcb1bc078dadeef961480c5",
+    "result": {
+      "passed": true,
+      "host_access": false,
+      "network": false,
+      "checks": {
+        "previous_rc4_wrapper_loads": true,
+        "owner_failure_reproduced": true,
+        "exact_recovery_files_and_IPC": true,
+        "original_failure_and_plan_retained": true,
+        "repeated_recovery_refused": true,
+        "exact_adapter_activation": true,
+        "new_version_and_helper_paths": true,
+        "original_plugin_retained": true,
+        "original_shell_settings_preserved": true,
+        "no_shell_restart": true,
+        "missing_tray_normalization_accepted": true,
+        "repeat_attempt_refused": true
+      },
+      "runner_preflight_stubbed": true,
+      "after": {
+        "version": "0.6.0-rc.4+dev.ui.1",
+        "profile": "review-040",
+        "collector": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1/bin/urbit-collector",
+        "omabit": "/lab/home/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v060rc4-ui1/bin/omabit",
+        "loaded": true,
+        "local_setup": false
+      },
+      "updater_sha256": "e799071aab7561ac37f7748be2a96582c61ed09210b7b3e4328e236a38bac3ee"
+    }
+  },
+  "initial_rehearsal": {
+    "directory": "/tmp/omabit-060-shell-devui1-recovery-01",
+    "cause": "Argument name shadowed argparse namespace before launching the private shell; corrected in verifier."
+  },
+  "live_recovery_check": "ready-to-recover",
+  "live_recovery_applied": false,
+  "limits": [
+    "Full-shell rehearsal uses inert runner/owner/budget preflight; the actual host checkpoint passes separate read-only checks.",
+    "Owner-run recovery is required for live completion."
+  ]
+}

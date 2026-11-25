@@ -1,23 +1,26 @@
-# Omabit 0.6.0-rc.3 review bundle
+# Omabit 0.6.0 bundle
 
-This Linux x86-64 prerelease contains matching `omabit`, `urbit-collector` and
+This Linux x86-64 release contains matching `omabit`, `urbit-collector` and
 `urbit-runner` binaries, the Omarchy interface, CLI references and three agent
-skills. It introduces per-ship reviewed runtime profiles and schema66. It is not
-a stable release. Read the [review guide](runtime-profiles-review.md) for the
-qualification status, exact release pins and manual update instructions before
-installing it on an existing fleet.
+skills. It introduces immutable per-ship runtime selection, owner-installed local
+builds and schema67. Read the [release notes](releases/0.6.0/notes.md) for the
+upgrade support window and tested limits.
 
 ## Update an existing Omarchy installation
 
-Use the exact review revision and commands supplied with the qualified release.
-The stock `omarchy plugin update` command follows remote HEAD, which is stable
-master; it does not select this review version. Preserve local plugin edits before
-switching revisions. A desktop update retains profiles, enrollments and preferences
+After 0.6.0 is published, update an unmodified stable Git installation with:
+
+```sh
+omarchy plugin update thelifeandtimes.omabit
+```
+
+This follows protected stable master and its verified artifact pins. Preserve local
+plugin edits before updating. A desktop update retains profiles, enrollments and preferences
 and does not automatically update a local or remote runner.
 
-Once the verified review desktop has loaded, use **Setup → Local services &
+Once the verified 0.6.0 desktop has loaded, use **Setup → Local services &
 updates → Check services → Update services** and authorize the OS prompt. The
-supported starting release for this candidate is0.5.0. Older installations must
+supported stable starting release is0.5.0. Older installations must
 follow their documented intermediate upgrades first. Finish pending management
 work before updating; do not reset, delete or re-enroll ships to perform an update.
 
@@ -61,7 +64,7 @@ operator key**; see [guided service upgrades](guided-service-upgrades.md) for th
 reviewed commands and access-preservation contract.
 
 Retry interrupted activation with the same target executable and bundle. After
-schema66 commits, older runners refuse the database. Use compatible new code for
+schema67 commits, older runners refuse the database. Use compatible new code for
 recovery; never lower the schema marker or erase journals to force a downgrade.
 Switching the desktop back to stable does not downgrade runner state.
 
