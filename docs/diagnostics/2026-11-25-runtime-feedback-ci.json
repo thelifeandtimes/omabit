@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "date": "2026-11-25",
+  "artifact_source_commit": "27aac5001c43a7a1148df47dc9904bdeb1a4a536",
+  "product_checks_passed": true,
+  "checks": [
+    {
+      "name": "release-policy",
+      "status": "failure",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567485333/job/139045733408",
+      "required": true
+    },
+    {
+      "name": "core",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736359",
+      "required": false
+    },
+    {
+      "name": "managed-race (0)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736568",
+      "required": false
+    },
+    {
+      "name": "managed-race (1)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736321",
+      "required": false
+    },
+    {
+      "name": "managed-race (2)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736315",
+      "required": false
+    },
+    {
+      "name": "managed-race (3)",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736322",
+      "required": false
+    },
+    {
+      "name": "qml-offscreen",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139045736011",
+      "required": true
+    },
+    {
+      "name": "source",
+      "status": "success",
+      "description": null,
+      "url": "https://github.com/thelifeandtimes/omabit/actions/runs/45567488066/job/139061888427",
+      "required": true
+    }
+  ],
+  "release_policy": "Expected refusal: master accepts only qualified stable X.Y.Z releases; this is a draft prerelease topic, not a stable promotion."
+}
