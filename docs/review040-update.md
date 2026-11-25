@@ -22,6 +22,12 @@ cd /home/thelifeandtimes/repos/omabit
 python3 -B scripts/qualification/runtime-profiles/update_review040.py --apply
 ```
 
+The initial fixed256MiB backup-size guard was corrected after the owner's
+pre-apply refusal. Both existing boot pills remain included. The refreshed plan
+passes measured backup/scratch admission under the unchanged48GiB cap; no live
+update started during that refusal. You can check readiness without changing the
+environment using the same command with `--check` instead of `--apply`.
+
 Require a final `"status": "complete"`. Then verify the live DEV widget:
 
 ```bash
@@ -55,6 +61,11 @@ reviewed fresh attempt, the preparer takes the published bundle/archive and a ne
 working directory, checks the exact existing DEV identity, service and binary
 hashes, and enforces the approved aggregate storage budget. `--prepare` never
 stops services or changes installed files; only `--apply` does the live update.
+The estimator counts actual management, SQLite analysis, desktop and tool copies,
+plus explicit archive/image and growth reserves. Apply remeasures before any
+mutation. `--refresh-plan` is a preparation-only recovery action: it keeps the
+old plan and refuses a started attempt, existing backup, changed identity or
+changed plugin inputs. It is not a way to retry a partially executed update.
 
 The [preparation record](diagnostics/2026-11-24-review040-update-prepared.json)
 binds the final updater and plan hashes. A separate networkless full Omarchy shell
@@ -64,6 +75,10 @@ restoration without restarting the shell. That test used empty private DEV-shape
 paths, not this environment's live state. Fault tests cover altered candidate
 refusal, repeat-attempt refusal, and a late UI failure preserving the migrated
 database/new tools/original offline WAL backup instead of downgrading them.
+The later [storage correction](diagnostics/2026-11-24-review040-storage-correction.json)
+supersedes the original updater/plan hashes and fixed backup thresholds; four
+regression tests pass, including large retained boot pills and refusal before
+mutation when the aggregate budget is exceeded.
 
 The [native0.5.0→rc.3 upgrade](diagnostics/2026-11-24-runtime-profiles-upgrade.json)
 and [runtime tests](diagnostics/2026-11-24-runtime-profiles-native.json) qualify the

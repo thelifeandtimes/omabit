@@ -109,11 +109,46 @@ def engine_state():
     return {'service': properties(ENGINE), 'containers': containers}
 
 
-def budget():
+def budget(additional=1024**3):
     spec = importlib.util.spec_from_file_location('review_budget', Path(__file__).with_name('run.py'))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.full_charge(1024**3, 48 * 1024**3)['charged_bytes']
+    return module.full_charge(additional, 48 * 1024**3)['charged_bytes']
+
+
+def copy_bytes(path):
+    """Conservative destination allocation, including sparse files and directories."""
+    require(path.resolve() == path.absolute(), 'aliased backup input: ' + str(path))
+    entries = [path, *path.rglob('*')] if path.is_dir() else [path]
+    total = 0
+    for item in entries:
+        require(not item.is_symlink() and (item.is_file() or item.is_dir()), 'unexpected backup input: ' + str(item))
+        total += 4096 if item.is_dir() else ((item.stat().st_size + 4095) // 4096) * 4096
+    return total
+
+
+def storage_plan(work):
+    # Retain every management file, including existing boot pills. An arbitrary
+    # per-directory threshold is not a substitute for the aggregate budget.
+    sqlite_bytes = sum(copy_bytes(MANAGED / name) for name in
+                       ('runner.sqlite', 'runner.sqlite-wal', 'runner.sqlite-shm')
+                       if (MANAGED / name).exists())
+    archive = work / ARCHIVE
+    with tarfile.open(archive) as tar:
+        payload = sum(member.size for member in tar if member.isfile())
+    parts = {
+        'management_backup': copy_bytes(MANAGED),
+        'sqlite_analysis_copy': sqlite_bytes,
+        'desktop_backups': sum(copy_bytes(DEV / 'desktop' / name) for name in ('config', 'data', 'state')),
+        'old_binaries_backup': sum(copy_bytes(DEV / 'bin' / name) for name in TOOLS),
+        'candidate_binaries_staging': sum(copy_bytes(work / 'plugin/bin' / name) for name in TOOLS),
+        # Reserve for the retained runtime archive, Docker import staging, blobs
+        # and unpacked layers. Existing engine layers are not assumed reusable.
+        'runtime_archive_and_image_reserve': copy_bytes(archive) + 4 * payload,
+        'growth_and_metadata_reserve': 128 * 1024**2,
+    }
+    required = max(1024**3, ((sum(parts.values()) + 1024**2 - 1) // 1024**2) * 1024**2)
+    return {'breakdown': parts, 'required_scratch_bytes': required, 'aggregate_cap_bytes': 48 * 1024**3}
 
 
 def preflight():
@@ -192,7 +227,9 @@ def prepare(work, assets):
     stage_plugin(assets / BUNDLE, OLD, work / 'plugin')
     shutil.copy2(assets / ARCHIVE, work / ARCHIVE)
     (work / ARCHIVE).chmod(0o600)
-    plan = dict(binding, phase='prepared-only', version=VERSION, source=SOURCE, work=str(work),
+    capacity = storage_plan(work)
+    charged = budget(capacity['required_scratch_bytes'])
+    plan = dict(binding, storage=capacity, phase='prepared-only', version=VERSION, source=SOURCE, work=str(work),
                 old_plugin=str(OLD), new_plugin=str(NEW), plugin_before=tree(OLD), plugin_candidate=tree(work / 'plugin'),
                 charged_bytes=charged, script_sha256=sha(__file__), backup=str(DEV / 'state/upgrade-060rc3-owner'))
     write(work / 'plan.json', plan)
@@ -222,9 +259,11 @@ def restore_config(original, expected):
     os.replace(temp, CONFIG)
 
 
-def apply(work):
+def validate_plan(work, require_script=True):
     plan = json.loads((work / 'plan.json').read_text())
-    require(plan['phase'] == 'prepared-only' and plan['script_sha256'] == sha(__file__), 'prepared updater differs')
+    require(plan['phase'] == 'prepared-only', 'plan phase differs')
+    if require_script:
+        require(plan['script_sha256'] == sha(__file__), 'prepared updater differs')
     require(not (work / 'apply-started.json').exists(), 'apply already started; inspect retained receipt, do not rerun or downgrade')
     binding = preflight()
     require(all(binding[k] == plan[k] for k in binding), 'DEV owner/service binding changed')
@@ -235,20 +274,47 @@ def apply(work):
     backup = DEV / 'state/upgrade-060rc3-owner'
     require(plan['backup'] == str(backup), 'backup target differs')
     require(not backup.exists(), 'backup already exists; do not reuse an earlier attempt')
-    inventory = tree(MANAGED)
-    require(sum(row['bytes'] for row in inventory.values()) < 256 * 1024**2, 'management backup exceeds declared scratch; inspect before proceeding')
-    for name in ('config', 'data', 'state'):
-        require(sum(row['bytes'] for row in tree(DEV / 'desktop' / name).values()) < 64 * 1024**2, 'desktop backup exceeds declared scratch')
+    capacity = storage_plan(work)
+    charged = budget(capacity['required_scratch_bytes'])
+    return plan, backup, capacity, charged
+
+
+def check(work):
+    _, _, capacity, charged = validate_plan(work)
+    print(json.dumps({'status': 'ready', 'live_changes': False, 'charged_bytes': charged,
+                      'total_with_scratch': charged + capacity['required_scratch_bytes'], 'storage': capacity}, indent=2))
+
+
+def refresh_plan(work):
+    # Explicitly renew only a still-unstarted preparation. Keep the original
+    # plan and refuse any attempt marker, backup or changed staged/installed bytes.
+    plan, _, capacity, charged = validate_plan(work, require_script=False)
+    original = (work / 'plan.json').read_bytes()
+    saved = work / ('plan-before-' + hashlib.sha256(original).hexdigest() + '.json')
+    with saved.open('xb') as f:
+        f.write(original)
+        f.flush()
+        os.fsync(f.fileno())
+    updated = dict(plan, script_sha256=sha(__file__), storage=capacity, charged_bytes=charged,
+                   supersedes_plan=saved.name)
+    temporary = work / ('plan-refresh-' + str(os.getpid()) + '.json')
+    write(temporary, updated)
+    require((work / 'plan.json').read_bytes() == original, 'plan changed during refresh')
+    os.replace(temporary, work / 'plan.json')
+    check(work)
+
+
+def apply(work):
+    _, backup, capacity, charged = validate_plan(work)
     before = snapshot()
     runtime = engine_state()
-    budget()
     original_config = CONFIG.read_bytes()
     backup.mkdir(mode=0o700)
     for label in ('bin-before', 'bin-candidate'):
         (backup / label).mkdir(mode=0o700)
         for name in TOOLS:
             shutil.copy2((DEV / 'bin' if label == 'bin-before' else work / 'plugin/bin') / name, backup / label / name)
-    write(work / 'apply-started.json', {'backup': str(backup), 'before': before, 'runtime': runtime})
+    write(work / 'apply-started.json', {'backup': str(backup), 'before': before, 'runtime': runtime, 'storage': capacity, 'charged_bytes': charged})
     (backup / 'shell-before.json').write_bytes(original_config)
     phase = 'disable-dev-widget'
     try:
@@ -321,16 +387,26 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--prepare', action='store_true')
     p.add_argument('--apply', action='store_true')
+    p.add_argument('--check', action='store_true', help='verify the prepared plan and current storage without live changes')
+    p.add_argument('--refresh-plan', action='store_true', help='retain and renew an unstarted preparation after adapter corrections')
     p.add_argument('--assets', type=Path, default=Path('/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.3'))
     p.add_argument('--work', type=Path, default=REPO / 'build/review040-update-060rc3-owner')
     args = p.parse_args()
-    if args.prepare == args.apply:
-        p.error('choose --prepare (staging only) or --apply (live DEV update)')
+    if sum((args.prepare, args.apply, args.check, args.refresh_plan)) != 1:
+        p.error('choose --prepare, --check, --refresh-plan, or --apply')
     os.umask(0o077)
     lock = os.open('/tmp/omabit-issues-vm-runtime.lock', os.O_RDONLY | os.O_NOFOLLOW)
     with os.fdopen(lock, 'r') as f:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        (prepare(args.work.absolute(), args.assets.absolute()) if args.prepare else apply(args.work.absolute()))
+        work = args.work.absolute()
+        if args.prepare:
+            prepare(work, args.assets.absolute())
+        elif args.check:
+            check(work)
+        elif args.refresh_plan:
+            refresh_plan(work)
+        else:
+            apply(work)
 
 
 if __name__ == '__main__':

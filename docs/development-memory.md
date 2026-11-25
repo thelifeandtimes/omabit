@@ -15051,3 +15051,30 @@ The existing0.5.0 environment, production and earlier DEV environment remain
 unchanged. [Owner commands](review040-update.md) use the already staged final work
 directory and report success only after a complete receipt. The owner's successful
 execution and subsequent manual feedback remain pending.
+
+## M796 — DEV backup-size refusal corrected before any update (2026-11-24)
+
+Status: supersedes M795's readiness claim for its original fixed256MiB management
+backup threshold. The owner ran the command and received “management backup
+exceeds declared scratch”. The management tree includes two legitimate217,421,172
+byte boot pills, making the observed total439,735,368 apparent bytes. No backup,
+apply marker, service stop or widget change occurred; DEV remains0.5.0/schema65.
+The pasted command was clarified as error output, not permission for the assistant
+to perform the live update.
+
+Replace arbitrary per-directory limits with measured management/SQLite-analysis/
+desktop/tool backup allocation plus explicit runtime-image and growth reservations.
+Preparation and apply use the same estimate and unchanged48GiB aggregate cap.
+Add read-only `--check` and an explicit `--refresh-plan` that retains the original
+plan and refuses any started attempt, backup, changed identity or altered staged
+bytes. The final unstarted plan was refreshed and checks ready with1,137,704,960
+bytes of scratch: total48,939,261,952bytes remains below51,539,607,552bytes.
+Both boot pills and all other data remain included in the backup; nothing is pruned.
+
+Four fault/measurement tests pass, including large sparse boot pills, aggregate
+budget refusal before mutation, symlink refusal, blocked refresh after apply starts,
+and late failure preserving migrated state/new tools/original WAL backup. The
+[correction evidence](diagnostics/2026-11-24-review040-storage-correction.json)
+binds the final script and refreshed plan, retaining the old plan. No release
+artifact or installed file changed. The owner can now rerun the same `--apply`
+command; live update and manual review remain pending.

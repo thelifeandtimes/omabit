@@ -6,6 +6,7 @@ from pathlib import Path
 import sqlite3
 import subprocess
 import tempfile
+import tarfile
 import unittest
 from unittest.mock import patch
 
@@ -21,8 +22,9 @@ class UpdateGuards(unittest.TestCase):
             (work / 'plan.json').write_text(json.dumps({'phase': 'prepared-only', 'script_sha256': m.sha(m.__file__)}))
             (work / 'apply-started.json').write_text('{}')
             with patch.object(m, 'preflight', side_effect=AssertionError('must not inspect or mutate host')):
-                with self.assertRaisesRegex(RuntimeError, 'already started'):
-                    m.apply(work)
+                for operation in (m.apply, m.refresh_plan):
+                    with self.assertRaisesRegex(RuntimeError, 'already started'):
+                        operation(work)
 
     def test_changed_candidate_refuses_before_service_commands(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -33,6 +35,29 @@ class UpdateGuards(unittest.TestCase):
             with patch.object(m, 'OLD', old), patch.object(m, 'preflight', return_value={}), patch.object(m, 'run', side_effect=AssertionError('must not run a command')):
                 with self.assertRaisesRegex(RuntimeError, 'inputs changed'):
                     m.apply(work)
+
+    def test_large_boot_pills_are_counted_without_a_fixed_directory_ceiling(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);dev=root/'dev';work=root/'work';managed=dev/'managed'
+            for p in (managed/'boot-pills', managed/'instance', dev/'bin', work/'plugin/bin'):
+                p.mkdir(parents=True)
+            for name in ('config','data','state'):(dev/'desktop'/name).mkdir(parents=True)
+            for name in m.TOOLS:
+                (dev/'bin'/name).write_bytes(b'old');(work/'plugin/bin'/name).write_bytes(b'new')
+            (managed/'runner.sqlite').write_bytes(b'state')
+            for path in (managed/'boot-pills/retained.pill', managed/'instance/retained.pill'):
+                with path.open('wb') as f:f.truncate(217421172)
+            with tarfile.open(work/m.ARCHIVE,'w:gz') as archive:
+                archive.add(work/'plugin/bin/urbit-runner',arcname='layer.tar')
+            with patch.multiple(m,DEV=dev,MANAGED=managed):
+                result=m.storage_plan(work)
+                self.assertGreater(result['breakdown']['management_backup'],2*217421172)
+                self.assertLess(result['breakdown']['sqlite_analysis_copy'],1024**2)
+                self.assertGreaterEqual(result['required_scratch_bytes'],sum(result['breakdown'].values()))
+                self.assertEqual(result['aggregate_cap_bytes'],48*1024**3)
+                (managed/'unsafe-link').symlink_to(root/'outside')
+                with self.assertRaisesRegex(RuntimeError,'unexpected backup input'):
+                    m.storage_plan(work)
 
     def test_late_ui_failure_retains_migrated_manager_and_checkpoint(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -46,7 +71,8 @@ class UpdateGuards(unittest.TestCase):
             for name in m.TOOLS:
                 (dev/'bin'/name).write_text('old '+name);before_pins[name]=m.sha(dev/'bin'/name)
                 (work/'plugin/bin'/name).write_text('new '+name);after_pins[name]=m.sha(work/'plugin/bin'/name)
-            (work/m.ARCHIVE).write_text('checked runtime archive')
+            with tarfile.open(work/m.ARCHIVE, 'w:gz') as archive:
+                archive.add(work/'plugin/bin/urbit-runner', arcname='layer.tar')
             plan={'phase':'prepared-only','script_sha256':m.sha(m.__file__),'plugin_before':m.tree(old),'plugin_candidate':m.tree(work/'plugin'),
                   'work':str(work),'version':m.VERSION,'source':m.SOURCE,'backup':str(dev/'state/upgrade-060rc3-owner')}
             (work/'plan.json').write_text(json.dumps(plan))
@@ -67,6 +93,12 @@ class UpdateGuards(unittest.TestCase):
                  patch.object(m,'engine_state',return_value={'untouched':'engine'}),patch.object(m,'properties',return_value={'ActiveState':'inactive'}), \
                  patch.object(m,'hello',return_value={}),patch.object(m,'wait_for',side_effect=lambda fn,*args:fn()),patch.object(m,'run',side_effect=command), \
                  patch.object(m.subprocess,'run',return_value=subprocess.CompletedProcess([],1)):
+                with patch.object(m,'budget',side_effect=RuntimeError('aggregate storage budget exceeded')):
+                    with self.assertRaisesRegex(RuntimeError,'aggregate storage'):
+                        m.apply(work)
+                    self.assertFalse(calls)
+                    self.assertFalse((work/'apply-started.json').exists())
+                    self.assertFalse((dev/'state/upgrade-060rc3-owner').exists())
                 with self.assertRaisesRegex(RuntimeError,'late UI'):
                     m.apply(work)
                 self.assertTrue((work/'apply-started.json').exists())
