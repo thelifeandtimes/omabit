@@ -15137,3 +15137,27 @@ separate official-runtime contract. Upstream live/edge/dev latest endpoints
 returned HTTP403 during research, so latest upstream artifacts and actual64-bit
 execution remain unverified. See the current section in runtime-policy.md;
 rc.3 evidence continues to qualify only unchanged rc.3 bytes.
+
+## M799 — Freeze rc.4 feedback candidate and preserve qualification storage (2026-11-25)
+
+Status: product frozen; native qualification in progress. Supersedes only M798's
+not-yet-frozen status. Product source is27aac5001c43a7a1148df47dc9904bdeb1a4a536,
+version0.6.0-rc.4/schema67. Full Go/source tests, targeted race tests, actual
+QML lifecycle bindings and installer/provenance smoke checks pass. The reviewed
+JSON-fix archive reproduces its existing hash; a separate local manifest/archive
+wraps that known executable for testing fresh boot, import and explicit stopped
+transitions. Actual latest upstream channels and64-bit execution remain untested.
+
+[The build record](diagnostics/2026-11-25-runtime-feedback-build.json) binds exact
+artifacts and logs. The48GiB aggregate cap remains unchanged. Manifested retirement
+removed regenerable build-cache objects and byte-identical superseded artifact
+copies; two inactive old qualification disks were compressed losslessly with full
+round-trip hashes and original report hashes retained. Original migration fixtures,
+canonical release inputs and manual DEV state remain intact. Historical paths
+with retirement receipts are evidence, not reusable launch inputs.
+
+Only private qualification/delivery adapters and distribution documentation may
+change after the freeze. The new owner updater has separate rc.4 work/backup/plugin
+paths, exact rc.3 starting hashes, schema66→67 checks and a retained runtime-profile
+backup. Its fault tests pass. It has not been prepared or applied at this checkpoint;
+first qualify the exact artifacts and wrapper, then prepare the owner command.
