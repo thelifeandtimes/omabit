@@ -17,6 +17,7 @@ const (
 
 type Hello struct {
 	RuntimeProfiles []candidate.Profile `json:"runtime_profiles,omitempty"`
+	RuntimeChannels map[string]string   `json:"runtime_channels,omitempty"`
 	Build           *ExecutableBuild    `json:"build,omitempty"`
 	StateSchema     int                 `json:"state_schema,omitempty"`
 	ProtocolVersion int                 `json:"protocol_version"`
@@ -51,6 +52,7 @@ type Instance struct {
 	AppliedRevision   uint64                `json:"applied_revision"`
 	DesiredState      string                `json:"desired_state"`
 	ObservedState     string                `json:"observed_state"`
+	ObservationError  string                `json:"observation_error,omitempty"`
 	ActiveOperationID string                `json:"active_operation_id,omitempty"`
 	Mode              string                `json:"mode,omitempty"`
 	Ship              string                `json:"ship,omitempty"`
@@ -229,8 +231,9 @@ type Snapshot struct {
 }
 
 type ConfigureRequest struct {
-	ExpectedRevision uint64        `json:"expected_revision"`
-	Config           Configuration `json:"config"`
+	ConfirmRuntimeChange bool          `json:"confirm_runtime_change,omitempty"`
+	ExpectedRevision     uint64        `json:"expected_revision"`
+	Config               Configuration `json:"config"`
 	// Legacy requests omit native_control. Preserve that setting rather than
 	// interpreting an HTTP/loom edit as permission to disable it.
 	PreserveNativeControl bool `json:"-"`

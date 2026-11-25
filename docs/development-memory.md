@@ -15098,3 +15098,42 @@ the official default; the reviewed selector currently appears in guided import.
 A full reviewed-runtime import needs a stopped disposable fixture already bound
 to that runtime, not a protected or currently running user's pier. Owner feedback
 and stable promotion remain separate; no production operation is authorized.
+
+
+## M798 — Manual DEV feedback expands runtime selection and identifies recovery/UI faults (2026-11-24)
+
+Status: active implementation and qualification. Supersedes M782/M797's finite
+bundled catalogue and import-only selector scope. The owner explicitly requests
+runtime selection for import, fresh boot and stopped enrolled ships, plus
+arbitrary owner-built Vere executables through the CLI, including future larger
+loom builds. UI channel names may be live/edge/dev, but enrolled selections must
+remain immutable. Existing production exclusions and the48GiB issue22 budget
+remain. Do not apply a new DEV update automatically; prepare the owner command.
+
+Read-only evidence identifies review-zod's removed-container endpoint retained
+on its exact owned Docker bridge. Stop previously reported success without
+reconciling that endpoint; the next observation returned unknown/recovery.
+Explicit Stop now reconciles only a matching journaled removed endpoint after
+checking bridge ownership and container ID/name absence. Observation never
+repairs anything. No live recovery has been performed.
+
+The unrelated release050-app-zod orange status is explained by the project
+observer bracketing the entire engine inventory while another ship's Pack
+container appears/disappears. Instance IDs and runtime resources are distinct;
+no same-@p collision was found. Read-only display now compares the selected
+namespace across full validated inventories; mutation admission stays strict.
+Stopped expanded project members retain their permission scope. Permission cards
+show instance IDs, and lifecycle buttons retain pending state through receipt and
+polling gaps. DEV setup remains disabled; its screen now explains the separate
+environment and offers Add a ship instead of an indefinitely checking installer.
+
+The new candidate is0.6.0-rc.4/schema67, not yet frozen or natively qualified.
+Local manifests bind binary/image/archive/provenance/loom/compatibility fields to
+an immutable ID, installed only by the Unix owner. Explicit stopped transitions
+preserve pier identity and journal both artifacts; Start is separate. Correction
+requirements still prevent an incompatible downgrade. Owner compatibility
+assertions are not qualification evidence. Project factories retain their
+separate official-runtime contract. Upstream live/edge/dev latest endpoints
+returned HTTP403 during research, so latest upstream artifacts and actual64-bit
+execution remain unverified. See the current section in runtime-policy.md;
+rc.3 evidence continues to qualify only unchanged rc.3 bytes.

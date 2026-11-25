@@ -68,7 +68,7 @@ ApplicationWindow {
         inspect();replyPreview(false);check(form.current && control(form,"import-pier-plan").text.indexOf("/fixture/disk/fakeships/friendly/zod")>=0,"custom root display missing")
         var capable=copy(connection);capable.features.push("runtime-profiles-v1");svc.connections=[capable]
         consent.checked=true
-        var profiles=control(form,"import-runtime-profile");check(profiles.enabled,"capable runner cannot select profile");profiles.currentIndex=1
+        var profiles=control(form,"import-runtime-profile");check(profiles.enabled,"capable runner cannot select profile");profiles.selectedProfile="vere-4.6-jsonfix-0774857c";profiles.edited()
         check(!consent.checked&&!form.current,"changed runtime retained previous import consent")
         inspect();replyPreview(false)
         check(form.current&&form.plan.runtime_profile==="vere-4.6-jsonfix-0774857c","review lost runtime selection")

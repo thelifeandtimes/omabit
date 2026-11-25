@@ -23,6 +23,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/routines"
+	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 	_ "modernc.org/sqlite"
 )
@@ -474,8 +475,8 @@ func validateConfig(c protocol.Configuration) error {
 	if err := validateContainerResources(c); err != nil {
 		return err
 	}
-	if c.HTTPPort < 1024 || c.AmesPort != 34343 || !protocol.ValidLoom(c.Loom) {
-		return bad("development runtime requires HTTP port 1024..65535, loom 30..34, and guest Ames value 34343 (no host UDP publication)")
+	if c.HTTPPort < 1024 || c.AmesPort != 34343 || !protocol.ValidProfileLoom(c.RuntimeProfile, c.Loom, false) {
+		return bad("development runtime requires HTTP port 1024..65535, a loom supported by the selected runtime, and guest Ames value 34343 (no host UDP publication)")
 	}
 	return nil
 }
@@ -516,7 +517,7 @@ func registrationFingerprint(req *protocol.CreateFakeRequest, source *protocol.I
 	}
 	// Historical request fingerprints must remain replayable after tightening
 	// selectable loom bounds. New registrations are validated after replay lookup.
-	if !protocol.ValidContainerResources(req.Config.MemoryGiB, req.Config.CPUCores) || req.Config.HTTPPort < 1024 || req.Config.AmesPort != 34343 || !protocol.ValidRecordedLoom(req.Config.Loom) {
+	if !protocol.ValidContainerResources(req.Config.MemoryGiB, req.Config.CPUCores) || req.Config.HTTPPort < 1024 || req.Config.AmesPort != 34343 || !protocol.ValidProfileLoom(req.Config.RuntimeProfile, req.Config.Loom, true) {
 		return "", bad("invalid registration configuration")
 	}
 	if req.Label == "" {
@@ -735,8 +736,25 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	if req.Config.RuntimeProfile == "" {
 		req.Config.RuntimeProfile = v.Public.Config.RuntimeProfile
 	}
-	if err := validateRuntimeChange(v.Public.Config.RuntimeProfile, req.Config.RuntimeProfile); err != nil {
+	runtimeChanged := v.Public.Config.RuntimeProfile != req.Config.RuntimeProfile
+	if err := validateRuntimeChange(v.Public.Config.RuntimeProfile, req.Config.RuntimeProfile); err != nil && !req.ConfirmRuntimeChange {
 		return v.Public, err
+	}
+	if runtimeChanged && req.ConfirmRuntimeChange {
+		if err := candidate.CompatibleSuccessor(v.Public.Config.RuntimeProfile, req.Config.RuntimeProfile); err != nil {
+			return v.Public, conflict("runtime_incompatible", err.Error())
+		}
+		if v.Public.DesiredState != "stopped" || v.Public.ObservedState != "stopped" && v.Public.ObservedState != "uninitialized" || v.Public.RecoveryRequired || v.Runtime.UncertainMaintenance() || v.Runtime.UncertainProvisioning() || v.Runtime.StartupResume != nil {
+			return v.Public, conflict("stop_required", "stop this ship and resolve recovery before selecting a runtime")
+		}
+		for _, c := range v.Runtime.Runtime.Containers {
+			if !c.Removed || c.CreateUncertain {
+				return v.Public, conflict("stop_required", "reconcile retained containers with Stop before selecting a runtime")
+			}
+		}
+		if len(v.Runtime.RuntimeHistory) >= 256 {
+			return v.Public, conflict("runtime_history_limit", "runtime selection history requires archival before further transitions")
+		}
 	}
 	// Omitted limits from old clients must never reset a selected limit.
 	if req.Config.MemoryGiB == 0 {
@@ -797,6 +815,12 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 		if v.Public.ConfigRevision == math.MaxInt64 {
 			return v.Public, conflict("revision_limit", "configuration revision exhausted")
 		}
+		if runtimeChanged {
+			v.Runtime, err = runtimequalify.SelectStoppedRuntime(v.Runtime, req.Config.RuntimeProfile, v.Public.ConfigRevision+1, time.Now().UTC())
+			if err != nil {
+				return v.Public, conflict("runtime_transition_refused", err.Error())
+			}
+		}
 		v.Public.Config, v.Public.ConfigRevision = req.Config, v.Public.ConfigRevision+1
 		v.Startup = nil
 		v.Public.Epochs, v.Runtime.Epochs = nil, nil
@@ -810,6 +834,10 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 		}
 		now := time.Now().UTC()
 		op := protocol.Operation{ID: "op-" + id, RequestID: "server-config-" + id, InstanceID: v.Public.ID, Kind: "configure", Actor: actor, Status: "succeeded", ConfigRevision: v.Public.ConfigRevision, CreatedAt: now, FinishedAt: &now}
+		if runtimeChanged {
+			last := v.Runtime.RuntimeHistory[len(v.Runtime.RuntimeHistory)-1]
+			op.Message = "Runtime selected: " + last.From.ID + " → " + last.To.ID + "; pier unchanged; explicit Start required"
+		}
 		fingerprint, err := json.Marshal(req)
 		if err != nil {
 			return v.Public, err
@@ -1148,7 +1176,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 	// Stop/observation retain the previous runtime contract. New runtime work
 	// uses this revision, while each retained container keeps its own launch.
 	if op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || routineKind(op.Kind) {
-		if !protocol.ValidRecordedLoom(v.Public.Config.Loom) {
+		if !protocol.ValidProfileLoom(v.Public.Config.RuntimeProfile, v.Public.Config.Loom, true) {
 			return op, v, bad("invalid runtime settings for this ship mode")
 		}
 		if v.Runtime.RuntimeProfile != v.Public.Config.RuntimeProfile {
@@ -1330,6 +1358,7 @@ func applyObservation(v *storedInstance, observation runtimequalify.ManagedObser
 	updateImportReport(v)
 	v.Public.ObservedState, v.Public.Health, v.Public.Endpoint = observation.State, observation.Health, observation.Endpoint
 	v.Public.RecoveryRequired, v.Public.ObservedAt = observation.RecoveryRequired, &now
+	v.Public.ObservationError = observation.Error
 	v.Public.RollNeedsRuntime = v.Runtime.RollNeedsRuntime
 	v.Public.Epochs = nil
 	if observation.State == "stopped" && !observation.RecoveryRequired {

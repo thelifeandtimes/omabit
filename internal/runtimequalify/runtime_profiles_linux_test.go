@@ -4,14 +4,17 @@ package runtimequalify
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 func TestRuntimeProfileMissingCorruptAndUnknownFailBeforeExecution(t *testing.T) {
@@ -82,8 +85,8 @@ func TestRuntimeProfileEpochCompatibilityRefusesImplicitTransition(t *testing.T)
 	if err := os.WriteFile(filepath.Join(base, "0i10/vere.txt"), []byte(candidate.VereVersion+"\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := q.inspectImportEpochs(t.Context()); err == nil || !strings.Contains(err.Error(), "never downgrade") {
-		t.Fatal("unprepared transition accepted", err)
+	if _, err := q.inspectImportEpochs(t.Context()); err != nil {
+		t.Fatal("reviewed successor rejected compatible stock pier", err)
 	}
 	if len(f.calls) != before {
 		t.Fatal("epoch refusal executed a runtime")
@@ -293,4 +296,113 @@ func imageLookupFixture(t *testing.T, f *fakeEngine) *qualifier {
 		}
 	}
 	return q
+}
+
+func TestExplicitRuntimeTransitionStartsWithNewArtifact(t *testing.T) {
+	source := os.Getenv("OMABIT_TEST_JSONFIX_ARCHIVE")
+	if source == "" {
+		t.Skip("exact reviewed archive required")
+	}
+	f, state, persist := managedFixture(t)
+	state, _, err := applyManaged(t.Context(), "start", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = SelectStoppedRuntime(state, candidate.JSONFixProfile, 2, time.Now()); err == nil {
+		t.Fatal("live transition accepted")
+	}
+	state, _, err = applyManaged(t.Context(), "stop", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, _ := candidate.Resolve(candidate.JSONFixProfile)
+	f.d.runtimeProfile = p.ID
+	f.imageID = p.ConfigDigest
+	f.version = "urbit " + p.VereVersion + "\n"
+	if _, err = installRuntimeProfile(t.Context(), p.ID, source, f.d); err != nil {
+		t.Fatal(err)
+	}
+	previous := state
+	epochFixture(t, f, state, "0i0")
+	state, err = SelectStoppedRuntime(state, p.ID, 2, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state.ID != previous.ID || *state.Storage != *previous.Storage || len(state.RuntimeHistory) != 1 {
+		t.Fatal("transition changed pier identity")
+	}
+	state, obs, err := applyManaged(t.Context(), "start", state, persist, f.d)
+	if err != nil || obs.State != "running" {
+		t.Fatal("selected runtime failed to start", obs, err)
+	}
+	if f.downloads != 1 {
+		t.Fatal("existing pier bootstrapped again")
+	}
+	for _, c := range state.Runtime.Containers {
+		if c.RuntimeProfile != p.ID {
+			t.Fatal("old launch substituted")
+		}
+	}
+	state, obs, err = applyManaged(t.Context(), "stop", state, persist, f.d)
+	if err != nil || obs.RecoveryRequired {
+		t.Fatal(obs, err)
+	}
+	if _, err = SelectStoppedRuntime(state, candidate.OfficialProfile, 3, time.Now()); err == nil {
+		t.Fatal("incompatible downgrade allowed")
+	}
+}
+
+func TestLocalRuntimeBuilderArchiveRoundTrip(t *testing.T) {
+	dir := os.Getenv("OMABIT_TEST_LOCAL_RUNTIME")
+	if dir == "" {
+		t.Skip("local builder output required")
+	}
+	raw, err := os.ReadFile(filepath.Join(dir, "profile.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var p runtimeprofile.Profile
+	if err = json.Unmarshal(raw, &p); err != nil {
+		t.Fatal(err)
+	}
+	if err = runtimeprofile.ValidateLocal(p); err != nil {
+		t.Fatal("Python/Go content identity differs", err)
+	}
+	f, state, persist := managedFixture(t)
+	old := runtimeprofile.StoreDirectory()
+	defer runtimeprofile.ConfigureStore(old)
+	runtimeprofile.ConfigureStore(filepath.Join(f.d.home, ".local/share/urbit-runner/runtime-profiles"))
+	if err = runtimeprofile.InstallMetadata(p); err != nil {
+		t.Fatal(err)
+	}
+	state.RuntimeProfile, f.d.runtimeProfile = p.ID, p.ID
+	f.imageID, f.version = p.ConfigDigest, "urbit "+p.VereVersion+"\n"
+	got, err := installRuntimeProfile(t.Context(), p.ID, filepath.Join(dir, "runtime-image.tar.gz"), f.d)
+	if err != nil || got != p {
+		t.Fatal("install local archive", err)
+	}
+	if err = verifyRuntimeProfile(t.Context(), p.ID, f.d); err != nil {
+		t.Fatal("preflight", err)
+	}
+	state, obs, err := applyManaged(t.Context(), "start", state, persist, f.d)
+	if err != nil || obs.State != "running" {
+		t.Fatal("local first boot", err, obs)
+	}
+	state, obs, err = applyManaged(t.Context(), "stop", state, persist, f.d)
+	if err != nil || obs.State != "stopped" {
+		t.Fatal("local stop", err, obs)
+	}
+	base := epochFixture(t, f, state, "0i0")
+	if err = os.WriteFile(filepath.Join(base, "0i0/vere.txt"), []byte(p.VereVersion+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	state, obs, err = applyManaged(t.Context(), "start", state, persist, f.d)
+	if err != nil || obs.State != "running" || f.downloads != 1 {
+		t.Fatal("local reopen", err, obs)
+	}
+	for _, c := range state.Runtime.Containers {
+		if c.RuntimeProfile != p.ID {
+			t.Fatal("launch lost local pin")
+		}
+	}
 }

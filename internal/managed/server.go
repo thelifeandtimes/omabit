@@ -241,6 +241,10 @@ func (r *Server) poll(interval time.Duration) {
 				if err != nil {
 					state = v.Runtime
 					observation = runtimequalify.ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+					observation.Error = err.Error()
+					if len(observation.Error) > 1024 {
+						observation.Error = observation.Error[:1024]
+					}
 					if errors.Is(err, runtimequalify.ErrHostCompatibility) {
 						observation.RecoveryRequired = runtimequalify.RecoveryRequiredOnCompatibility(state, v.Public.RecoveryRequired)
 					}
@@ -452,10 +456,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		var profiles []candidate.Profile
 		if _, ok := r.b.(runtimeProfilesBackend); ok {
-			features = append(features, protocol.RuntimeProfilesFeature)
+			features = append(features, protocol.RuntimeProfilesFeature, protocol.RuntimeTransitionFeature)
 			profiles = candidate.Catalogue()
 		}
-		respond(w, 200, protocol.Hello{RuntimeProfiles: profiles, Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
+		respond(w, 200, protocol.Hello{RuntimeChannels: candidate.Channels(), RuntimeProfiles: profiles, Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
@@ -846,6 +850,16 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if err := decode(w, req, &body); err != nil {
 			r.respondError(w, err)
 			return
+		}
+		if body.ConfirmRuntimeChange {
+			if body.Config.RuntimeProfile == "" {
+				r.respondError(w, bad("select an explicit runtime profile"))
+				return
+			}
+			if err := r.verifyRuntimeProfile(req.Context(), body.Config.RuntimeProfile); err != nil {
+				r.respondError(w, err)
+				return
+			}
 		}
 		instance, err := r.s.configure(actor, parts[3], body)
 		if err != nil {

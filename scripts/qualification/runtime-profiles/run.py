@@ -44,8 +44,8 @@ def verify_boot(path):
 original_charge=full_charge
 def full_charge(additional,cap):
  report=original_charge(additional,cap)
- extra=Path.home()/'.config/omarchy/plugins/thelifeandtimes.omabit.review040-v050'
- if not any(row['path']==str(extra) for row in report['measurements']):report['measurements'].append(storage.measure(extra))
+ for extra in (Path.home()/'.config/omarchy/plugins').glob('thelifeandtimes.omabit.review040-v*'):
+  if not any(row['path']==str(extra) for row in report['measurements']):report['measurements'].append(storage.measure(extra))
  return storage.admit(additional,report['measurements'],budget_bytes=cap)
 def read_report(lines):
  frames={};end=None
@@ -71,6 +71,7 @@ def main():
  for n in ('portable','previous','candidate','rootless','output','init'):p.add_argument('--'+n,type=Path)
  p.add_argument('--case',choices=('runtime','upgrade'),default='runtime')
  p.add_argument('--namespace-tests',type=Path)
+ p.add_argument('--local-runtime',type=Path,help='owner-built profile.json and runtime-image.tar.gz for the expanded runtime scenario')
  p.add_argument('--app-workflow',action='store_true',help='create original stable app history before upgrade and verify preservation')
  p.add_argument('--theme-source',type=Path)
  p.add_argument('--dms-source',type=Path)
@@ -130,6 +131,12 @@ def main():
  stage_immutable(pill,payload/'boot.pill')
  stage_immutable(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
  stage_immutable(a.candidate/'vere-4.6-jsonfix-0774857c.tar.gz',payload/'jsonfix.tar.gz')
+ local_runtime=None
+ if a.local_runtime:
+  manifest=a.local_runtime/'profile.json';archive=a.local_runtime/'runtime-image.tar.gz'
+  local_runtime=json.loads(manifest.read_text())
+  if local_runtime['kind']!='local' or digest(archive)!=local_runtime['archive_sha256'] or archive.stat().st_size!=local_runtime['archive_bytes']:raise RuntimeError('local runtime artifact binding differs')
+  stage_immutable(manifest,payload/'local-profile.json');stage_immutable(archive,payload/'local-runtime.tar.gz')
  for n in ('shell.qml','desktop.py','fleet_guest.py','fleet_client.py','desk_guest.py'):shutil.copy2(SUPPORT/n,payload/n)
  guest=(HERE/'guest.py').read_text() if a.case=='runtime' else (SUPPORT/'guest.py').read_text()
  if a.case=='upgrade':
@@ -162,7 +169,7 @@ def main():
    (dest/'manifest.json').write_text(json.dumps(manifest)+'\n')
    (dest/'application-profile.json').write_text(json.dumps({'version':1,'profile':'qualification040'})+'\n')
  shutil.copytree(ROOT/'native/bootstrap',payload/'bootstrap',ignore=shutil.ignore_patterns('__pycache__'))
- (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests),'app_workflow':a.app_workflow}))
+ (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests),'app_workflow':a.app_workflow,'local_runtime':local_runtime}))
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)
  run(['mkfs.ext4','-q','-F','-d',payload,disk],stdout=subprocess.DEVNULL)

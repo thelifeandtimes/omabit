@@ -53,7 +53,9 @@ func appPolicyTargets(q querier) ([]protocol.AppPolicyTarget, error) {
 		}
 		if expErr == nil {
 			for _, m := range expanded.Members {
-				out = append(out, protocol.AppPolicyTarget{Target: apppolicy.Target{InstanceID: m.Member.InstanceID, ProjectID: id, Generation: m.Creator.Generation, Creator: m.Creator.OperationID}, Label: p.Plan.Label + " / " + m.Member.InstanceID, Ship: m.Member.Ship, Ready: m.Phase == "ready"})
+				// Saved permission scope belongs to this generation, not its
+				// current process. An explicit Stop preserves that identity.
+				out = append(out, protocol.AppPolicyTarget{Target: apppolicy.Target{InstanceID: m.Member.InstanceID, ProjectID: id, Generation: m.Creator.Generation, Creator: m.Creator.OperationID}, Label: p.Plan.Label + " / " + m.Member.InstanceID, Ship: m.Member.Ship, Ready: m.Phase == "ready" || m.Phase == "stopped"})
 			}
 			continue
 		}

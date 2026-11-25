@@ -17,6 +17,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 // OpenManagedHost locks the fixed development state directory. Docker may be
@@ -26,6 +27,7 @@ func OpenManagedHost() (*ManagedHost, error) {
 	if err := q.accountBoundary(false); err != nil {
 		return nil, err
 	}
+	runtimeprofile.ConfigureStore(filepath.Join(q.d.home, ".local/share/urbit-runner/runtime-profiles"))
 	// Keep inventory and Stop available even if an externally edited pier tree
 	// needs repair. Discovery reports that problem; runtime path checks stay strict.
 	_ = pierstore.Init(q.d.home)
@@ -82,7 +84,7 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	if !runIDPattern.MatchString(state.ID) || state.Port < 1024 {
 		return nil, errors.New("invalid managed instance identity or HTTP port")
 	}
-	if !protocol.ValidRecordedLoom(protocol.EffectiveLoom(state.Loom)) {
+	if !protocol.ValidProfileLoom(state.RuntimeProfile, protocol.EffectiveLoom(state.Loom), true) {
 		return nil, errors.New("invalid loom")
 	}
 	if !protocol.ValidContainerResources(state.MemoryGiB, state.CPUCores) {
@@ -195,7 +197,7 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 				return nil, errors.New("invalid recorded launch engine version")
 			}
 			entry, args := baseCommand(c.Kind)
-			if !protocol.ValidContainerResources(c.MemoryGiB, c.CPUCores) || !protocol.ValidRecordedLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
+			if !protocol.ValidContainerResources(c.MemoryGiB, c.CPUCores) || !protocol.ValidProfileLoom(c.RuntimeProfile, protocol.EffectiveLoom(c.Loom), true) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
 				return nil, errors.New("invalid recorded runtime settings")
 			}
 			if c.SnapshotMinutes != 0 && c.SnapshotMinutes != DefaultSnapshotMinutes {
@@ -471,6 +473,9 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 			} else if err := q.remove(ctx, i); err != nil {
 				return finish(unknown, err)
 			}
+		}
+		if err := q.reconcileStoppedNetwork(ctx); err != nil {
+			return finish(unknown, err)
 		}
 		if !q.restrictedEngine && managedMaintenanceUndispatched(state, q.r) {
 			previousStage := q.r.Stage

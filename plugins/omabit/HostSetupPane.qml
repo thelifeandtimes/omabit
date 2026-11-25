@@ -12,6 +12,7 @@ Column {
   width: parent.width
   spacing: Style.space(14)
   readonly property var status: service ? service.localSetupStatus : null
+  readonly property bool setupAllowed: !!service && service.localSetupAllowed
   readonly property bool ready: !!status && status.ready
   readonly property bool running: !!service && service.settingUp
   readonly property var packages: status && status.packages_to_install || []
@@ -24,13 +25,13 @@ Column {
       spacing: Style.space(10)
       RowLayout {
         width: parent.width
-        CardTitle { Layout.fillWidth: true; text: root.ready ? "Your local runner is ready" : "Set up this computer" }
-        StatusBadge { text: root.ready ? "Connected" : root.running ? "Setting up" : "Local host"; tone: root.ready ? "good" : root.running ? "accent" : "muted" }
+        CardTitle { Layout.fillWidth: true; text: !root.setupAllowed ? "Development environment" : root.ready ? "Your local runner is ready" : "Set up this computer" }
+        StatusBadge { text: !root.setupAllowed ? "DEV" : root.ready ? "Connected" : root.running ? "Setting up" : "Local host"; tone: root.ready ? "good" : root.running ? "accent" : "muted" }
       }
-      Label { objectName: "setup-description"; width: parent.width; secondary: true; text: root.ready ? "The background services and private desktop connection are ready. Your ships can keep running when this panel is closed." : root.running ? "Installing and configuring the software needed to run Urbit on your Omarchy computer. Enter your password when the system asks." : "Install and configure the software needed to run Urbit on your Omarchy computer. Choose Set up this computer, then enter your password when the system asks." }
+      Label { objectName: "setup-description"; width: parent.width; secondary: true; text: !root.setupAllowed ? "This environment uses its separately configured runners. Manage them in Connections, or add a ship using an enrolled runner." : root.ready ? "The background services and private desktop connection are ready. Your ships can keep running when this panel is closed." : root.running ? "Installing and configuring the software needed to run Urbit on your Omarchy computer. Enter your password when the system asks." : "Install and configure the software needed to run Urbit on your Omarchy computer. Choose Set up this computer, then enter your password when the system asks." }
       RowLayout {
         width: parent.width
-        ActionButton { objectName: "setup-view-details"; compact: true; quiet: true; text: root.detailsOpen ? "Hide details ▾" : "View details ›"; onClicked: root.detailsOpen=!root.detailsOpen }
+        ActionButton { objectName: "setup-view-details"; visible: root.setupAllowed; compact: true; quiet: true; text: root.detailsOpen ? "Hide details ▾" : "View details ›"; onClicked: root.detailsOpen=!root.detailsOpen }
       }
       Column {
         objectName: "setup-install-details"
@@ -57,7 +58,7 @@ Column {
     updater:root.service && root.service.serviceUpgrade ? root.service.serviceUpgrade : null
     visible:!!updater && !!root.status && (root.status.host_present || root.ready) && root.service.localSetupAllowed
   }
-  MachineUsePane { width: parent.width; service: root.service; visible: !root.ready }
+  MachineUsePane { width: parent.width; service: root.service; visible: root.setupAllowed && !root.ready }
   Column {
     objectName: "setup-progress-checklist"
     width: parent.width; spacing: Style.space(9); visible: root.running || root.ready
@@ -96,7 +97,8 @@ Column {
   }
   RowLayout {
     width: parent.width
-    ActionButton { objectName: "local-setup-primary"; text: root.ready ? "Add a ship →" : root.running ? "Setting up…" : !root.status ? "Checking this computer…" : "Set up this computer"; primary: true; enabled: !!root.service && !root.service.busy && !root.service.checkingSetup && !root.running && !!root.status && (root.ready || root.status.can_setup); onClicked: root.ready ? root.addShip() : root.service.setUpLocal(true) }
+    ActionButton { objectName:"dev-add-ship";visible:!root.setupAllowed;text:"Add a ship →";primary:true;enabled:!!root.service && !root.service.busy && (root.service.connections || []).some(function(c){return c.access_role==="operator" && Model.available(c,root.service.now)});onClicked:root.addShip() }
+    ActionButton { objectName: "local-setup-primary"; visible: root.setupAllowed; text: root.ready ? "Add a ship →" : root.running ? "Setting up…" : !root.status ? "Checking this computer…" : "Set up this computer"; primary: true; enabled: !!root.service && !root.service.busy && !root.service.checkingSetup && !root.running && !!root.status && (root.ready || root.status.can_setup); onClicked: root.ready ? root.addShip() : root.service.setUpLocal(true) }
     ActionButton { objectName: "local-check-again"; text: "Check again"; visible: !!root.status && !root.ready && !root.running; quiet: true; enabled: !!root.service && !root.service.checkingSetup; onClicked: root.service.checkLocalSetup(true) }
   }
 }

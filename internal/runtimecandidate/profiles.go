@@ -13,4 +13,5 @@ const (
 
 func Resolve(id string) (Profile, error)        { return runtimeprofile.Resolve(id) }
 func Catalogue() []Profile                      { return runtimeprofile.Catalogue() }
+func Channels() map[string]string               { return runtimeprofile.Channels() }
 func CompatibleSuccessor(from, to string) error { return runtimeprofile.CompatibleSuccessor(from, to) }

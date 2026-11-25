@@ -184,8 +184,8 @@ Window {
                 ShipName { objectName: "monitor-ship-name"; width: parent.width; instance: root.instance; font.pixelSize: Style.space(30); font.bold: true }
                 Flow {
                   width: parent.width; spacing: Style.space(8)
-                ActionButton { text: "▶ Start"; enabled: root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"start",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"start") }
-                ActionButton { text: "■ Stop"; enabled: root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"stop",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"stop") }
+                ActionButton { objectName: "ship-start"; readonly property string pending: root.service.lifecycleKind(root.connection,root.instance); text: pending==="start" ? "Starting…" : "▶ Start"; enabled: !pending && root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"start",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"start") }
+                ActionButton { objectName: "ship-stop"; readonly property string pending: root.service.lifecycleKind(root.connection,root.instance); text: pending==="stop" ? "Stopping…" : "■ Stop"; enabled: !pending && root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"stop",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"stop") }
                 CopyCodeButton { objectName: "monitor-copy-code"; service: root.service; runnerID: root.connection ? root.connection.runner_id : ""; connectionName: root.connection ? root.connection.name : ""; instanceID: root.instance ? root.instance.id : "" }
                 ActionButton { objectName: "monitor-open-ship"; text: "Open ship ↗"; hint: "Open this ship when startup and health checks complete"; enabled: root.service.observing && Model.shipLive(root.connection,root.instance,root.service.now) && !!Model.shipURL(root.connection,root.instance,root.service.registrations,root.service.runnerPreferences); onClicked: root.service.openShip(root.connection,root.instance) }
                 }
@@ -201,6 +201,7 @@ Window {
               Column {
                 width: parent.width; spacing: Style.space(16); visible: root.page === "overview"
                 RuntimePane { width:parent.width;service:root.service;connection:root.connection;instance:root.instance;active:root.visible&&root.visibility!==Window.Minimized&&root.page==="overview" }
+                RuntimeSelectionPane {width:parent.width;service:root.service;connection:root.connection;instance:root.instance;visible:!!root.instance && !root.instance.project_id}
                 GridLayout {
                   width: parent.width; columns: width < Style.space(590) ? 2 : 3; columnSpacing: Style.space(10); rowSpacing: Style.space(10)
                   Metric { objectName: "container-memory"; Layout.fillWidth: true; label: "CONTAINER RAM"; value: root.resources.value; note: root.resources.note; ratio: root.sample ? root.sample.value / root.sample.limit : -1 }

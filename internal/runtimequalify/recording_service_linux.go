@@ -4,6 +4,7 @@ package runtimequalify
 
 import (
 	"context"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 	"os"
 	"path/filepath"
 )
@@ -13,7 +14,13 @@ import (
 // command, native input or configuration from a client. Normal managed launch
 // does not create or submit jobs yet; its journal/downgrade guard is still needed.
 func RunRecordingService(ctx context.Context, id, digest string) error {
-	return runRecordingService(ctx, id, digest, defaults(), os.Getenv, RunManagedRecordingWorker)
+	d := defaults()
+	q := &qualifier{d: d}
+	if q.accountBoundary(false) != nil {
+		return ErrRecordingWorker
+	}
+	runtimeprofile.ConfigureStore(filepath.Join(d.home, ".local/share/urbit-runner/runtime-profiles"))
+	return runRecordingService(ctx, id, digest, d, os.Getenv, RunManagedRecordingWorker)
 }
 
 func runRecordingService(ctx context.Context, id, digest string, d dependencies, getenv func(string) string, worker func(context.Context, RecordingWorkerOptions, string, string, func(RecordingJobReady) error) (RecordingJobResult, error)) error {

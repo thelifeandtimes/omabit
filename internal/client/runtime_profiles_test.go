@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"testing"
 
@@ -130,6 +131,34 @@ func TestRuntimeProfileHandoffRefusesBeforeSourceFence(t *testing.T) {
 			_, err := MoveStopped(t.Context(), endpoint("source"), endpoint("destination"), "source", "fixture", protocol.PrepareHandoffRequest{DestinationRunner: "destination", DestinationInstance: "arrived", ExpectedRevision: 1, RequestID: "move-pinned"}, 0, 0)
 			if err == nil || mutations.Load() != 0 {
 				t.Fatal("unavailable/mismatched destination fenced source", fault, err, mutations.Load())
+			}
+		})
+	}
+}
+
+func TestLocalRuntimePreflightUsesSelectedRunnerCatalogue(t *testing.T) {
+	p := runtimeprofile.Profile{Format: 1, Kind: "local", Platform: runtimeprofile.Platform, VereVersion: "local-64", Image: "omabit/vere@sha256:" + strings.Repeat("a", 64), ManifestDigest: "sha256:" + strings.Repeat("a", 64), ConfigDigest: "sha256:" + strings.Repeat("b", 64), BinarySHA256: strings.Repeat("c", 64), ArchiveSHA256: strings.Repeat("d", 64), ArchiveBytes: 1234, MaxLoom: 38}
+	p.ID = runtimeprofile.LocalID(p)
+	for _, tamper := range []bool{false, true} {
+		t.Run(strconv.FormatBool(tamper), func(t *testing.T) {
+			advertised := p
+			if tamper {
+				advertised.MaxLoom++
+			}
+			c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set(protocol.Header, strconv.Itoa(protocol.Version))
+				if r.URL.Path == "/hello" {
+					json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: "selected", Features: []string{protocol.RuntimeProfilesFeature}, RuntimeProfiles: []runtimeprofile.Profile{advertised}})
+					return
+				}
+				if r.Method != http.MethodGet || r.URL.Path != "/v1/runtime-profiles/"+p.ID {
+					t.Error("unexpected request", r.Method, r.URL.Path)
+				}
+				json.NewEncoder(w).Encode(protocol.RuntimeProfilePreflight{RunnerID: "selected", Available: true, Profile: p})
+			})
+			got, err := c.RuntimeProfilePreflight(t.Context(), p.ID)
+			if (err == nil) == tamper || !tamper && got.Profile != p {
+				t.Fatal("local profile binding", got, err)
 			}
 		})
 	}

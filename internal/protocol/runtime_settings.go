@@ -47,6 +47,24 @@ func ValidLoom(loom uint8) bool { return loom >= MinLoom && loom <= MaxLoom }
 // or invalidate a signed, already-prepared handoff.
 func ValidRecordedLoom(loom uint8) bool { return loom >= 20 && loom <= MaxLoom }
 
+// Larger address spaces require an explicitly installed runtime declaration.
+// The declaration is an owner's assertion; runtime qualification is separate.
+func ValidProfileLoom(id string, loom uint8, historical bool) bool {
+	p, err := runtimeprofile.Resolve(id)
+	if err != nil {
+		return false
+	}
+	limit := uint8(MaxLoom)
+	if p.Kind == "local" {
+		limit = p.MaxLoom
+	}
+	minimum := uint8(MinLoom)
+	if historical {
+		minimum = 20
+	}
+	return loom >= minimum && loom <= limit
+}
+
 // EffectiveLoom preserves pre-settings private runtime records. Public requests
 // still require an explicit valid value; zero is not a request-side default.
 func EffectiveLoom(loom uint8) uint8 {

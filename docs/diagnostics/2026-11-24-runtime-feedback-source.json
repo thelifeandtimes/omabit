@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-24",
+  "status": "source-reviewed; matching native/artifact qualification pending",
+  "version": "0.6.0-rc.4",
+  "schema": 67,
+  "live_state_changed": false,
+  "findings": {
+    "review-zod": "Exact owned Docker bridge retains ep-80a35db6a5ca1e78cffff8331b409b0d8dea5ab2f24b4e4dbef1f204cbf40eed for journaled removed container8e287e5dc9394a42fde00b10b2a85dc358dfe1031c5296a23460e8d0d6db27b3. Explicit Stop reconciliation implemented; no live repair performed.",
+    "project_status": "Full-inventory bracketing treated unrelated Pack container churn as a project change. Full observer regression now accepts unrelated churn and rejects foreign namespace joins. Distinct instance/runtime IDs; no same-@p collision found.",
+    "permissions": "Stopped expanded project member had ready=false; stopped resolved members now retain permission scope, with instance IDs visible in cards.",
+    "lifecycle": "Actual submit/finish and QML Start/Stop controls retain pending state until exact instance/request completion; definite preadmission refusal releases it.",
+    "local_runtime": "Known reviewed executable repackaged via the arbitrary local-build builder. Go validates the Python content ID, installs and authenticates archive, then exercises fresh/start/stop/replacement with an inert engine. This is not native qualification.",
+    "channels": "live/edge/dev bootstrap latest endpoints each returnedHTTP403; actual latest upstream builds and64-bit execution remain unverified."
+  },
+  "tests": {
+    "go_all": "passed",
+    "runtime_client_collection_protocol_cli_race": "runtimequalify/client/collection/runner passed; collector historical loom expectations corrected and collector/protocol/client/registry rerun passed",
+    "final_changed_paths_race": "passed",
+    "vet": "passed",
+    "qml": "lifecycle, compact creation/key picker, resource settings, import and permission rendering passed",
+    "packaging_and_policy_source": "passed; full artifact reproduction still pending",
+    "reviewed_image_reproduction": {
+      "passed": true,
+      "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+      "bytes": 54750277
+    }
+  },
+  "logs": {
+    "/tmp/omabit-feedback-go-final.log": {
+      "sha256": "b6f740006aff375bea8251e252569151e0387299cb6c8d7ba09d9974f91901d5",
+      "bytes": 5937
+    },
+    "/tmp/omabit-feedback-race.log": {
+      "sha256": "8388ced46a0bc669034711f996c3b453a3fc09f9fc1296484307dc4b2587a7f4",
+      "bytes": 1803
+    },
+    "/tmp/omabit-feedback-race-final-small.log": {
+      "sha256": "ebc2d0cebdbf8d26bc20ada1bb5e1581b6ab98a3f84f431959d5a691a1b83702",
+      "bytes": 330
+    },
+    "/tmp/omabit-feedback-race-final.log": {
+      "sha256": "4d7770675e7337cee763f96c1be550d0c8cd16821273804d55f212099a87ee41",
+      "bytes": 163
+    },
+    "/tmp/omabit-feedback-vet.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/tmp/omabit-feedback-model.log": {
+      "sha256": "4f50a7978b3cd4a206147d59393203d5eed6cac4f5d7f38e4c162398b680e7de",
+      "bytes": 4225
+    },
+    "/tmp/omabit-feedback-lifecycle-qml.log": {
+      "sha256": "c6aa71ed2a8620df9df6232183d23adb6a3a462cf12351745c7a3357e4eebec0",
+      "bytes": 692
+    },
+    "/tmp/omabit-feedback-local-roundtrip.log": {
+      "sha256": "044ecd9ab6c063224467c6cacf080450455fc19eea80af4ce06d373d3c1a5d94",
+      "bytes": 85
+    },
+    "/tmp/omabit-feedback-compact.log": {
+      "sha256": "49e522d4e3b546c0d4d25729db3f32665fe7173664084439a3c4c8b4e64f0d24",
+      "bytes": 380
+    },
+    "/tmp/omabit-feedback-resources-qml.log": {
+      "sha256": "3ee8614891ee1d110fd78f033ffd93459e0e1139ed4f552c73c2ddb5066d0f18",
+      "bytes": 98
+    }
+  },
+  "local_builder_profile": {
+    "format": 1,
+    "kind": "local",
+    "platform": "linux/amd64",
+    "vere_version": "4.6-82f4558",
+    "image": "omabit/vere@sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "manifest_digest": "sha256:8ab8d737bffcc11118a81a16e8be4d37d745655bf26a90dce3f0cfe8b4bfe9df",
+    "config_digest": "sha256:b928fee51281b86b3a86d322b581daf74491b02ecea859ad91d6e7f6ba71fbbd",
+    "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+    "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+    "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+    "requirement": "vere-json-array-error-1145-v1",
+    "review_url": "",
+    "archive_sha256": "6a31b3710e718fe25ebea42f89300c85451d4f4db1078b3db400187425ad4a8e",
+    "archive_bytes": 54750411,
+    "channel": "",
+    "max_loom": 34,
+    "compatible_versions": "4.6 4.6-5a7614f",
+    "id": "local-e1e1a414ef5e4d061608ceea6937c7b6f4315b8865665cb1e7f10bde"
+  },
+  "limits": [
+    "No production or live DEV mutation",
+    "No decoder crash/malformed-input/exploit investigation",
+    "Project factory runtime switching remains outside ordinary ship support",
+    "Owner compatibility and larger-loom declarations are assertions, not qualification"
+  ]
+}

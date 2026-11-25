@@ -249,3 +249,62 @@ func TestProjectExpansionExplicitPreflightContinuation(t *testing.T) {
 		t.Fatal("dispatched outcome repeated")
 	}
 }
+
+func TestStoppedExpandedMemberRetainsPermissionScope(t *testing.T) {
+	r, original, _, _ := projectQueueFixture(t)
+	p, reviewed, _ := readyStopProject(t, r.s)
+	before, err := r.s.appPolicyStatus()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var target protocol.AppPolicyTarget
+	for _, v := range before.Targets {
+		if v.Target.ProjectID == p.ID {
+			target = v
+			break
+		}
+	}
+	if !target.Ready {
+		t.Fatal("missing initial permission scope")
+	}
+	selection, err := r.s.projectFleetSelection(p.ID, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, err := runtimequalify.SeedProjectExpansion(selection)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := state.Members[0]
+	b := &expansionFixtureBackend{queuedProjectBackend: original}
+	b.shipAction = func(_ context.Context, s *runtimequalify.ProjectExpansion, id, action, _ string, save func(runtimequalify.ProjectExpansion) error) error {
+		for i := range s.Members {
+			if s.Members[i].Member.InstanceID == id {
+				s.Members[i].Phase = "stopped"
+			}
+		}
+		return save(*s)
+	}
+	r.b = b
+	_, _, err = r.queueProjectAddition("actor", p.ID, protocol.ProjectActionRequest{Kind: "member-stop", InstanceID: m.Member.InstanceID, ContainerID: m.Creator.Container.ID, ExpectedRevision: p.Revision, ReviewDigest: reviewed.ReviewDigest, RequestID: "policy-stop", ConfirmAction: true}, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	waitProjectWorker(t, r)
+	after, err := r.s.appPolicyStatus()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range after.Targets {
+		if v.Target.InstanceID == m.Member.InstanceID {
+			if !v.Ready || v.Target != target.Target {
+				t.Fatal("Stop lost saved permission identity", target, v)
+			}
+			if err = r.s.db.QueryRow("SELECT count(*) FROM project_expansions WHERE project_id=?", p.ID).Scan(new(int)); err != nil {
+				t.Fatal(err)
+			}
+			return
+		}
+	}
+	t.Fatal("stopped permission target vanished")
+}

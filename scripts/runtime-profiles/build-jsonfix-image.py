@@ -37,9 +37,14 @@ def add(tar, name, data, mode=0o644):
     tar.addfile(entry, io.BytesIO(data))
 
 
-def build(binary, cache, output):
+def build(binary, cache, output, local=None):
     data = binary.read_bytes()
-    if sha(data) != BINARY or data[:6] != b'\x7fELF\x02\x01':
+    binary_sha = local['binary_sha256'] if local else BINARY
+    name = 'omabit/vere:local-' + binary_sha[:24] if local else NAME
+    source = local.get('source_base', '') if local else '5a7614f69bbc783736b08965fdc0a2534bb42e82'
+    patch = local.get('patch_revision', '') if local else 'fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47'
+    version = local['vere_version'] if local else '4.6-82f4558'
+    if len(data)>MAX_BLOB or sha(data) != binary_sha or data[:6] != b'\x7fELF\x02\x01':
         raise ValueError('expected exact reviewed Linux x86-64 executable')
     if int.from_bytes(data[18:20], 'little') != 62:
         raise ValueError('wrong ELF machine')
@@ -98,13 +103,13 @@ def build(binary, cache, output):
     unpacked.append(raw)
     blobs[sha(compressed)] = compressed
     config['rootfs']['diff_ids'].append('sha256:' + sha(raw))
-    config.setdefault('history', []).append({'created': '2026-11-19T02:00:00Z', 'created_by': 'Omabit reviewed Vere 4.6 PR1145 binary ' + BINARY})
+    config.setdefault('history', []).append({'created': '2026-11-19T02:00:00Z', 'created_by': ('Omabit owner-selected Vere binary ' if local else 'Omabit reviewed Vere 4.6 PR1145 binary ') + binary_sha})
     config['created'] = '2026-11-19T02:00:00Z'
     config.setdefault('config', {}).setdefault('Labels', {}).update({
         'org.opencontainers.image.source': 'https://github.com/thelifeandtimes/omabit',
-        'org.omabit.vere.binary-sha256': BINARY,
-        'org.omabit.vere.base': '5a7614f69bbc783736b08965fdc0a2534bb42e82',
-        'org.omabit.vere.patch': 'fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47',
+        'org.omabit.vere.binary-sha256': binary_sha,
+        'org.omabit.vere.base': source,
+        'org.omabit.vere.patch': patch,
     })
     config_blob = encode(config)
     config_sha = sha(config_blob)
@@ -118,8 +123,8 @@ def build(binary, cache, output):
     manifest_sha = sha(manifest)
     blobs[manifest_sha] = manifest
     index = encode({'schemaVersion': 2, 'manifests': [{'mediaType': 'application/vnd.oci.image.manifest.v1+json', 'digest': 'sha256:' + manifest_sha, 'size': len(manifest),
-                      'platform': {'os': 'linux', 'architecture': 'amd64'}, 'annotations': {'org.opencontainers.image.ref.name': NAME}}]})
-    archive = output / 'vere-4.6-jsonfix-0774857c.tar.gz'
+                      'platform': {'os': 'linux', 'architecture': 'amd64'}, 'annotations': {'org.opencontainers.image.ref.name': name}}]})
+    archive = output / ('runtime-image.tar.gz' if local else 'vere-4.6-jsonfix-0774857c.tar.gz')
     with archive.open('xb') as file, gzip.GzipFile(fileobj=file, mode='wb', filename='', mtime=0) as gz, tarfile.open(fileobj=gz, mode='w|', format=tarfile.USTAR_FORMAT) as tar:
         add(tar, 'oci-layout', encode({'imageLayoutVersion': '1.0.0'}))
         add(tar, 'index.json', index)
@@ -133,16 +138,17 @@ def build(binary, cache, output):
             path = 'layers/' + str(i) + '.tar'
             paths.append(path)
             add(tar, path, raw)
-        add(tar, 'manifest.json', encode([{'Config': config_sha + '.json', 'RepoTags': [NAME], 'Layers': paths}]))
-    report = {'format': 1, 'platform': 'linux/amd64', 'vere_version': '4.6-82f4558', 'binary_sha256': BINARY,
+        add(tar, 'manifest.json', encode([{'Config': config_sha + '.json', 'RepoTags': [name], 'Layers': paths}]))
+    report = {'format': 1, 'platform': 'linux/amd64', 'vere_version': version, 'binary_sha256': binary_sha,
               'base_image_manifest_sha256': BASE, 'base_image_config_sha256': BASE_CONFIG, 'stock_binary_sha256': stock_sha,
               'image_manifest_sha256': manifest_sha, 'image_config_sha256': config_sha,
               'archive': archive.name, 'archive_sha256': sha(archive.read_bytes()), 'archive_bytes': archive.stat().st_size,
-              'source_base': '5a7614f69bbc783736b08965fdc0a2534bb42e82', 'patch_revision': 'fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47',
-              'approval': 'https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705',
+              'source_base': source, 'patch_revision': patch,
+              'approval': 'local Unix owner selection' if local else 'https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705',
               'qualification': 'packaging only; no executable or runtime lifecycle test performed'}
     (output / 'provenance.json').write_bytes(encode(report) + b'\n')
     print(json.dumps(report, indent=2))
+    return report
 
 
 if __name__ == '__main__':

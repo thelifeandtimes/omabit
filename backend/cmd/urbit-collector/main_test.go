@@ -267,7 +267,7 @@ func TestUsageErrors(t *testing.T) {
 			values = append(values, "65536")
 		}
 		if name == "loom" {
-			values = append(values, "19", "35", "287")
+			values = append(values, "19", "41", "287")
 		}
 		for _, value := range values {
 			args := append([]string{}, configuration...)

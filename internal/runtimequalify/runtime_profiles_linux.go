@@ -32,7 +32,7 @@ func (q *qualifier) verifyProfileArchive() error {
 	if p.Kind == "official" {
 		return nil
 	}
-	if p.Kind != "reviewed" {
+	if p.Kind != "reviewed" && p.Kind != "local" {
 		return errors.New("invalid runtime profile")
 	}
 	path := q.profileArchive()
@@ -65,7 +65,7 @@ func installRuntimeProfile(ctx context.Context, id, source string, d dependencie
 	if err != nil {
 		return p, err
 	}
-	if p.Kind != "reviewed" {
+	if p.Kind != "reviewed" && p.Kind != "local" {
 		return p, errors.New("archive installation requires a reviewed custom runtime profile")
 	}
 	q := &qualifier{d: d}

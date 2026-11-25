@@ -721,13 +721,56 @@ function runtimeActionTarget(args) {
   return {key:runtimeActionKey(target,ship),title:operationTitle(args[command+2])}
 }
 
+function lifecycleTarget(args) {
+  function flag(name) { var n=args.indexOf(name);return n<0 ? "" : args[n+1] }
+  var command=args.indexOf("operate"), project=args.indexOf("project-operate")
+  var kind=command>=0 ? args[command+2] : project>=0 ? args[project+2].replace(/^member-/,"") : ""
+  if(["start","stop","pack","meld","roll"].indexOf(kind)<0)return null
+  var runner=flag("--expected-runner-id"),name=flag("--runner"),instance=command>=0 ? args[command+1] : flag("--member"),request=flag("--request-id")
+  if(!validId(runner)||!validId(name)||!validId(instance)||!request)return null
+  return {key:runner+"/"+instance,runner:runner,connection:name,instance:instance,kind:kind,request:request}
+}
+
+function runtimeChoices(connection, selected) {
+  var values=[{id:"",label:"Official · Vere 4.6"}],profiles=connection && connection.runtime_profiles || []
+  profiles.forEach(function(p) {
+    if(p.id==="vere-4.6-5a7614f")return
+    if(p.channel && connection.runtime_channels && connection.runtime_channels[p.channel]!==p.id && selected!==p.id)return
+    if(typeof p.id!=="string" || !/^(vere-[a-zA-Z0-9.-]+|local-[a-f0-9]{56})$/.test(p.id))return
+    var label=p.channel ? p.channel.charAt(0).toUpperCase()+p.channel.slice(1)+" · Vere "+p.vere_version : p.kind==="reviewed" ? "Reviewed · Vere "+p.vere_version : "Local build · Vere "+p.vere_version+" · "+String(p.binary_sha256 || "").slice(0,8)
+    values.push({id:p.id,label:label})
+  })
+  // Older profiles-v1 runners did not include the catalogue in collection rows.
+  if(!profiles.length && hasFeature(connection,"runtime-profiles-v1"))values.push({id:"vere-4.6-jsonfix-0774857c",label:"Reviewed · Vere 4.6 JSON fix"})
+  if(selected && !values.some(function(p){return p.id===selected}))values.push({id:selected,label:"Selected · "+selected})
+  return values
+}
+function lifecycleKind(requests,connection,instance) {
+  if(!connection||!instance)return ""
+  var pending=requests[connection.runner_id+"/"+instance.id]
+  if(pending && pending.connection===connection.name)return pending.kind
+  var ops=connection.snapshot && connection.snapshot.operations || []
+  var active=ops.filter(function(o){return o.id===instance.active_operation_id && o.instance_id===instance.id})[0]
+  return active ? active.kind.replace(/^member-/,"") : ""
+}
+function reconcileLifecycle(requests,connections) {
+  var next=Object.assign({},requests)
+  Object.keys(next).forEach(function(key) {
+    var p=next[key],c=connections.filter(function(c){return c.runner_id===p.runner && c.name===p.connection})[0]
+    if(!c||!c.snapshot)return
+    var ops=(c.snapshot.operations||[]).concat((c.snapshot.instances||[]).filter(function(i){return i.id===p.instance && i.runtime_status && i.runtime_status.last_operation}).map(function(i){return i.runtime_status.last_operation}))
+    if(ops.some(function(o){return o.request_id===p.request && o.instance_id===p.instance && ["succeeded","failed","cancelled","interrupted"].indexOf(o.status)>=0}))delete next[key]
+  })
+  return next
+}
+
 function runtimeStage(stage) {
   return {"preparing-runtime":"Preparing runtime","preparing-pill":"Preparing boot pill","starting-runtime":"Starting runtime","waiting-for-identity":"Booting · checking identity","moving-pier":"Moving stopped pier","stopping":"Stopping runtime","stopped":"Stopped","ready":"Ready"}[stage] || ""
 }
 function runtimeLoom(instance) {
   var d=instance && instance.runtime_status || {}, config=instance && instance.config || {}
   var recorded=d.launch_loom!==undefined, n=Number(recorded ? d.launch_loom : config.loom)
-  if (!Number.isInteger(n) || n<20 || n>34) return {label:"Loom unknown",hint:"Loom size has not been reported."}
+  if (!Number.isInteger(n) || n<20 || n>40) return {label:"Loom unknown",hint:"Loom size has not been reported."}
   var hint=(recorded ? "Recorded launch" : "Configured for the next launch; actual launch size not reported")+": "+loomLabel(n)+" address space. This is not current RAM usage."
   if (recorded && config.loom!==undefined && Number(config.loom)!==n) hint+=" Requested for the next launch: "+loomLabel(config.loom)+"."
   return {label:Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? "MB" : "GB")+" Loom",hint:hint}
@@ -735,6 +778,7 @@ function runtimeLoom(instance) {
 function runtimeNotice(instance) {
   if (!instance) return ""
   var d=instance.runtime_status || {}, parts=[]
+  if (instance.observation_error) parts.push("Observation failed: "+instance.observation_error+". Use Stop to reconcile this instance, then refresh before Start.")
   if (instance.active_operation_id) parts.push(runtimeStage(d.stage) || "Runner operation in progress")
   if (d.running===false && d.exit_code!==undefined && (d.exit_code!==0 || d.oom_killed===true || instance.observed_state==="failed"))
     parts.push("Urbit exited with code "+d.exit_code+(d.oom_killed===true ? " · out of memory" : "")+". See Urbit Logs and Technical details.")
@@ -745,6 +789,7 @@ function runtimeNotice(instance) {
 function runtimeDetail(instance) {
   if (!instance) return "Select a ship."
   var d=instance.runtime_status || {}, op=d.last_operation, parts=[]
+  if (instance.observation_error) parts.push("Current observation: "+instance.observation_error)
   if (d.launch_loom!==undefined) parts.push("Recorded launch: loom "+loomLabel(d.launch_loom)+" address space · native control "+(d.launch_native_control===true ? "enabled" : "disabled"))
   if (instance.config) parts.push("Requested: loom "+loomLabel(instance.config.loom)+" address space · native control "+(instance.config.native_control===true ? "enabled" : "disabled"))
   if (d.launch_memory_gib!==undefined && d.launch_cpu_cores!==undefined) parts.push("Recorded container limits: "+d.launch_memory_gib+" GiB RAM · "+d.launch_cpu_cores+" CPUs")
@@ -1114,7 +1159,7 @@ function edit(connection, instance) {
   if (!connection || !instance) return null
   return { connection: connection.name, runner: connection.runner_id, instance: instance.id,
     revision: instance.config_revision, port: instance.config.http_port,
-    ames: instance.config.ames_port, loom: instance.config.loom, nativeControl: instance.config.native_control === true,
+    ames: instance.config.ames_port, loom: instance.config.loom, runtimeProfile:instance.config.runtime_profile || "", nativeControl: instance.config.native_control === true,
     memoryGiB: instance.config.memory_gib || 4, cpuCores: instance.config.cpu_cores || 2,
     containerResources: hasFeature(connection,"container-resources-v1"),
     resourcesEditable: instance.desired_state==="stopped" && ["stopped","uninitialized"].indexOf(instance.observed_state)>=0 && !instance.recovery_required && !instance.active_operation_id,
@@ -1128,7 +1173,8 @@ function configure(target, port, loom, memory, cpus) {
   var features = target.runtimeSettings ? ["runtime-settings"] : []
   // Pre-settings runners accept the historical 31..33 range for port edits.
   var legacy = !target.runtimeSettings && Number.isInteger(loom) && loom>=31 && loom<=33
-  if (!legacy) runtimeSettingsArgs({features:features},loom)
+  var preserveLocal=target.runtimeSettings && /^local-[a-f0-9]{56}$/.test(target.runtimeProfile || "") && loom===target.loom && Number.isInteger(loom) && loom>34 && loom<=40
+  if (!legacy && !preserveLocal) runtimeSettingsArgs({features:features},loom)
   var resources=[]
   if (memory !== undefined || cpus !== undefined) {
     memory=memory===undefined ? target.memoryGiB : Number(memory)
@@ -1148,7 +1194,7 @@ function configure(target, port, loom, memory, cpus) {
 
 function loomLabel(exponent) {
   var n=Number(exponent)
-  if (!Number.isInteger(n) || n<20 || n>34) return "Unsupported loom"
+  if (!Number.isInteger(n) || n<20 || n>40) return "Unsupported loom"
   return n+" · "+Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? " MiB" : " GiB")
 }
 function creationResourceArgs(connection,memory,cpus) {

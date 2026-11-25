@@ -104,9 +104,9 @@ Commands:
                              Serve development management; optional resolved startup resume.
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
-  runtime-profiles           List immutable reviewed runtime metadata (offline).
-  runtime-profile-install --profile ID --archive FILE
-                             Verify and retain a reviewed image; never opens a pier.
+  runtime-profiles           List bundled and owner-installed runtime metadata.
+  runtime-profile-install {--profile ID|--manifest FILE} --archive FILE
+                             Verify and retain an immutable image; never opens a pier.
 
 install-host performs explicitly authorized host setup for an existing Unix user.
 Qualification commands create new disposable ships and runtime resources.
@@ -143,6 +143,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		args = args[2:]
 	}
 	if len(args) > 0 && (args[0] == "runtime-profiles" || args[0] == "runtime-profile-install") {
+		configureRuntimeRegistry()
 		return runRuntimeProfiles(ctx, args[0], args[1:], stdout, stderr)
 	}
 	if len(args) > 0 && args[0] == "recording-worker" {

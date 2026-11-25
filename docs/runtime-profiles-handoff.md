@@ -1,5 +1,28 @@
 # Issue22 continuation and review handoff
 
+## Active feedback implementation — rc.4 (not yet delivered)
+
+The owner completed the rc.3 DEV update and reported recovery, action-feedback,
+permission-label and runtime-selection issues. M798 and the current section of
+[runtime policy](runtime-policy.md) supersede the historical next-action and
+finite-catalogue statements below. The current source implements the fixes and
+owner-installed local/channel artifacts with explicit stopped transitions.
+The version is0.6.0-rc.4/schema67; the source freeze, matching native runtime,
+0.5.0/rc.3 upgrade rehearsals and new owner update adapter remain pending.
+Do not reuse the completed review040-update-060rc3-owner attempt or alter its
+backups. Do not run the live DEV apply automatically.
+
+The expanded runtime harness accepts `--local-runtime DIRECTORY` containing the
+builder's profile.json and runtime-image.tar.gz. It verifies their digest/length
+binding, then stages them only in a fresh disposable VM. It tests local fresh
+boot, explicit stopped transition, local import and manager restart in addition
+to the existing core scenario. Latest upstream channels returned HTTP403; real
+64-bit Vere execution is not yet qualified. Project members retain their separate
+runtime contract. All historical rc.3 evidence below still applies only to its
+unchanged published bytes.
+
+## Historical rc.3 handoff
+
 The active candidate is **0.6.0-rc.3**, frozen at
 `747dd810c10b74b4fbcdc10f617e6b15dd545a45`, on
 `codex/issue-22-runtime-profiles`, in [draft PR24](https://github.com/thelifeandtimes/omabit/pull/24).

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -136,35 +137,77 @@ func TestRuntimeProfilesPersistIndependentlyAndOldConfigurePreserves(t *testing.
 	}
 }
 
-func TestRuntimeProfilesSchema65MigrationPreservesOriginalBytes(t *testing.T) {
+func TestRuntimeProfilesSchema65And66MigrationPreservesOriginalBytes(t *testing.T) {
+	for _, schema := range []int{65, 66} {
+		t.Run(fmt.Sprint(schema), func(t *testing.T) {
+			s := testStore(t)
+			if _, _, err := s.register("actor", registration("legacy", "old", 18080)); err != nil {
+				t.Fatal(err)
+			}
+			var before, after []byte
+			if err := s.db.QueryRow("SELECT body FROM instances WHERE id='legacy'").Scan(&before); err != nil {
+				t.Fatal(err)
+			}
+			// Synthetic previous schema marker; actual published-reader rehearsal is a
+			// separate artifact qualification. No native process or pier is involved.
+			if _, err := s.db.Exec(fmt.Sprintf("PRAGMA user_version=%d", schema)); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.initialize(); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRow("SELECT body FROM instances WHERE id='legacy'").Scan(&after); err != nil || !bytes.Equal(before, after) {
+				t.Fatal("migration rewrote original", err)
+			}
+			var version int
+			if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != StateSchemaVersion {
+				t.Fatal("missing older-reader fence", version, err)
+			}
+			var v storedInstance
+			if err := json.Unmarshal(after, &v); err != nil || v.Runtime.RuntimeProfile != "" || v.Public.Config.RuntimeProfile != "" {
+				t.Fatal("legacy encoding relabeled", err)
+			}
+			if err := s.initialize(); err != nil {
+				t.Fatal("nonrepeatable migration", err)
+			}
+		})
+	}
+}
+
+func TestExplicitStoppedRuntimeTransitionPreservesPierAndHistory(t *testing.T) {
 	s := testStore(t)
-	if _, _, err := s.register("actor", registration("legacy", "old", 18080)); err != nil {
+	req := registration("switchable", "register-switchable", 18085)
+	if _, _, err := s.register("actor", req); err != nil {
 		t.Fatal(err)
 	}
-	var before, after []byte
-	if err := s.db.QueryRow("SELECT body FROM instances WHERE id='legacy'").Scan(&before); err != nil {
+	before, err := loadInstance(s.db, req.ID)
+	if err != nil {
 		t.Fatal(err)
 	}
-	// Synthetic previous schema marker; actual published-reader rehearsal is a
-	// separate artifact qualification. No native process or pier is involved.
-	if _, err := s.db.Exec("PRAGMA user_version=65"); err != nil {
+	config := before.Public.Config
+	config.RuntimeProfile = runtimeprofile.JSONFixProfile
+	change := protocol.ConfigureRequest{ExpectedRevision: before.Public.ConfigRevision, Config: config, ConfirmRuntimeChange: true}
+	got, err := s.configure("owner", req.ID, change)
+	if err != nil || got.Config.RuntimeProfile != runtimeprofile.JSONFixProfile || got.DesiredState != "stopped" {
+		t.Fatal(got, err)
+	}
+	after, err := loadInstance(s.db, req.ID)
+	if err != nil {
 		t.Fatal(err)
 	}
-	if err := s.initialize(); err != nil {
-		t.Fatal(err)
+	if after.Runtime.ID != before.Runtime.ID || after.Public.PierPath != before.Public.PierPath || after.Public.Ship != before.Public.Ship || len(after.Runtime.RuntimeHistory) != 1 || after.Runtime.RuntimeHistory[0].From.ID != runtimeprofile.OfficialProfile || after.Runtime.RuntimeHistory[0].To.ID != runtimeprofile.JSONFixProfile {
+		t.Fatal("transition changed identity or lost history", after)
 	}
-	if err := s.db.QueryRow("SELECT body FROM instances WHERE id='legacy'").Scan(&after); err != nil || !bytes.Equal(before, after) {
-		t.Fatal("migration rewrote original", err)
+	if _, err = s.configure("owner", req.ID, change); err == nil {
+		t.Fatal("stale revision replayed transition")
 	}
-	var version int
-	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 66 {
-		t.Fatal("missing older-reader fence", version, err)
+	change.ExpectedRevision = got.ConfigRevision
+	change.Config.RuntimeProfile = runtimeprofile.OfficialProfile
+	if _, err = s.configure("owner", req.ID, change); err == nil {
+		t.Fatal("confirmation bypassed correction requirement")
 	}
-	var v storedInstance
-	if err := json.Unmarshal(after, &v); err != nil || v.Runtime.RuntimeProfile != "" || v.Public.Config.RuntimeProfile != "" {
-		t.Fatal("legacy encoding relabeled", err)
-	}
-	if err := s.initialize(); err != nil {
-		t.Fatal("nonrepeatable migration", err)
+	unchanged, _ := loadInstance(s.db, req.ID)
+	if len(unchanged.Runtime.RuntimeHistory) != 1 || unchanged.Public.ConfigRevision != got.ConfigRevision {
+		t.Fatal("refusal mutated history")
 	}
 }

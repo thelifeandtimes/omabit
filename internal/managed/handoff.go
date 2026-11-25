@@ -265,7 +265,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 			r.respondError(w, err)
 			return
 		}
-		if !protocol.ValidRecordedLoom(settings.Loom) || !protocol.ValidContainerResources(settings.MemoryGiB, settings.CPUCores) {
+		if !protocol.ValidProfileLoom(settings.RuntimeProfile, settings.Loom, true) || !protocol.ValidContainerResources(settings.MemoryGiB, settings.CPUCores) {
 			r.respondError(w, bad("invalid handoff runtime settings"))
 			return
 		}

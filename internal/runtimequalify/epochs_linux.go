@@ -239,6 +239,10 @@ func scanPierEpochsForProfile(ctx context.Context, root *os.Root, pier, id strin
 		return a < b
 	})
 	for i := range inv.Entries {
+		patched, _ := candidate.Resolve(candidate.JSONFixProfile)
+		if inv.Entries[i].VereVersion == patched.VereVersion && selected.Requirement != candidate.JSONFixRequirement {
+			return nil, errors.New("pier history requires the JSON decoder correction; never downgrade or edit epoch metadata")
+		}
 		inv.Entries[i].Protected = i >= len(inv.Entries)-epochs.ProtectedSuffix
 		if inv.Entries[i].LayoutVersion != 2 || inv.Entries[i].VereVersion != selected.VereVersion {
 			inv.Source = epochs.ImportSource
@@ -246,7 +250,7 @@ func scanPierEpochsForProfile(ctx context.Context, root *os.Root, pier, id strin
 	}
 	if len(history) > 0 && history[0] {
 		latest := inv.Entries[len(inv.Entries)-1]
-		if latest.LayoutVersion != 2 || (latest.VereVersion != selected.VereVersion && !(selected.Kind == "official" && latest.VereVersion == "4.6")) {
+		if latest.LayoutVersion != 2 || !selected.AcceptsEpochVersion(latest.VereVersion) {
 			return nil, fmt.Errorf("latest epoch runtime %q does not match selected %s; prepare a clean checkpoint with the required runtime before importing; never downgrade a patched pier or edit epoch metadata", latest.VereVersion, selected.ID)
 		}
 	}
@@ -358,7 +362,7 @@ func scanEpochDirectoryForProfile(ctx context.Context, root *os.Root, name strin
 					version = e.LayoutVersion == 1 || e.LayoutVersion == 2
 				}
 			} else {
-				vere = value == selected.VereVersion || selected.Kind == "reviewed" && value == candidate.VereVersion
+				vere = selected.AcceptsEpochVersion(value)
 				e.VereVersion = value
 				if allowHistory {
 					vere = historicalVereVersion.MatchString(value)

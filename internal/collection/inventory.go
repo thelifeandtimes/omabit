@@ -9,11 +9,14 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
 // Observation keeps instance IDs scoped to a connection and stable runner ID.
 // Unavailable runners have no current snapshot; absence is not a ship crash.
 type Observation struct {
+	RuntimeProfiles         []runtimeprofile.Profile          `json:"runtime_profiles,omitempty"`
+	RuntimeChannels         map[string]string                 `json:"runtime_channels,omitempty"`
 	ProjectInventory        *protocol.ProjectInventory        `json:"project_inventory,omitempty"`
 	ProjectInventoryStatus  string                            `json:"project_inventory_status,omitempty"`
 	Actor                   string                            `json:"actor,omitempty"`
@@ -57,6 +60,8 @@ func inspectClient(ctx context.Context, entry Connection, c *client.Client) Obse
 		result.AccessRole = hello.AccessRole
 		result.Actor = hello.Actor
 		result.Features = hello.Features
+		result.RuntimeProfiles = hello.RuntimeProfiles
+		result.RuntimeChannels = hello.RuntimeChannels
 		// Independent requests share the per-runner deadline. Host evidence cannot
 		// erase a usable snapshot, nor does unavailable inventory hide a host report.
 		var reportWG sync.WaitGroup

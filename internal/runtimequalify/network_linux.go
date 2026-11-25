@@ -52,6 +52,12 @@ func bridgeOptions() map[string]string {
 }
 
 func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
+	return q.inspectNetworkMode(ctx, false)
+}
+
+// Only explicit Stop may accept a dangling endpoint, and then only for an
+// already removed, journaled container on this exact owned bridge.
+func (q *qualifier) inspectNetworkMode(ctx context.Context, stopping bool) (bridge, error) {
 	r := q.r.Network
 	if !networkProfile(q.d.profile) || r == nil || r.Removed {
 		return bridge{}, errUntrustedNetwork
@@ -82,11 +88,84 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 			owned = owned || (c.ID == id && isNetworkedKind(c.Kind))
 		}
 		if !owned {
+			if stopping && q.orphanEndpoint(id, n.Containers[id]) != "" {
+				continue
+			}
 			return bridge{}, errors.Join(errUntrustedNetwork, errors.New("unrecognized network attachment"))
 		}
 	}
 	r.ID, r.CreateUncertain = n.ID, false
 	return n, nil
+}
+
+func (q *qualifier) orphanEndpoint(id string, raw json.RawMessage) string {
+	var endpoint struct {
+		Name       string
+		EndpointID string
+	}
+	if json.Unmarshal(raw, &endpoint) != nil || id != "ep-"+endpoint.EndpointID || !containerIDPattern.MatchString(endpoint.EndpointID) {
+		return ""
+	}
+	for _, c := range q.r.Containers {
+		if c.Removed && !c.CreateUncertain && isNetworkedKind(c.Kind) && containerIDPattern.MatchString(c.ID) && c.Name == endpoint.Name && c.Name == q.resourceName(c.Kind) {
+			return c.Name
+		}
+	}
+	return ""
+}
+
+func (q *qualifier) reconcileStoppedNetwork(ctx context.Context) error {
+	if q.r.Network == nil || q.r.Network.Removed {
+		return nil
+	}
+	n, err := q.inspectNetworkMode(ctx, true)
+	if err != nil {
+		return err
+	}
+	for id, raw := range n.Containers {
+		name := q.orphanEndpoint(id, raw)
+		if name == "" {
+			return errors.New("stopped runtime still has a network attachment; refresh and retry Stop")
+		}
+		// Check both the retained ID and the exact name independently. Never
+		// use an inspect failure as evidence that a container is absent.
+		for _, c := range q.r.Containers {
+			if c.Name == name {
+				for _, filter := range []string{"id=" + c.ID, "name=^/" + name + "$"} {
+					out, e := q.docker(ctx, q.d.times.command, "container", "ls", "--all", "--no-trunc", "--filter", filter, "--format", "{{.ID}}")
+					if e != nil {
+						return e
+					}
+					if strings.TrimSpace(out) != "" {
+						return errors.New("network recovery refused: retained container identity or name is still present")
+					}
+				}
+			}
+		}
+		again, e := q.inspectNetworkMode(ctx, true)
+		if e != nil {
+			return e
+		}
+		if !reflect.DeepEqual(n, again) {
+			return errors.New("network changed during stopped recovery; retry Stop")
+		}
+		// Persist Stop's phase and removed-container evidence before dispatch.
+		if err = q.save(); err != nil {
+			return err
+		}
+		if _, err = q.docker(ctx, q.d.times.command, "network", "disconnect", "--force", n.ID, name); err != nil {
+			return err
+		}
+		n, err = q.inspectNetworkMode(ctx, true)
+		if err != nil {
+			return err
+		}
+		if _, exists := n.Containers[id]; exists {
+			return errors.New("Docker retained the orphan endpoint after disconnect; Stop remains unresolved")
+		}
+	}
+	_, err = q.inspectNetwork(ctx)
+	return err
 }
 
 func (q *qualifier) createNetwork(ctx context.Context) error {

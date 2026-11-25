@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 
@@ -115,6 +116,15 @@ func (c *Client) SuggestHTTPPort(ctx context.Context) (protocol.PortSuggestion, 
 }
 
 func (c *Client) Configure(ctx context.Context, id string, req protocol.ConfigureRequest) (protocol.Instance, error) {
+	if req.ConfirmRuntimeChange {
+		h, err := c.Hello(ctx)
+		if err != nil {
+			return protocol.Instance{}, err
+		}
+		if !slices.Contains(h.Features, protocol.RuntimeTransitionFeature) {
+			return protocol.Instance{}, errors.New("update this runner for runtime-transition-v1 before changing an enrolled runtime")
+		}
+	}
 	if err := c.requireRuntimeProfile(ctx, req.Config.RuntimeProfile); err != nil {
 		return protocol.Instance{}, err
 	}

@@ -162,6 +162,43 @@ def main():
  operation('profile-patched','start','patched-after-import-copy');wait(lambda:row('profile-patched')['observed_state']=='running',600)
  for name in ('profile-patched','profile-stock'):
   if row(name)['desired_state']!='stopped' or row(name)['observed_state']=='running':operation(name,'stop',name+'-final-stop')
+ # Expand the ordinary workflows with a separately packaged local executable.
+ local=scenario.get('local_runtime')
+ if local:
+  local_id=local['id'];local_images=[local['config_digest'],local['manifest_digest']]
+  run([tool('urbit-runner'),'runtime-profile-install','--manifest',I/'local-profile.json','--archive',I/'local-runtime.tar.gz'],True)
+  code,value=endpoint('/v1/runtime-profiles/'+local_id);assert code==200 and value['profile']==local
+  col('create-fake','profile-local','--ship','~zod','--http-port','19185','--runtime-profile',local_id,'--loom','34','--request-id','profile-local-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
+  operation('profile-local','start','local-first-start');wait(lambda:row('profile-local')['observed_state']=='running',600)
+  audit_profile('profile-local',local_id,local_images)
+  operation('profile-local','stop','local-first-stop');check('local_manifest_install_and_fresh_boot')
+  before_switch=row('profile-stock');config=dict(before_switch['config']);config['runtime_profile']=local_id
+  # Confirmation is required, and changing intent does not automatically boot.
+  code,error=endpoint('/v1/instances/profile-stock/configuration','PUT',{'expected_revision':before_switch['config_revision'],'config':config})
+  assert code==409 and row('profile-stock')['config']==before_switch['config']
+  col('configure','profile-stock','--revision',str(before_switch['config_revision']),'--http-port',str(config['http_port']),'--ames-port',str(config['ames_port']),'--loom',str(config['loom']),'--runtime-profile',local_id,'--confirm-runtime-change')
+  assert row('profile-stock')['observed_state']=='stopped' and row('profile-stock')['pier_path']==before_switch['pier_path']
+  operation('profile-stock','start','stock-to-local-start');wait(lambda:row('profile-stock')['observed_state']=='running',600)
+  audit_profile('profile-stock',local_id,local_images);operation('profile-stock','stop','stock-to-local-stop')
+  check('explicit_stopped_stock_to_local_transition_preserves_pier')
+  local_source=Path('/home/review/local-import-source')
+  run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/row('profile-local')['pier_path'],local_source],True,timeout=180)
+  plan=json.loads(storage('preview-pier','--source',local_source,'--storage-root','default','--runtime-profile',local_id).stdout)
+  local_import=plan['instance_id']
+  storage('import-pier',local_import,'--source',local_source,'--path',plan['destination'],'--ship',plan['ship'],'--fingerprint',plan['source']['fingerprint'],'--http-port',str(plan['http_port']),'--runtime-profile',local_id,'--request-id','local-import','--confirm-stopped','--identify')
+  def local_import_ready():
+   snap=col('snapshot');op=next((x for x in snap['operations'] if x['request_id']=='local-import'),None)
+   if not op or op['status'] in ('queued','pending','running'):return False
+   assert op['status']=='succeeded',op
+   return row(local_import)['observed_state']=='stopped'
+  wait(local_import_ready,300)
+  operation(local_import,'start','local-import-start');wait(lambda:row(local_import)['observed_state']=='running',600)
+  pinned=row(local_import)['runtime_status']['container_id']
+  run(['systemctl','--user','restart','urbit-runner.service'],True);wait(lambda:col('hello'))
+  assert row(local_import)['runtime_status']['container_id']==pinned
+  audit_profile(local_import,local_id,local_images)
+  operation(local_import,'stop','local-import-stop');check('local_import_and_manager_restart_preserve_pin')
+  report['local_runtime']=local
  events.terminate();events.wait(timeout=10);events_log.close()
  with sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True) as db:
   saved={id:json.loads(body) for id,body in db.execute('select id,body from instances')}
@@ -172,7 +209,10 @@ def main():
   attrs=event['Actor']['Attributes'];name=attrs.get('name','')
   for id,item in saved.items():
    if item['runtime']['id'] in name:
-    expected=[PATCH,PATCH_MANIFEST] if item['public']['config'].get('runtime_profile')==PROFILE else [STOCK,STOCK_MANIFEST]
+    profiles={p['id']:p for p in col('hello')['runtime_profiles']}
+    pins={item['public']['config'].get('runtime_profile') or 'vere-4.6-5a7614f'}
+    for transition in item['runtime'].get('runtime_history',[]):pins.update((transition['from']['id'],transition['to']['id']))
+    expected=[digest for pin in pins for digest in (profiles[pin]['manifest_digest'],profiles[pin]['config_digest'])]
     assert attrs['image'] in expected,(id,attrs)
     report['native_launches'].append({'instance':id,'name':name,'image':attrs['image']})
  assert any(x['instance']=='profile-patched' and x['name'].endswith('-pack') for x in report['native_launches']),report['native_launches']

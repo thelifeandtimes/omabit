@@ -3,8 +3,8 @@
 from pathlib import Path
 import argparse,hashlib,importlib.util,json,shutil,subprocess
 ROOT=Path(__file__).resolve().parents[1]
-spec=importlib.util.spec_from_file_location('storage',ROOT/'scripts/qualification/app-development/storage.py');storage=importlib.util.module_from_spec(spec);spec.loader.exec_module(storage);storage.admit(8*1024**2)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);out=p.parse_args().output.resolve();out.mkdir(mode=0o700)
+spec=importlib.util.spec_from_file_location('storage',ROOT/'scripts/qualification/app-development/storage.py');storage=importlib.util.module_from_spec(spec);spec.loader.exec_module(storage)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);args=p.parse_args();storage.admit(8*1024**2,budget_bytes=args.storage_budget_gib*1024**3);out=args.output.resolve();out.mkdir(mode=0o700)
 plugin=out/'Plugin';plugin.mkdir()
 for name in ('ShipPortsPane.qml','ContainerResourceFields.qml','RuntimeSettingsFields.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','Hint.qml','Model.js'):
  shutil.copy2(ROOT/'plugins/omabit'/name,plugin/name)

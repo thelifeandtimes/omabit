@@ -557,3 +557,39 @@ for(const change of [c=>c.status="unavailable",c=>c.snapshot.instances[0].config
 }
 assert.equal(model.completedImportTarget([navConnection],navRequest,now+3600000),null);
 console.log("PASS: import navigation requires the exact successful receipt and current matching ship; no stale, failed or reused-name redirection");
+
+// Acceptance and polling gaps must not re-enable another action on the same
+// instance. Identical ~zod identities on other instances/runners stay distinct.
+{
+ const c={name:'dev',runner_id:'runner-dev',snapshot:{instances:[],operations:[]}};
+ const i={id:'zod',ship:'~zod'},other={id:'review-zod',ship:'~zod'};
+ const p=model.lifecycleTarget(['--runner','dev','--expected-runner-id','runner-dev','operate','zod','stop','--revision','1','--request-id','click-1']);
+ let requests={[p.key]:p};
+ assert.equal(model.lifecycleKind(requests,c,i),'stop');
+ assert.equal(model.lifecycleKind(requests,c,other),'');
+ assert.equal(model.lifecycleKind(requests,{...c,runner_id:'another'},i),'');
+ requests=model.reconcileLifecycle(requests,[c]);
+ assert.equal(model.lifecycleKind(requests,c,i),'stop','acknowledgement gap stays pending');
+ c.snapshot.operations=[{id:'op1',instance_id:'review-zod',request_id:'click-1',kind:'stop',status:'succeeded'}];
+ requests=model.reconcileLifecycle(requests,[c]);assert.equal(model.lifecycleKind(requests,c,i),'stop');
+ c.snapshot.operations[0].instance_id='zod';c.snapshot.operations[0].status='running';
+ requests=model.reconcileLifecycle(requests,[c]);assert.equal(model.lifecycleKind(requests,c,i),'stop');
+ c.snapshot.operations[0].status='succeeded';requests=model.reconcileLifecycle(requests,[c]);
+ assert.equal(model.lifecycleKind(requests,c,i),'');
+ const project=model.lifecycleTarget(['--runner','dev','--expected-runner-id','runner-dev','project-operate','project-a','member-stop','--member','project-zod','--request-id','click-2']);
+ assert.equal(project.instance,'project-zod');assert.equal(project.kind,'stop');
+}
+console.log('PASS: lifecycle pending state survives acceptance/polling and isolates same-identity instances');
+
+{
+ const local='local-'+'a'.repeat(56), old='local-'+'b'.repeat(56);
+ const c={features:['runtime-profiles-v1'],runtime_channels:{live:local},runtime_profiles:[
+ {id:'vere-4.6-jsonfix-0774857c',kind:'reviewed',vere_version:'4.6-82f4558'},
+ {id:local,kind:'local',channel:'live',vere_version:'4.7',binary_sha256:'a'.repeat(64)},
+ {id:old,kind:'local',channel:'live',vere_version:'4.6',binary_sha256:'b'.repeat(64)}]};
+ assert(model.runtimeChoices(c,'').some(p=>p.id==='vere-4.6-jsonfix-0774857c'));
+ assert(model.runtimeChoices(c,'').some(p=>p.id===local));
+ assert(!model.runtimeChoices(c,'').some(p=>p.id===old));
+ assert(model.runtimeChoices(c,old).some(p=>p.id===old),'existing channel selection must stay visible');
+}
+console.log('PASS: runtime choices show reviewed and latest channel builds while preserving older selected pins');

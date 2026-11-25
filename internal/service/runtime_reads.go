@@ -20,7 +20,7 @@ func (in RuntimeProfileInput) Validate() error {
 	if in.Target.Validate() != nil || in.RuntimeProfile == "" {
 		return invalid()
 	}
-	if _, err := runtimeprofile.Resolve(in.RuntimeProfile); err != nil {
+	if _, err := runtimeprofile.Resolve(in.RuntimeProfile); err != nil && !runtimeprofile.IsLocalID(in.RuntimeProfile) {
 		return invalid()
 	}
 	return nil

@@ -1,6 +1,9 @@
 package runtimeprofile
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	ManifestDigest     = "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
@@ -14,26 +17,28 @@ const (
 	JSONFixRequirement = "vere-json-array-error-1145-v1"
 )
 
-// Profile is a reviewed, immutable execution contract. IDs never follow a
-// mutable channel or version tag. Extending this catalogue requires a reviewed
-// release, artifact provenance and runtime qualification; callers cannot supply
-// paths, commands, images or replacement metadata.
+// Profile is an immutable execution contract. Bundled profiles carry release
+// qualification; local profiles carry the owner's provenance and compatibility
+// assertions. A channel pointer affects future selection, never an enrolled pin.
 type Profile struct {
-	Format         int    `json:"format"`
-	ID             string `json:"id"`
-	Kind           string `json:"kind"`
-	Platform       string `json:"platform"`
-	VereVersion    string `json:"vere_version"`
-	Image          string `json:"image"`
-	ManifestDigest string `json:"manifest_digest"`
-	ConfigDigest   string `json:"config_digest"`
-	BinarySHA256   string `json:"binary_sha256"`
-	SourceBase     string `json:"source_base"`
-	PatchRevision  string `json:"patch_revision,omitempty"`
-	Requirement    string `json:"requirement,omitempty"`
-	ReviewURL      string `json:"review_url,omitempty"`
-	ArchiveSHA256  string `json:"archive_sha256,omitempty"`
-	ArchiveBytes   int64  `json:"archive_bytes,omitempty"`
+	Format             int    `json:"format"`
+	ID                 string `json:"id"`
+	Kind               string `json:"kind"`
+	Platform           string `json:"platform"`
+	VereVersion        string `json:"vere_version"`
+	Image              string `json:"image"`
+	ManifestDigest     string `json:"manifest_digest"`
+	ConfigDigest       string `json:"config_digest"`
+	BinarySHA256       string `json:"binary_sha256"`
+	SourceBase         string `json:"source_base"`
+	PatchRevision      string `json:"patch_revision,omitempty"`
+	Requirement        string `json:"requirement,omitempty"`
+	ReviewURL          string `json:"review_url,omitempty"`
+	ArchiveSHA256      string `json:"archive_sha256,omitempty"`
+	ArchiveBytes       int64  `json:"archive_bytes,omitempty"`
+	Channel            string `json:"channel,omitempty"`
+	MaxLoom            uint8  `json:"max_loom,omitempty"`
+	CompatibleVersions string `json:"compatible_versions,omitempty"`
 }
 
 // Resolve preserves the exact historical official runtime for omitted fields.
@@ -58,18 +63,42 @@ func Resolve(id string) (Profile, error) {
 			ReviewURL:      "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
 			ArchiveSHA256:  "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510", ArchiveBytes: 54750277}, nil
 	default:
-		return Profile{}, fmt.Errorf("unknown immutable runtime profile %q; use a matching runner and reviewed catalogue", id)
+		if IsLocalID(id) {
+			return readInstalled(id)
+		}
+		return Profile{}, fmt.Errorf("unknown immutable runtime profile %q; select an installed immutable runtime", id)
 	}
 }
 
 func Catalogue() []Profile {
 	a, _ := Resolve(OfficialProfile)
 	b, _ := Resolve(JSONFixProfile)
-	return []Profile{a, b}
+	return append([]Profile{a, b}, installedCatalogue()...)
 }
 
 func (p Profile) AcceptsImageID(id string) bool {
 	return id == p.ConfigDigest || id == p.ManifestDigest
+}
+
+func (p Profile) AcceptsEpochVersion(version string) bool {
+	patched, _ := Resolve(JSONFixProfile)
+	if version == patched.VereVersion && p.Requirement != JSONFixRequirement {
+		return false
+	}
+	if version == p.VereVersion {
+		return true
+	}
+	if p.Kind == "official" && version == "4.6" || p.Kind == "reviewed" && (version == "4.6" || version == VereVersion) {
+		return true
+	}
+	if p.Kind == "local" {
+		for _, v := range strings.Fields(p.CompatibleVersions) {
+			if v == version {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // CompatibleSuccessor requires actual correction evidence, never version order.

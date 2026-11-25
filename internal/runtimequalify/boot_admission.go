@@ -65,7 +65,7 @@ func (s ManagedState) UndispatchedInitialBoot() bool {
 		r.ReportPath != "" || r.CleanupComplete || r.Failure != "" || len(r.Phases) != 0 || r.RetainedLogs != nil ||
 		r.Meld != nil || r.Prune != nil || r.Recovery != nil || r.EpochLifecycle != nil || len(r.PrefixPrunes) != 0 || r.PierImport != nil || r.Comet != nil ||
 		len(r.CometUtilities) != 0 || r.CometFinalEpochs != nil ||
-		!protocol.ValidRecordedLoom(protocol.EffectiveLoom(s.Loom)) || len(r.Containers) != 2 {
+		!protocol.ValidProfileLoom(s.RuntimeProfile, protocol.EffectiveLoom(s.Loom), true) || len(r.Containers) != 2 {
 		return false
 	}
 	n := r.Network

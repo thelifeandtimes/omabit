@@ -20,7 +20,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = (
-    "Model.js", "StorageLocationSelector.qml", "SelectField.qml", "Label.qml",
+    "RuntimeProfileChoice.qml", "Model.js", "StorageLocationSelector.qml", "SelectField.qml", "Label.qml",
     "Design.qml", "PierImportPane.qml", "ProgressMeter.qml", "ActionButton.qml", "Field.qml",
     "CheckField.qml", "Hint.qml", "MaintenancePane.qml", "RoutinePane.qml",
     "RoutineCard.qml", "Card.qml", "CardTitle.qml", "StatusBadge.qml", "ImportRecoveryPane.qml",
@@ -62,7 +62,7 @@ def main():
         (commons / "Color.qml").write_text('pragma Singleton\nimport QtQuick\nQtObject { property color background:"black";property color foreground:"white";property color accent:"blue";property color urgent:"red" }\n')
         service = (ROOT / "plugins/omabit/Service.qml").read_text()
         methods = "\n".join(extract_method(service, name) for name in (
-            "rememberInspection", "reconcileInspection", "rememberImport", "reconcileImports",
+            "operate", "lifecycleKind", "reconcileLifecycle", "rememberInspection", "reconcileInspection", "rememberImport", "reconcileImports",
             "storageConnection", "importExternalPier", "recoverImport", "finish",
             "clearEpochPreview", "canMaintain", "canSaveRoutine", "canReviewTarget",
             "invalidateEpochPreview", "invalidateImportCatalogue",
@@ -91,6 +91,7 @@ def main():
         qml = (ROOT / "scripts/test-rc11-panel-offscreen.qml").read_text()
         for token, value in {
             "SERVICE_METHODS": methods, "CONNECTIONS_CHANGED": changed[0],
+            "LIFECYCLE_BUTTONS": "\n".join(line.replace("ActionButton {", "P.ActionButton {").replace("root.", "test.") for line in monitor.splitlines() if 'objectName: "ship-start"' in line or 'objectName: "ship-stop"' in line),
             "MONITOR_SELECTION": "\n".join(selections),
             "RECOVERY_INVENTORY": json.dumps(recovery), "RECOVERY_COMPLETED": json.dumps(completed),
             "RECOVERY_ACK": json.dumps(acknowledgement), "RECOVERY_REFUSAL": json.dumps(refusal.stderr),
@@ -110,7 +111,7 @@ def main():
             env.pop(name, None)
         result = subprocess.run([executable, "-I", str(directory), str(directory / "main.qml")], env=env, capture_output=True, text=True, timeout=25)
         text = result.stdout + result.stderr
-        assert result.returncode == 0 and text.count("PASS:") == 4, text
+        assert result.returncode == 0 and text.count("PASS:") == 5, text
         assert not any(error in text for error in ("Error:", "FAIL:", "Unable to assign", "Binding loop", "Cannot assign", "is not defined")), text
         for line in text.splitlines():
             if "PASS:" in line:

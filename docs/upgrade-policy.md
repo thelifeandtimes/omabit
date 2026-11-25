@@ -1,6 +1,17 @@
 # Stable-release upgrade requirement
 
-## Review development: immutable per-ship runtimes, schema66
+## Current development: local runtime manifests and explicit transitions, schema67
+
+The rc.4 source adds an older-writer fence for owner-installed immutable runtime
+manifests and journaled stopped runtime transitions. Migration preserves original
+instance and operation bodies. Preserve the runtime-profiles directory alongside
+management state; it contains the exact metadata and archives needed by enrolled
+ships. No migrated database may be opened by an older writer. The planned review
+window is published0.5.0/schema65 and rc.3/schema66 to the new candidate; actual
+matching-artifact rehearsals are still pending. Earlier rc.3 evidence does not
+qualify rc.4. No live DEV or production update is implied.
+
+## Historical review: immutable per-ship runtimes, schema66
 
 Issue#22 introduces additive runtime-profile fields and a schema66 older-reader
 fence. An omitted historical profile keeps the exact official Vere4.6 artifact;

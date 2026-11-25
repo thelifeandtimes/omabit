@@ -5,12 +5,38 @@ package runtimequalify
 import (
 	"context"
 	"errors"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
 )
+
+func TestFleetInventoryIgnoresUnrelatedPackButRejectsNamespaceChanges(t *testing.T) {
+	a := strings.Repeat("a", 64)
+	m := strings.Repeat("b", 64)
+	u := strings.Repeat("c", 64)
+	before := []projectnetwork.NetworkContainer{{ID: a, Name: "anchor", NetworkMode: "bridge"}, {ID: m, Name: "member", NetworkMode: "container:" + a}}
+	after := append(append([]projectnetwork.NetworkContainer{}, before...), projectnetwork.NetworkContainer{ID: u, Name: "other-zod-pack", NetworkMode: "none"})
+	if !sameProjectNamespaceInventory(a, before, after) || !sameProjectNamespaceInventory(a, after, before) {
+		t.Fatal("unrelated maintenance invalidated project display")
+	}
+	after[2].NetworkMode = "container:" + m
+	if sameProjectNamespaceInventory(a, before, after) {
+		t.Fatal("foreign indirect namespace join accepted")
+	}
+	after[2].NetworkMode = "container:missing"
+	if sameProjectNamespaceInventory(a, before, after) {
+		t.Fatal("ambiguous inventory accepted")
+	}
+	after = append([]projectnetwork.NetworkContainer{}, before...)
+	after[1].Name = "changed"
+	if sameProjectNamespaceInventory(a, before, after) {
+		t.Fatal("selected identity changed")
+	}
+}
 
 func TestFleetObservationEvidenceScope(t *testing.T) {
 	f, input, _ := resumedStopAdapterFixture(t, false, 2)
@@ -98,5 +124,49 @@ func TestFleetObservationEvidenceConcurrentReads(t *testing.T) {
 	wg.Wait()
 	if calls.Load() != 1 {
 		t.Fatal("duplicate host scan", calls.Load())
+	}
+}
+
+func TestFleetObservationRemainsHealthyDuringUnrelatedPack(t *testing.T) {
+	for _, mode := range []string{"none", "foreign-join", "mutation"} {
+		t.Run(mode, func(t *testing.T) {
+			f, input, _ := resumedStopAdapterFixture(t, false, 2)
+			s := ProjectCurrentReadinessSelection{Project: input.Project, Launches: input.Launches, Resumes: input.Resumes, Original: f.readiness["receiver"]}
+			d := f.f.d
+			if mode != "mutation" {
+				d = fleetObservationDependencies(d)
+			}
+			raw, err := openCurrentProjectReadiness(t.Context(), s, d)
+			if err != nil {
+				t.Fatal(err)
+			}
+			e := raw.(*projectCurrentReadinessEngine)
+			e.source.anchor.readBootID = func() (string, error) { return f.ns.BootID, nil }
+			execute := e.source.anchor.base.q.d.execute
+			inserted := false
+			e.source.anchor.base.q.d.execute = func(ctx context.Context, args, env []string) (string, error) {
+				out, err := execute(ctx, args, env)
+				if len(args) > 5 && args[4] == "network" && args[5] == "inspect" && !inserted {
+					inserted = true
+					v := &container{ID: strings.Repeat("7", 64), Name: "/other-zod-pack"}
+					v.HostConfig.NetworkMode = "none"
+					if mode == "foreign-join" {
+						v.HostConfig.NetworkMode = "container:" + e.source.anchor.prepared.Anchor.ID
+					}
+					f.containers[v.ID] = v
+				}
+				return out, err
+			}
+			_, err = projectFleetInspect(t.Context(), e)
+			if !inserted {
+				t.Fatal("fixture did not exercise inventory churn")
+			}
+			if (err == nil) != (mode == "none") {
+				t.Fatal("inventory boundary", mode, err)
+			}
+			if f.signals != 0 {
+				t.Fatal("observation changed a process")
+			}
+		})
 	}
 }

@@ -7,9 +7,13 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 )
 
-func validCreationLoom(loom uint) bool {
+func validCreationLoom(loom uint, profile ...string) bool {
+	if len(profile) > 0 && runtimeprofile.IsLocalID(profile[0]) {
+		return loom >= 20 && loom <= 40
+	}
 	return loom <= protocol.MaxLoom && protocol.ValidRecordedLoom(uint8(loom))
 }
 

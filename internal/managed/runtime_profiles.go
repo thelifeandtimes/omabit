@@ -16,7 +16,7 @@ func validateRuntimeChange(from, to string) error {
 	a, _ := candidate.Resolve(from)
 	b, _ := candidate.Resolve(to)
 	if a.ID != b.ID {
-		return conflict("runtime_transition_required", "runtime selection is bound to this pier; a transition requires a separately reviewed checkpoint/replay plan. Do not re-enroll, edit epoch metadata or downgrade to bypass this refusal")
+		return conflict("runtime_transition_required", "stop the ship, select an installed compatible runtime, and explicitly confirm the runtime change; preserve a backup before starting an untested build")
 	}
 	// Avoid changing the persisted encoding of an existing equivalent binding.
 	if from != to {

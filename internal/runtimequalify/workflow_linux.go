@@ -81,7 +81,7 @@ func (q *qualifier) inspectImage(ctx context.Context) error {
 	}
 	// A locally loaded archive has no registry RepoDigests. The retained archive
 	// authenticates its OCI manifest and config independently of mutable tags.
-	if p.Kind == "reviewed" {
+	if p.Kind == "reviewed" || p.Kind == "local" {
 		knownDigest = p.Image
 	}
 	if i.Os != "linux" || i.Architecture != "amd64" || knownDigest == "" || !p.AcceptsImageID(i.ID) {
@@ -102,7 +102,7 @@ func (q *qualifier) inspectImage(ctx context.Context) error {
 func (q *qualifier) inspectImageReference(ctx context.Context) (string, error) {
 	p := q.runtimeProfile()
 	references := []string{p.Image}
-	if p.Kind == "reviewed" {
+	if p.Kind == "reviewed" || p.Kind == "local" {
 		references = []string{p.ManifestDigest, p.ConfigDigest}
 	}
 	var last error
@@ -201,7 +201,7 @@ func (q *qualifier) probe(ctx context.Context) error {
 		return errors.New("live CPU quota does not match the recorded container limit")
 	}
 	q.r.LimitsObserved = true
-	if q.runtimeProfile().Kind == "reviewed" {
+	if q.runtimeProfile().Kind != "official" {
 		sum, err := q.control(ctx, i, q.d.times.command, "exec", "/usr/bin/sha256sum", "/bin/urbit")
 		if err != nil || strings.TrimSpace(sum) != q.runtimeProfile().BinarySHA256+"  /bin/urbit" {
 			return errors.New("reviewed runtime executable checksum mismatch; pier execution refused")

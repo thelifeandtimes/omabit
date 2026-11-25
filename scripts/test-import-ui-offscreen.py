@@ -9,8 +9,8 @@ import shutil
 import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
-COMPONENTS=('Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ProgressMeter.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
-METHODS=('previewExternalPier','rememberInspection','reconcileInspection','rememberImport','reconcileImports','storageConnection','importExternalPier','recoverImport','finish','clearEpochPreview','canMaintain','canSaveRoutine','canReviewTarget','invalidateEpochPreview','invalidateImportCatalogue')
+COMPONENTS=('RuntimeProfileChoice.qml','Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ProgressMeter.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
+METHODS=('previewExternalPier','lifecycleKind','reconcileLifecycle','rememberInspection','reconcileInspection','rememberImport','reconcileImports','storageConnection','importExternalPier','recoverImport','finish','clearEpochPreview','canMaintain','canSaveRoutine','canReviewTarget','invalidateEpochPreview','invalidateImportCatalogue')
 
 def method(source,name):
     found=re.search(r'^  function '+name+r'\([^\n]*\) \{[^\n]*\}$',source,re.M)

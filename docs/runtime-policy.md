@@ -1,5 +1,71 @@
 # Runtime policy: immutable choices per ship
 
+## Current development: selectable owner-installed runtimes (rc.4, schema67)
+
+The owner's manual review expands selection to fresh ordinary fake/comet/key
+boots, existing-pier imports, and explicit changes on stopped ordinary ships.
+This supersedes the finite-catalogue and no-transition restrictions in the
+historical rc.3 section below. Project members and private-chain factories keep
+their separate official-runtime contracts. This source is not yet qualified as
+a new installed release; rc.3 artifacts remain immutable.
+
+An enrolled ship stores an exact artifact ID. Live/edge/dev identify the latest
+**installed** upstream channel build; refreshing a channel does not change any
+ship's pin. The owner must first install an artifact on the selected runner.
+Upstream channel discovery failed with HTTP403 from this machine during this
+change, so no latest upstream build is claimed as verified.
+
+For a local executable, package without executing it:
+
+```sh
+python3 -B scripts/runtime-profiles/build-local-image.py \
+  --binary /absolute/path/to/vere --version EXACT_BANNER_VERSION \
+  --source-revision SOURCE_COMMIT --max-loom 34 \
+  --cache /absolute/path/to/base-cache --output /absolute/path/to/new-output
+```
+
+Use `--channel live` (or edge/dev) instead of `--binary` to resolve upstream;
+`--bits 64` selects the upstream64-bit variant. An optional `--version` supplies
+an exact banner if it differs from the channel label. `--sha256` checks an
+expected executable digest. The builder accepts Linux x86-64 ELF binaries and
+retains the pinned container base. The runtime checks the exact binary digest
+and banner before using a pier. Packaging is not runtime qualification.
+
+`--max-loom` declares the supported address-space exponent, at most40. The
+ordinary UI offers30..34 and preserves a larger current CLI choice. A larger
+limit neither changes the container RAM limit nor proves that a particular build
+supports that loom. `--compatible-vere VERSION` can be repeated to declare older
+epoch versions that the build can replay. For a successor to the reviewed JSON
+fix, use `--requirement vere-json-array-error-1145-v1` only if that correction is
+actually retained. These are owner assertions, not independent verification.
+
+Install on the pier-owning runner, without starting or selecting a ship:
+
+```sh
+urbit-runner runtime-profile-install \
+  --manifest /absolute/path/to/new-output/profile.json \
+  --archive /absolute/path/to/new-output/runtime-image.tar.gz
+```
+
+For the separate review040 DEV runner, prefix that command with its actual
+binary and development root:
+`/srv/dev/urbit-040/bin/urbit-runner --development-root /srv/dev/urbit-040`.
+This requires the new matching helpers; the currently installed rc.3 does not
+support `--manifest`. Preserve the owner-private runtime-profiles directory with
+runner backups, including profile.json and image.tar.gz for every enrolled ID.
+Never substitute a different manifest or executable under an existing ID.
+
+Creation and import accept `--runtime-profile ID`. To change an enrolled ship,
+Stop first, then submit `configure` with its fresh revision, existing ports and
+loom, `--runtime-profile ID --confirm-runtime-change`. The runner preflights the
+artifact and requires a stopped, resolved state with removed containers. It
+journals old/new artifacts, preserves the pier and stays stopped. Start is a
+separate operation. Preserve a backup before starting an untested build: runtime
+replay changes can be irreversible. Old clients omitting the field preserve the
+current pin. Schema67 fences older writers without rewriting original bodies.
+
+## Historical rc.3 behavior and qualification
+
 The official default remains Vere `4.6-5a7614f` from the frozen `tloncorp/vere`
 image. Omabit's release channel and a ship's Vere runtime are separate choices.
 A manager update never changes the meaning of an existing runtime selection.

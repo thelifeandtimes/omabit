@@ -219,8 +219,8 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	}
 	switch args[0] {
 	case "image":
-		if args[1] == "load" && f.d.runtimeProfile == candidate.JSONFixProfile {
-			expected := filepath.Join(f.d.home, ".local/share/urbit-runner/runtime-profiles", candidate.JSONFixProfile, "image.tar.gz")
+		if args[1] == "load" && (f.d.runtimeProfile == candidate.JSONFixProfile || strings.HasPrefix(f.d.runtimeProfile, "local-")) {
+			expected := filepath.Join(f.d.home, ".local/share/urbit-runner/runtime-profiles", f.d.runtimeProfile, "image.tar.gz")
 			if !reflect.DeepEqual(args, []string{"image", "load", "--input", expected}) {
 				t.Fatal("wrong archive load", args)
 			}
@@ -239,7 +239,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			t.Fatal(err)
 		}
 		references := []string{profile.Image}
-		if profile.Kind == "reviewed" {
+		if profile.Kind == "reviewed" || profile.Kind == "local" {
 			references = []string{profile.ManifestDigest, profile.ConfigDigest}
 		}
 		valid := false
@@ -251,7 +251,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		}
 		f.events = append(f.events, "image-inspect")
 		image := map[string]any{"Id": f.imageID, "Os": "linux", "Architecture": "amd64", "RepoDigests": []string{strings.TrimPrefix(candidate.Image, "docker.io/")}}
-		if profile.Kind == "reviewed" {
+		if profile.Kind == "reviewed" || profile.Kind == "local" {
 			image["RepoDigests"] = []string{}
 		}
 		if f.editImage != nil {
@@ -367,7 +367,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 				t.Fatal("unexpected checksum target")
 			}
 			profile, err := candidate.Resolve(f.d.runtimeProfile)
-			if err != nil || profile.Kind != "reviewed" {
+			if err != nil || profile.Kind != "reviewed" && profile.Kind != "local" {
 				t.Fatal("unexpected checksum profile", err)
 			}
 			f.events = append(f.events, "binary-checksum")

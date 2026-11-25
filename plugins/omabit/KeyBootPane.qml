@@ -68,6 +68,7 @@ Column {
   ActionButton { objectName: "key-advanced-toggle"; text: root.advanced ? "Advanced settings −" : "Advanced settings +"; quiet: true; onClicked: root.advanced=!root.advanced }
   Column {
     objectName: "key-advanced"; width: parent.width; spacing: Style.space(10); visible: root.advanced
+    RuntimeProfileChoice {id:runtimeChoice;width:parent.width;connection:root.connection;enabled:!root.submitted && !!root.service && !root.service.busy;onEdited:bootConsent.checked=false}
     RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: Model.hasFeature(root.connection,"runtime-settings"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
     ContainerResourceFields { id: containerResources; width: parent.width; initialBoot: true; stopped: true; supported: Model.hasFeature(root.connection,"container-resources-v1"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
     StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; visible: !root.registered; enabled: !root.submitted && !root.service.busy; onEdited: bootConsent.checked=false }
@@ -83,7 +84,7 @@ Column {
   CheckField { id: bootConsent; objectName: "key-boot-consent"; width: parent.width; visible: !root.registered; enabled: !root.submitted && !root.service.busy; text: "Boot this identity now with these settings." }
   Flow {
     width: parent.width; spacing: Style.space(8)
-    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom,root.pasteKey ? keyInput.text.trim() : "",containerResources.memoryGiB,containerResources.cpuCores))root.submitError=root.service.lastError;else keyInput.clear()} }
+    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom,root.pasteKey ? keyInput.text.trim() : "",containerResources.memoryGiB,containerResources.cpuCores,runtimeChoice.selectedProfile))root.submitError=root.service.lastError;else keyInput.clear()} }
     ActionButton {
       objectName: "key-start"
       text: "▶ Start"
