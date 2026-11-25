@@ -1,7 +1,7 @@
 """Exact release bundles in an unmodified Omarchy shell on a private compositor."""
 import argparse,hashlib,importlib.util,json,os,shutil,subprocess,sys,time,traceback
 from pathlib import Path
-REPO=Path(__file__).resolve().parents[3]
+REPO=Path('/repo') if '--inside' in sys.argv else Path(__file__).resolve().parents[3]
 PLUGIN='thelifeandtimes.omabit.review060shell'
 
 def run(args,**kw):return subprocess.run(list(map(str,args)),check=True,**kw)

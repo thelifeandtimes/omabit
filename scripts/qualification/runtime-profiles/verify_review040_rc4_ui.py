@@ -1,6 +1,6 @@
 import importlib.util,json,os,shutil,subprocess,sys,time
 from pathlib import Path
-repo=Path(__file__).resolve().parents[3]
+repo=Path('/repo') if '--inside' in sys.argv else Path(__file__).resolve().parents[3]
 if '--inside' not in sys.argv:
  spec=importlib.util.spec_from_file_location('base',repo/'scripts/qualification/runtime-profiles/full_shell.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
  # Reuse the proven isolated compositor launcher; add only private DEV-shaped mounts.
