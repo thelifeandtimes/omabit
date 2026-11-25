@@ -111,7 +111,9 @@ Native.Panel {
   (lab/'result.json').write_text(json.dumps(report,indent=2)+'\n')
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path)
+ p.add_argument('--previous',type=Path,default=Path('/tmp/omabit-050-public-downloads/assets'))
+ p.add_argument('--candidate',type=Path,default=Path('/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.4'));a=p.parse_args()
  if a.inside:return inside()
  if a.output is None:p.print_help();return
  out=a.output;assert out.parent==Path('/tmp') and not out.exists() and out.name.startswith('omabit-060-shell-')
@@ -124,7 +126,7 @@ def main():
  (out/'etc/fonts').mkdir();(out/'etc/passwd').write_text(f'lab:x:{os.getuid()}:{os.getgid()}:Lab:/lab/home:/bin/sh\n');(out/'etc/group').write_text(f'lab:x:{os.getgid()}:\n');(out/'etc/nsswitch.conf').write_text('passwd: files\ngroup: files\n')
  (out/'sway.conf').write_text('xwayland disable\nswaybg_command -\noutput HEADLESS-1 mode 1280x960\n');shutil.copyfile(__file__,out/'driver.py')
  tools=Path.home()/'Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-040-wayland-tools/root'
- cmd=['bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--ro-bind',out/'etc','/etc','--ro-bind','/etc/fonts','/etc/fonts','--ro-bind',tools,'/tools','--ro-bind',REPO,'/repo','--ro-bind','/tmp/omabit-050-public-downloads/assets','/previous','--ro-bind','/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.3','/candidate','--bind',out,'/lab','--chdir','/repo']
+ cmd=['bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--ro-bind',out/'etc','/etc','--ro-bind','/etc/fonts','/etc/fonts','--ro-bind',tools,'/tools','--ro-bind',REPO,'/repo','--ro-bind',a.previous.resolve(),'/previous','--ro-bind',a.candidate.resolve(),'/candidate','--bind',out,'/lab','--chdir','/repo']
  for k,v in {'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','HOME':'/lab/home','XDG_RUNTIME_DIR':'/lab/runtime','XDG_CONFIG_HOME':'/lab/home/.config','XDG_STATE_HOME':'/lab/state','XDG_DATA_HOME':'/lab/data','XDG_CACHE_HOME':'/lab/cache','QT_QUICK_BACKEND':'software','QT_QPA_PLATFORMTHEME':'','QML_DISABLE_DISK_CACHE':'1','OMARCHY_PATH':'/usr/share/omarchy','XDG_SESSION_TYPE':'wayland'}.items():cmd+=['--setenv',k,v]
  (out/'host.json').write_text(json.dumps({'admission':admission,'driver_sha256':sha(Path(__file__))},indent=2))
  r=subprocess.run(list(map(str,cmd+['--','dbus-run-session','--','python3','-B','/lab/driver.py','--inside'])),timeout=270)
